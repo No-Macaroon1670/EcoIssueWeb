@@ -96,6 +96,8 @@
   l('cyclones', 'worsens', 'climate-anxiety', 2);
   l('cyclones', 'threatens', 'food-insecurity', 1);
   l('cyclones', 'causes', 'waterborne', 1, 'Flooding mixes sewage into drinking water.');
+  l('cyclones', 'causes', 'rainfall-shift', 2,
+    'Note the direction. Rainfall patterns do not brew cyclones — that needs warm sea surface and low wind shear — but in cyclone basins the storms are the dominant source of extreme rainfall totals, and they now carry more water and move more slowly.');
   l('drought', 'increases', 'wildfire', 3);
   l('drought', 'causes', 'water-scarcity', 3);
   l('drought', 'drives', 'food-insecurity', 3);
@@ -109,6 +111,8 @@
   l('wildfire', 'causes', 'habitat-loss', 2);
   l('wildfire', 'increases', 'soil-erosion', 2, 'Bare, water-repellent burnt ground erodes badly in the first rains.');
   l('wildfire', 'weakens', 'carbon-sinks', 2);
+  l('rainfall-shift', 'drives', 'drought', 3,
+    'The supply side of drought. The map already had the demand side — thirstier air pulling moisture out of soil — but a rainfall deficit is what the word means first.');
   l('rainfall-shift', 'worsens', 'water-scarcity', 2);
   l('rainfall-shift', 'increases', 'soil-erosion', 2);
   l('rainfall-shift', 'causes', 'waterborne', 2);
