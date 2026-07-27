@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Environmental issue web</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <header class="brand">
+      <h1>Environmental issue web</h1>
+      <p class="tagline">How the problems connect, and what the connections are called.</p>
+    </header>
+
+    <div class="control">
+      <label class="control-label" for="search">Find an issue</label>
+      <div class="search-wrap">
+        <input id="search" type="search" placeholder="permafrost, plastic, drought…" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search-results" hidden></ul>
+      </div>
+    </div>
+
+    <div class="control">
+      <span class="control-label">Colour by</span>
+      <div class="segmented" role="radiogroup" aria-label="Colour by">
+        <button class="seg active" data-colour="cat" role="radio" aria-checked="true">Category</button>
+        <button class="seg" data-colour="cluster" role="radio" aria-checked="false">Detected cluster</button>
+      </div>
+      <p id="cluster-note" class="control-hint"></p>
+    </div>
+
+    <div class="control">
+      <span class="control-label">Show links</span>
+      <div class="segmented" role="radiogroup" aria-label="Link strength">
+        <button class="seg active" data-weight="1" role="radio" aria-checked="true">All</button>
+        <button class="seg" data-weight="2" role="radio" aria-checked="false">Closer</button>
+        <button class="seg" data-weight="3" role="radio" aria-checked="false">Tightest</button>
+      </div>
+    </div>
+
+    <div class="control">
+      <label class="check"><input type="checkbox" id="opt-group" checked> Pull groups apart on screen</label>
+      <label class="check"><input type="checkbox" id="opt-verbs"> Show every verb at once</label>
+    </div>
+
+    <div class="control">
+      <span class="control-label" id="legend-title">Categories</span>
+      <ul class="legend" id="legend"></ul>
+    </div>
+
+    <div class="control">
+      <label class="control-label" for="place">Assess for a place</label>
+      <select id="place">
+        <option value="">— none —</option>
+        <option value="__custom__">Describe my area…</option>
+      </select>
+      <fieldset id="custom-profile" class="custom" hidden>
+        <legend>My area</legend>
+        <label class="control-label" for="custom-income">Income group</label>
+        <select id="custom-income"></select>
+        <span class="control-label">Geography</span>
+        <div id="custom-flags" class="flag-grid"></div>
+      </fieldset>
+      <div id="local-top" class="local-top"></div>
+    </div>
+
+    <footer class="sidebar-foot">
+      <button class="btn" id="btn-table">Table view</button>
+      <button class="btn" id="btn-theme" title="Switch theme">Theme: auto</button>
+    </footer>
+  </aside>
+
+  <main class="stage">
+    <canvas id="graph" aria-label="Network of environmental issues. Use the table view for a non-visual equivalent."></canvas>
+    <div class="stage-tools">
+      <button class="tool" id="btn-zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
+      <button class="tool" id="btn-zoom-out" title="Zoom out" aria-label="Zoom out">−</button>
+      <button class="tool wide" id="btn-fit" title="Fit everything in view">Fit</button>
+    </div>
+    <div class="stage-key">
+      <span><span class="key-line solid"></span>drives</span>
+      <span><span class="key-line dashed"></span>suppresses</span>
+    </div>
+  </main>
+
+  <aside class="detail" id="detail" tabindex="-1"></aside>
+</div>
+
+<script src="data/schema.js"></script>
+<script src="data/nodes-a.js"></script>
+<script src="data/nodes-b.js"></script>
+<script src="data/links.js"></script>
+<script src="data/regions.js"></script>
+<script src="src/cluster.js"></script>
+<script src="src/layout.js"></script>
+<script src="src/graph.js"></script>
+<script src="src/locale.js"></script>
+<script src="src/panel.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>
