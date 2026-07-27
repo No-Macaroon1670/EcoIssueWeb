@@ -43,6 +43,9 @@ also works.
   greenhouse gas emissions; "hurricane" finds tropical cyclones; "heat pump" finds
   electrification even while the solutions layer is off. Roughly 600 keywords across
   the nodes, and the result row shows which term matched.
+- **Two weight sources.** Link weights can come from my judgement or from three
+  months of English Wikipedia reader navigation, and the clustering re-runs against
+  whichever is active. See "Whose distances?" below — they disagree a lot.
 - **Detected clusters.** Louvain community detection on the undirected weighted
   projection, colourable as an alternative to categories. It runs over issues only,
   so the communities do not shift when the solutions layer is toggled; each lever
@@ -64,9 +67,53 @@ of them invalidates that run, so re-validate before shipping a new colour.** Six
 not an arbitrary number: at these constraints seven hues only pass if you accept neon
 chroma, which looks alarming in a graph.
 
-**Clustering runs on link structure, and the weights are editorial.** Each link has a
-weight from 1 to 3 estimating how tightly the two issues are discussed together. That
-is a hand-assigned judgement, *not* a measured co-mention count from a corpus. The
+## Whose distances? (the weight sources)
+
+The original weights were mine: a 1–3 judgement per link about how tightly two issues
+are discussed together. `tools/clickstream.py` adds a second, independent source —
+**English Wikipedia reader navigation** for 2026-04 through 2026-06. If someone reading
+*Permafrost* clicks through to *Atmospheric methane*, that is a revealed adjacency in a
+real person's head rather than an asserted one. Two signals per pair: direct clicks
+between the articles, and cosine similarity of their reader *neighbourhoods* (the
+articles people arrive from and leave to), log-damped so a few enormous pages don't
+dominate every vector.
+
+**They disagree, and that is the finding.** Correlation between the two weightings is
+only **r = 0.34** on the 300 links where readers supply a signal. Louvain over reader
+weights returns 7 communities at modularity 0.51, against 8 at 0.41 for mine, and the
+partitions match at **ARI 0.36** — well above chance, nowhere near the same map.
+
+That is not an artifact of sparsity. Reader weights zero out 88 links that nobody
+navigates, which mechanically raises modularity, so the pipeline was re-run keeping my
+weights for those 88 and reweighting only the 300 measured links: **Q = 0.50, ARI =
+0.30**. The divergence survives the control, so it comes from the reweighting itself.
+
+Where they part company is legible:
+
+- **Light and noise pollution** leave the pollution cluster and join biodiversity —
+  readers meet them as ecological problems, not as chemical ones.
+- **Data centres** group with mining, e-waste and materials rather than with emissions.
+- **Air quality** breaks out as its own tight cluster (PM2.5, ozone, respiratory
+  disease, household air) instead of sitting inside the climate story.
+- **Water scarcity** merges with agriculture and soil rather than with displacement.
+- Readers barely connect things I scored 3: *overconsumption → plastic waste* and
+  *PFAS → unsafe water* record no navigation at all, while *temperature rise →
+  wildfire* draws 615 clicks against my 2.
+
+**Known limits.** The dump only includes links clicked more than ten times a month, so
+niche articles are under-covered — stacking three months cut the no-signal links from
+151 to 88, and more months would cut it further. 22 of 102 nodes map to a *broad* or
+*proxy* article rather than an exact one, and one (clean-tech end-of-life waste) has no
+usable article at all and keeps my weights. Wikipedia readers are not the public.
+Graph geometry deliberately does **not** change with the source, so switching is a
+clean A/B on colour and clustering alone.
+
+Regenerate with `python tools/clickstream.py fetch && ... extract && ... build`. The
+484 MB dumps are gitignored; the derived weights are committed.
+
+**Clustering runs on link structure, and the default weights are editorial.** Each link
+has a weight from 1 to 3 estimating how tightly the two issues are discussed together.
+That is a hand-assigned judgement, *not* a measured co-mention count from a corpus. The
 clusters it produces (modularity ≈ 0.41) are substantive and cut across the
 categories — a carbon core, a heat-and-air-quality-to-health cluster, an
 agriculture-and-soil cluster, a waste-and-toxics-to-injustice cluster, a
@@ -142,6 +189,9 @@ and its neighbours, and the "Show links" control drops to the closer-coupled sub
 | `data/links.js` | the core directed, verb-labelled links |
 | `data/links-c.js` | links for the newer issues and the whole solutions layer |
 | `data/keywords.js` | search synonyms — chemicals, place names, plain-language terms |
+| `data/weights-clickstream.js` | **generated** — reader-navigation weights + the article mapping |
+| `tools/wiki_titles.py` | node → Wikipedia article mapping, with a live validator |
+| `tools/clickstream.py` | fetch / extract / build the reader-navigation weights |
 | `data/regions.js` | ~120 place profiles and the geography-flag vocabulary |
 | `src/cluster.js` | Louvain community detection + modularity |
 | `src/layout.js` | force simulation and the declutter projection pass |

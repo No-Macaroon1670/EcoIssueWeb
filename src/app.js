@@ -77,38 +77,91 @@
     });
   })();
 
+  /* ── weight sources ──────────────────────────────────────────────────────── */
+
+  /* Editorial weights are my judgement. The clickstream weights are derived from
+   * three months of English Wikipedia reader navigation (see tools/clickstream.py).
+   * They disagree, and the disagreement is the interesting part, so both ship. */
+  const CS = window.ECO_CLICKSTREAM || null;
+  const csByPair = new Map();
+  if (CS) CS.links.forEach(r => csByPair.set(r.s + '\t' + r.t, r));
+
+  function csRow(link) { return csByPair.get(link.source + '\t' + link.target) || null; }
+
+  function weightOf(link, source) {
+    if ((source || state.weights) === 'editorial') return link.w;
+    const row = csRow(link);
+    return row && row.w != null ? row.w : link.w;   // unmapped pairs keep editorial
+  }
+
   /* Clustering runs over issues only, so the communities do not shift when the
    * solutions layer is toggled. Each lever then inherits the cluster of whatever
    * it acts on most heavily. */
   const issues = E.nodes.filter(n => n.kind !== 'solution');
   const solutions = E.nodes.filter(n => n.kind === 'solution');
   const issueIds = new Set(issues.map(n => n.id));
-  const clusters = window.ECO_CLUSTER.run(
-    issues.map(n => n.id),
-    E.links.filter(l => issueIds.has(l.source) && issueIds.has(l.target)),
-    1
-  );
-  solutions.forEach(sol => {
-    const tally = new Map();
-    outgoing.get(sol.id).forEach(({ link, other }) => {
-      const c = clusters.of[other.id];
-      if (c != null) tally.set(c, (tally.get(c) || 0) + link.w);
-    });
-    const best = [...tally.entries()].sort((a, b) => b[1] - a[1])[0];
-    clusters.of[sol.id] = best ? best[0] : 0;
-  });
+  const issueLinks = E.links.filter(l => issueIds.has(l.source) && issueIds.has(l.target));
 
+  function clusterFor(source) {
+    const weighted = issueLinks.map(l => ({
+      source: l.source, target: l.target, w: weightOf(l, source)
+    }));
+    return window.ECO_CLUSTER.run(issues.map(n => n.id), weighted, 1);
+  }
+
+  const clusterCache = {};
+  let clusters = null;
   const clusterMembers = new Map();
-  E.nodes.forEach(n => {
-    const c = clusters.of[n.id];
-    if (!clusterMembers.has(c)) clusterMembers.set(c, []);
-    clusterMembers.get(c).push(n);
-  });
   const clusterLabel = new Map();
-  clusterMembers.forEach((members, c) => {
-    const top = members.slice().sort((a, b) => b.weight - a.weight)[0];
-    clusterLabel.set(c, top.label);
-  });
+
+  function applyClusters(source) {
+    if (!clusterCache[source]) {
+      const run = clusterFor(source);
+      // levers inherit the cluster of whatever they act on most heavily
+      solutions.forEach(sol => {
+        const tally = new Map();
+        outgoing.get(sol.id).forEach(({ link, other }) => {
+          const c = run.of[other.id];
+          if (c != null) tally.set(c, (tally.get(c) || 0) + weightOf(link, source));
+        });
+        const best = [...tally.entries()].sort((a, b) => b[1] - a[1])[0];
+        run.of[sol.id] = best ? best[0] : 0;
+      });
+      clusterCache[source] = run;
+    }
+    clusters = clusterCache[source];
+
+    clusterMembers.clear();
+    E.nodes.forEach(n => {
+      const c = clusters.of[n.id];
+      if (!clusterMembers.has(c)) clusterMembers.set(c, []);
+      clusterMembers.get(c).push(n);
+    });
+    clusterLabel.clear();
+    clusterMembers.forEach((members, c) => {
+      clusterLabel.set(c, members.slice().sort((a, b) => b.weight - a.weight)[0].label);
+    });
+  }
+
+  /* How much do the two weight sources actually disagree about the communities?
+   * Adjusted Rand index over the issue nodes: 1 = identical partitions, 0 = no
+   * better than chance agreement. */
+  function adjustedRand(aOf, bOf, ids) {
+    const table = new Map(), aCount = new Map(), bCount = new Map();
+    ids.forEach(id => {
+      const key = aOf[id] + ',' + bOf[id];
+      table.set(key, (table.get(key) || 0) + 1);
+      aCount.set(aOf[id], (aCount.get(aOf[id]) || 0) + 1);
+      bCount.set(bOf[id], (bCount.get(bOf[id]) || 0) + 1);
+    });
+    const c2 = n => (n * (n - 1)) / 2;
+    const sum = m => [...m.values()].reduce((s, n) => s + c2(n), 0);
+    const index = sum(table), sa = sum(aCount), sb = sum(bCount);
+    const total = c2(ids.length);
+    const expected = (sa * sb) / total;
+    const max = (sa + sb) / 2;
+    return max === expected ? 0 : (index - expected) / (max - expected);
+  }
 
   /* ── state ───────────────────────────────────────────────────────────────── */
   const store = {
@@ -129,6 +182,7 @@
     hiddenGroups: new Set(),
     minWeight: store.get('minWeight', 1),
     solutions: store.get('solutions', false),
+    weights: CS ? store.get('weights', 'editorial') : 'editorial',
     place: store.get('place', ''),
     custom: store.get('custom', { income: 'high', flags: [] }),
     tableOpen: false
@@ -210,7 +264,8 @@
     onDrag: () => layout.reheat(0.35)
   });
   graph.setVisibility(nodeVisible);
-  graph.setLinkFilter(link => link.w >= state.minWeight);
+  graph.setLinkFilter(link => weightOf(link) >= state.minWeight);
+  graph.setWeightOf(link => weightOf(link));
   layout.setActive(nodeVisible);
 
   function applyGrouping() {
@@ -282,6 +337,19 @@
       clusterName: node => groupTitleForCluster(clusters.of[node.id]),
       outgoing: id => outgoing.get(id),
       incoming: id => incoming.get(id),
+      weightOf: link => weightOf(link),
+      /* When the reader source is active, say what it is actually based on — a
+       * weight derived from 40 clicks should not look like one derived from 600. */
+      evidence: link => {
+        if (state.weights !== 'readers' || !CS) return null;
+        const row = csRow(link);
+        if (!row) return null;
+        if (row.status === 'unmapped') return 'no article · my weight kept';
+        if (row.status === 'no-signal') return 'no reader navigation';
+        return row.direct
+          ? `${row.direct.toLocaleString()} clicks`
+          : 'shared context only';
+      },
       profile: profile(),
       issueCount: issues.length,
       solutionCount: solutions.length,
@@ -559,6 +627,47 @@
     });
   });
 
+  function describeWeights() {
+    const note = document.getElementById('weights-note');
+    if (!CS) { note.textContent = 'Clickstream weights unavailable.'; return; }
+    if (state.weights === 'editorial') {
+      note.textContent = 'Hand-assigned by me. Honest, but one person’s judgement.';
+      return;
+    }
+    const counts = { measured: 0, 'no-signal': 0, unmapped: 0 };
+    CS.links.forEach(r => { counts[r.status] = (counts[r.status] || 0) + 1; });
+    const ari = adjustedRand(clusterCache.editorial.of, clusterCache.readers.of,
+                             issues.map(n => n.id));
+    note.textContent =
+      `English Wikipedia navigation, ${CS.months.join(' + ')}. ${counts.measured} of ` +
+      `${CS.links.length} links measured, ${counts['no-signal']} with no recorded ` +
+      `navigation, ${counts.unmapped} with no article. Clusters vs my weights: ` +
+      `ARI ${ari.toFixed(2)}.`;
+  }
+
+  function setWeightSource(next) {
+    state.weights = next;
+    store.set('weights', next);
+    document.querySelectorAll('[data-weights]').forEach(b => {
+      const on = b.dataset.weights === next;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-checked', String(on));
+    });
+    applyClusters(next);
+    buildLegend();
+    describeWeights();
+    document.getElementById('cluster-note').textContent =
+      `${clusters.count} clusters found by Louvain modularity (Q = ` +
+      `${clusters.modularity.toFixed(2)}) on link structure.`;
+    if (state.colourBy === 'cluster') applyGrouping();
+    renderLocalTop();
+    if (state.tableOpen) openTable(); else renderDetail(graph.selected());
+  }
+
+  document.querySelectorAll('[data-weights]').forEach(btn => {
+    btn.addEventListener('click', () => setWeightSource(btn.dataset.weights));
+  });
+
   document.querySelectorAll('[data-weight]').forEach(btn => {
     const value = Number(btn.dataset.weight);
     if (value === state.minWeight) {
@@ -648,6 +757,10 @@
 
   /* ── boot ────────────────────────────────────────────────────────────────── */
   applyTheme();
+  // both partitions are needed up front so the ARI comparison can be reported
+  applyClusters('editorial');
+  if (CS) applyClusters('readers');
+  applyClusters(state.weights);
   buildLegend();
   graph.setShowAllVerbs(state.verbs);
   document.getElementById('key-lever').hidden = !state.solutions;
@@ -655,8 +768,7 @@
   renderLocalTop();
   renderDetail(null);
 
-  document.getElementById('cluster-note').textContent =
-    `${clusters.count} clusters found by Louvain modularity (Q = ${clusters.modularity.toFixed(2)}) on link structure.`;
+  setWeightSource(state.weights);
 
   graph.resize();
 

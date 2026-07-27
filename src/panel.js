@@ -13,14 +13,18 @@ window.ECO_PANEL = (function () {
 
   function relationList(rows, ctx, emptyText) {
     if (!rows.length) return `<p class="empty-note">${emptyText}</p>`;
-    return `<ul class="rel-list">` + rows.map(({ link, other }) => `
+    return `<ul class="rel-list">` + rows.map(({ link, other }) => {
+      const evidence = ctx.evidence ? ctx.evidence(link) : null;
+      return `
       <li class="${isNegative(link.verb) ? 'neg' : ''}">
         <button class="rel" data-goto="${esc(other.id)}">
           <span class="verb">${esc(link.verb)}</span>
           ${swatch(other, ctx)}<span class="rel-label">${esc(other.label)}</span>
+          ${evidence ? `<span class="hit">${esc(evidence)}</span>` : ''}
         </button>
         ${link.note ? `<p class="rel-note">${esc(link.note)}</p>` : ''}
-      </li>`).join('') + `</ul>`;
+      </li>`;
+    }).join('') + `</ul>`;
   }
 
   function localeBlock(node, ctx) {
@@ -204,7 +208,7 @@ window.ECO_PANEL = (function () {
         <td>${esc(byId.get(l.source).label)}</td>
         <td class="${isNegative(l.verb) ? 'verb-neg' : 'verb-pos'}">${esc(l.verb)}</td>
         <td>${esc(byId.get(l.target).label)}</td>
-        <td class="num">${l.w}</td>
+        <td class="num">${(ctx.weightOf ? ctx.weightOf(l) : l.w).toFixed(2)}</td>
       </tr>`).join('');
 
     return `
@@ -220,7 +224,7 @@ window.ECO_PANEL = (function () {
       <section class="block">
         <h3>Links <span class="count">${window.ECO.links.length}</span></h3>
         <div class="table-scroll"><table>
-          <thead><tr><th>From</th><th>Verb</th><th>To</th><th class="num">Weight</th></tr></thead>
+          <thead><tr><th>From</th><th>Verb</th><th>To</th><th class="num">Active weight</th></tr></thead>
           <tbody>${linkRows}</tbody>
         </table></div>
       </section>`;

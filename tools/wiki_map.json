@@ -1,0 +1,614 @@
+{
+ "fossil-fuels": {
+  "title": "Fossil fuel",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "ghg-emissions": {
+  "title": "Greenhouse gas emissions",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "methane": {
+  "title": "Atmospheric methane",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "cooling-demand": {
+  "title": "Air conditioning",
+  "quality": "proxy",
+  "redirected_from": null,
+  "missing": false
+ },
+ "greenhouse-effect": {
+  "title": "Greenhouse effect",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "warming": {
+  "title": "Climate change",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "heatwaves": {
+  "title": "Heat wave",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "drought": {
+  "title": "Drought",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "wildfire": {
+  "title": "Wildfire",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "rainfall-shift": {
+  "title": "Extreme weather",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "cyclones": {
+  "title": "Tropical cyclone",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "sea-level": {
+  "title": "Sea level rise",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "ice-loss": {
+  "title": "Retreat of glaciers since 1850",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "albedo": {
+  "title": "Albedo",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "permafrost": {
+  "title": "Permafrost",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "carbon-sinks": {
+  "title": "Carbon sink",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "amoc": {
+  "title": "Atlantic meridional overturning circulation",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "data-centres": {
+  "title": "Data center",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "geoengineering": {
+  "title": "Solar radiation modification",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "carbon-offsets": {
+  "title": "Carbon offsets and credits",
+  "quality": "exact",
+  "redirected_from": "Carbon offset",
+  "missing": false
+ },
+ "overconsumption": {
+  "title": "Overconsumption",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "plastic": {
+  "title": "Plastic pollution",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "microplastics": {
+  "title": "Microplastics",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "pfas": {
+  "title": "PFAS",
+  "quality": "exact",
+  "redirected_from": "Per- and polyfluoroalkyl substances",
+  "missing": false
+ },
+ "heavy-metals": {
+  "title": "Heavy metals",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "air-pollution": {
+  "title": "Air pollution",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "ozone-smog": {
+  "title": "Smog",
+  "quality": "proxy",
+  "redirected_from": null,
+  "missing": false
+ },
+ "nutrient-runoff": {
+  "title": "Eutrophication",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "pesticides": {
+  "title": "Pesticide",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "ewaste": {
+  "title": "Electronic waste",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "oil-spills": {
+  "title": "Oil spill",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "pharma-residues": {
+  "title": "Antimicrobial resistance",
+  "quality": "proxy",
+  "redirected_from": null,
+  "missing": false
+ },
+ "landfill-waste": {
+  "title": "Landfill",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "light-pollution": {
+  "title": "Light pollution",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "noise-pollution": {
+  "title": "Noise pollution",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "nuclear-waste": {
+  "title": "Radioactive waste",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "cleantech-waste": {
+  "title": null,
+  "quality": "unmapped",
+  "redirected_from": null,
+  "missing": false
+ },
+ "water-scarcity": {
+  "title": "Water scarcity",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "groundwater": {
+  "title": "Groundwater depletion",
+  "quality": "exact",
+  "redirected_from": "Overdrafting",
+  "missing": false
+ },
+ "unsafe-water": {
+  "title": "Sanitation",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "salinization": {
+  "title": "Saltwater intrusion",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "glacier-water": {
+  "title": "Meltwater",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "dams": {
+  "title": "Dam",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "ocean-warming": {
+  "title": "Marine heatwave",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "acidification": {
+  "title": "Ocean acidification",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "dead-zones": {
+  "title": "Dead zone (ecology)",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "deep-sea-mining": {
+  "title": "Deep sea mining",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "habitat-loss": {
+  "title": "Habitat destruction",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "deforestation": {
+  "title": "Deforestation",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "wetland-loss": {
+  "title": "Wetland",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "extinction": {
+  "title": "Holocene extinction",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "pollinators": {
+  "title": "Pollinator decline",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "insect-decline": {
+  "title": "Decline in insect populations",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "soil-life": {
+  "title": "Soil biology",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "overfishing": {
+  "title": "Overfishing",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "coral-bleaching": {
+  "title": "Coral bleaching",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "kelp-seagrass": {
+  "title": "Kelp forest",
+  "quality": "proxy",
+  "redirected_from": null,
+  "missing": false
+ },
+ "invasives": {
+  "title": "Invasive species",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "wildlife-trade": {
+  "title": "Wildlife trade",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "industrial-ag": {
+  "title": "Intensive farming",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "livestock": {
+  "title": "Livestock",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "monoculture": {
+  "title": "Monoculture",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "soil-erosion": {
+  "title": "Soil erosion",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "land-degradation": {
+  "title": "Land degradation",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "desertification": {
+  "title": "Desertification",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "food-insecurity": {
+  "title": "Food security",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "food-waste": {
+  "title": "Food loss and waste",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "urban-sprawl": {
+  "title": "Urban sprawl",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "mining": {
+  "title": "Mining",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "respiratory": {
+  "title": "Asthma",
+  "quality": "proxy",
+  "redirected_from": null,
+  "missing": false
+ },
+ "indoor-air": {
+  "title": "Indoor air quality",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "heat-mortality": {
+  "title": "Hyperthermia",
+  "quality": "proxy",
+  "redirected_from": null,
+  "missing": false
+ },
+ "vector-disease": {
+  "title": "Disease vector",
+  "quality": "exact",
+  "redirected_from": "Vector (epidemiology)",
+  "missing": false
+ },
+ "waterborne": {
+  "title": "Waterborne disease",
+  "quality": "exact",
+  "redirected_from": "Waterborne diseases",
+  "missing": false
+ },
+ "displacement": {
+  "title": "Environmental migrant",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "env-injustice": {
+  "title": "Environmental justice",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "energy-poverty": {
+  "title": "Energy poverty",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "resource-conflict": {
+  "title": "Water conflict",
+  "quality": "proxy",
+  "redirected_from": null,
+  "missing": false
+ },
+ "climate-anxiety": {
+  "title": "Eco-anxiety",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "renewables": {
+  "title": "Renewable energy",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "grid-storage": {
+  "title": "Grid energy storage",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "electrification": {
+  "title": "Electrification",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "nuclear-power": {
+  "title": "Nuclear power",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "efficiency-buildings": {
+  "title": "Efficient energy use",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "methane-repair": {
+  "title": "Fugitive gas emissions",
+  "quality": "proxy",
+  "redirected_from": null,
+  "missing": false
+ },
+ "carbon-pricing": {
+  "title": "Carbon price",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "circular-economy": {
+  "title": "Circular economy",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "product-standards": {
+  "title": "Right to repair",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "new-materials": {
+  "title": "Bioplastic",
+  "quality": "proxy",
+  "redirected_from": null,
+  "missing": false
+ },
+ "organics-diversion": {
+  "title": "Compost",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "regen-ag": {
+  "title": "Regenerative agriculture",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "agroforestry": {
+  "title": "Agroforestry",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "diet-shift": {
+  "title": "Plant-based diet",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "transit-density": {
+  "title": "Public transport",
+  "quality": "broad",
+  "redirected_from": null,
+  "missing": false
+ },
+ "protected-areas": {
+  "title": "Protected area",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "coastal-restoration": {
+  "title": "Mangrove restoration",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "fisheries-mgmt": {
+  "title": "Marine protected area",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "water-efficiency": {
+  "title": "Water conservation",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "wastewater-upgrade": {
+  "title": "Wastewater treatment",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "clean-cooking": {
+  "title": "Energy poverty and cooking",
+  "quality": "exact",
+  "redirected_from": "Clean cooking",
+  "missing": false
+ },
+ "urban-greening": {
+  "title": "Urban forest",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
+ "early-warning": {
+  "title": "Early warning system",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ }
+}

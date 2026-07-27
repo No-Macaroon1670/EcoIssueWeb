@@ -24,6 +24,15 @@
     </div>
 
     <div class="control">
+      <span class="control-label">Link weights from</span>
+      <div class="segmented" role="radiogroup" aria-label="Weight source">
+        <button class="seg active" data-weights="editorial" role="radio" aria-checked="true">My judgement</button>
+        <button class="seg" data-weights="readers" role="radio" aria-checked="false">Readers</button>
+      </div>
+      <p id="weights-note" class="control-hint"></p>
+    </div>
+
+    <div class="control">
       <span class="control-label">Colour by</span>
       <div class="segmented" role="radiogroup" aria-label="Colour by">
         <button class="seg active" data-colour="cat" role="radio" aria-checked="true">Category</button>
@@ -99,6 +108,7 @@
 <script src="data/links.js"></script>
 <script src="data/links-c.js"></script>
 <script src="data/keywords.js"></script>
+<script src="data/weights-clickstream.js"></script>
 <script src="data/regions.js"></script>
 <script src="src/cluster.js"></script>
 <script src="src/layout.js"></script>
