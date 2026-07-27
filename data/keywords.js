@@ -32,7 +32,9 @@
   k('microplastics', ['microfibres', 'microfibers', 'nurdles', 'tyre wear', 'tire wear', 'microbeads', 'nanoplastics']);
   k('pfas', ['forever chemicals', 'pfoa', 'pfos', 'teflon', 'non-stick', 'nonstick', 'firefighting foam', 'afff', 'fluorinated', 'gore-tex', 'scotchgard']);
   k('heavy-metals', ['lead', 'mercury', 'cadmium', 'arsenic', 'chromium', 'flint', 'lead pipes', 'methylmercury']);
-  k('air-pollution', ['pm2.5', 'pm25', 'particulate', 'particulates', 'smog', 'soot', 'black carbon', 'nox', 'so2', 'air quality', 'aqi', 'haze']);
+  k('air-pollution', ['pm2.5', 'pm25', 'pm 2.5', 'pm10', 'pm 10', 'particulate matter', 'particulate',
+                      'particulates', 'coarse particles', 'fine particles', 'dust', 'road dust',
+                      'smog', 'soot', 'black carbon', 'nox', 'so2', 'air quality', 'aqi', 'haze']);
   k('ozone-smog', ['ozone', 'o3', 'tropospheric ozone', 'smog', 'nox', 'voc', 'photochemical']);
   k('nutrient-runoff', ['fertiliser', 'fertilizer', 'nitrogen', 'phosphorus', 'algal bloom', 'algae', 'eutrophication', 'manure', 'slurry', 'haber bosch']);
   k('pesticides', ['neonicotinoids', 'neonics', 'glyphosate', 'roundup', 'herbicide', 'insecticide', 'ddt', 'atrazine', 'spraying']);

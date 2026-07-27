@@ -231,8 +231,8 @@
             ['high', 'Historical contamination and exported e-waste.']] },
     'lead mercury contamination testing'),
 
-  n('air-pollution', 'Air pollution (PM2.5)', 'pollution',
-    'Fine particles under 2.5 microns lodge deep in the lungs and pass into the bloodstream. They come from combustion — vehicles, coal, cooking fires, industry — plus wildfire smoke and farm ammonia. Outdoor and household air pollution together are linked to millions of premature deaths a year, making this one of the largest environmental health burdens.',
+  n('air-pollution', 'Air pollution (particulate matter)', 'pollution',
+    'Airborne particles, which regulators split by size. PM10 is coarse enough to irritate the airways; PM2.5 is fine enough to lodge deep in the lungs and cross into the bloodstream. Both come from combustion — vehicles, coal, cooking fires, industry — plus wildfire smoke and farm ammonia, while the coarse fraction also carries road, construction and desert dust. The fine fraction is what drives the health burden, and outdoor and household air pollution together are linked to millions of premature deaths a year, making this one of the largest environmental health burdens.',
     ['Check your local air quality index and shift exercise timing or route on bad days',
      'A decent HEPA purifier in the bedroom measurably lowers indoor exposure and is cheap',
      'Walk, cycle or take transit where possible; drivers are exposed to more pollution than they expect',
