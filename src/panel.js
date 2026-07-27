@@ -63,14 +63,13 @@ window.ECO_PANEL = (function () {
 
   function head(node, ctx) {
     const cat = window.ECO.cats[node.cat];
-    const tier = ctx.tier ? ctx.tier(node) : null;
     return `
       <div class="panel-head">
         <div class="chips">
           ${node.kind === 'solution' ? '<span class="chip chip-lever">Lever</span>' : ''}
           <span class="chip" style="--chip:${ctx.colourOf(node)}">${esc(cat.label)}</span>
-          ${tier && tier !== 'lever'
-            ? `<span class="chip chip-plain">${esc(ctx.tierLabel[tier])}</span>` : ''}
+          ${ctx.inLoop && ctx.inLoop(node)
+            ? '<span class="chip chip-plain">In a feedback loop</span>' : ''}
           <span class="chip chip-plain">${esc(ctx.clusterName(node))}</span>
         </div>
         <h2>${esc(node.label)}</h2>

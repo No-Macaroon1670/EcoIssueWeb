@@ -52,9 +52,6 @@ also works.
 - **Feedback loops.** 50 of them up to six steps, 40 reinforcing and 10 balancing.
   Turn on highlighting and every issue on a loop gets an outer ring; open an issue
   and each loop is written out as the sentence it is, clickable to trace on the map.
-- **Causal role.** A third colour mode splitting issues into root cause, mechanism
-  and symptom — with an explicit fourth state for the ones inside a loop, where the
-  question has no answer.
 - **Two weight sources.** Link weights can come from my judgement or from three
   months of English Wikipedia reader navigation, and the clustering re-runs against
   whichever is active. See "Whose distances?" below — they disagree a lot.
@@ -101,7 +98,13 @@ Cycles are capped at six steps and enumerated once each (canonical entry at the
 lowest-ranked node). The cap is not just performance — the count grows exponentially,
 and a nine-step loop is not something a reader can hold in their head.
 
-**The hierarchy is honest about its own limits.** Of 79 issues, 13 are root causes,
+**The causal hierarchy is computed but not currently shown.** `src/loops.js` still
+produces it and the notes below still describe it, but the root/mechanism/symptom
+colour mode has been withdrawn pending better definitions — the categories were doing
+more asserting than the underlying analysis supports. Loops are unaffected, since they
+rest on cycle detection rather than on the hierarchy.
+
+Of 79 issues, 13 are root causes,
 31 mechanisms, 2 symptoms — and **33 sit inside one 27-node tangle** spanning the
 whole climate–water–land system, where cause and effect genuinely cannot be ordered.
 Those get grey and a label saying so, not a fabricated rank. The 13 roots are all
@@ -111,8 +114,11 @@ disease, climate anxiety). Levers are excluded from the analysis entirely — in
 them would make every intervention an in-degree-zero "root cause", which is exactly
 backwards.
 
-Causal role is an **ordinal** scale, so it gets a single-hue blue ramp rather than the
-six categorical hues, validated with `validate_palette.js --ordinal` in both modes.
+**Cluster naming** uses each cluster's most *internally* connected member rather than
+its highest-degree one. Global degree names a cluster after whichever hub landed in it
+— food insecurity has 31 links and would title anything it joined — while internal
+degree picks the node whose connections actually sit inside the group. Only the colour
+runs out at six hues; every cluster is named, greys included.
 
 ## Whose distances? (the weight sources)
 

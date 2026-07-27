@@ -88,10 +88,33 @@
 
   function csRow(link) { return csByPair.get(link.source + '\t' + link.target) || null; }
 
+  /* A link with no Wikipedia article on one end has no reader evidence, so it falls
+   * back to my judgement — but the two scales are not commensurate. Editorial weights
+   * run 1..3 while measured reader weights sit near 0.17, so handing an unmapped link
+   * its raw editorial 2 made it stronger than 90% of everything actually measured.
+   * Clean-tech waste, whose links are ALL unmapped, ended up titling the largest
+   * reader cluster purely for lack of data. The fallback is therefore quantile-mapped:
+   * the editorial weight keeps its rank, expressed on the reader scale. */
+  const fallbackScale = (() => {
+    let editorialSorted = null, measuredSorted = null;
+    return w => {
+      if (!editorialSorted) {
+        editorialSorted = E.links.map(l => l.w).sort((a, b) => a - b);
+        measuredSorted = CS
+          ? CS.links.filter(r => r.status === 'measured').map(r => r.w).sort((a, b) => a - b)
+          : [];
+      }
+      if (!measuredSorted.length) return w;
+      const rank = editorialSorted.indexOf(w) / Math.max(1, editorialSorted.length - 1);
+      return measuredSorted[Math.round(rank * (measuredSorted.length - 1))];
+    };
+  })();
+
   function weightOf(link, source) {
     if ((source || state.weights) === 'editorial') return link.w;
     const row = csRow(link);
-    return row && row.w != null ? row.w : link.w;   // unmapped pairs keep editorial
+    if (row && row.w != null) return row.w;
+    return fallbackScale(link.w);
   }
 
   /* Raw weights are not comparable across sources: editorial runs 1..3 while reader
@@ -141,17 +164,10 @@
     nodes: new Set(graphAnalysis.loopNodes.keys()),
     links: graphAnalysis.loopLinks
   };
-  const TIER_LABEL = {
-    root: 'Root cause',
-    mechanism: 'Mechanism',
-    symptom: 'Symptom',
-    loop: 'In a feedback loop',
-    lever: 'Lever'
-  };
-  function tierOf(node) {
-    if (node.kind === 'solution') return 'lever';
-    return graphAnalysis.tier.get(node.id) || 'mechanism';
-  }
+  /* graphAnalysis also carries a root/mechanism/symptom layering. It is deliberately
+   * not surfaced: the definitions need more work before the map asserts them. The
+   * loop findings below are independent of it and do stand up. */
+
   /** Loops passing through a node, shortest first. */
   function loopsThrough(id) {
     return graphAnalysis.loops.filter(c => c.nodes.includes(id));
@@ -185,9 +201,25 @@
       if (!clusterMembers.has(c)) clusterMembers.set(c, []);
       clusterMembers.get(c).push(n);
     });
+    /* Name each cluster after its most *internally* connected member, not its
+     * highest-degree one. Global degree names a cluster after whichever hub happened
+     * to land in it — food insecurity has 31 links and would title any cluster it
+     * joined — whereas internal degree picks the node whose connections actually sit
+     * inside the group, which is what makes it characteristic. Short labels keep the
+     * legend to one line where possible. */
     clusterLabel.clear();
     clusterMembers.forEach((members, c) => {
-      clusterLabel.set(c, members.slice().sort((a, b) => b.weight - a.weight)[0].label);
+      const inside = new Set(members.map(m => m.id));
+      const internal = new Map(members.map(m => [m.id, 0]));
+      E.links.forEach(l => {
+        if (!inside.has(l.source) || !inside.has(l.target)) return;
+        const w = weightOf(l, source);
+        internal.set(l.source, internal.get(l.source) + w);
+        internal.set(l.target, internal.get(l.target) + w);
+      });
+      const rep = members.slice().sort((a, b) =>
+        (internal.get(b.id) - internal.get(a.id)) || (b.weight - a.weight))[0];
+      clusterLabel.set(c, rep.short || rep.label);
     });
   }
 
@@ -271,27 +303,15 @@
     return getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() || '#898781';
   }
 
-  /* Causal role is an ORDINAL scale, not a categorical one, so it gets a single-hue
-   * blue ramp rather than the six hues — validated with validate_palette.js
-   * --ordinal in both modes (monotone lightness, adjacent ΔL >= 0.06, the step
-   * nearest the surface clears 2:1). Loop members and levers take muted grey
-   * because neither has a position on the scale. */
-  const ROLE_RAMP = {
-    light: { root: '#1c5cab', mechanism: '#3987e5', symptom: '#86b6ef' },
-    dark:  { root: '#5598e7', mechanism: '#256abf', symptom: '#184f95' }
-  };
   function mutedColour() {
     return getComputedStyle(document.documentElement)
       .getPropertyValue('--text-muted').trim() || '#898781';
   }
-  function roleColour(tier) {
-    return ROLE_RAMP[activeMode()][tier] || mutedColour();
-  }
 
   function colourOf(node) {
-    if (state.colourBy === 'cat') return catColour(node.cat);
-    if (state.colourBy === 'role') return roleColour(tierOf(node));
-    return clusterColour(clusters.of[node.id]);
+    return state.colourBy === 'cat'
+      ? catColour(node.cat)
+      : clusterColour(clusters.of[node.id]);
   }
 
   /* Colour key drives the legend and hiding; group key drives layout anchoring.
@@ -299,7 +319,6 @@
    * screen so the solutions layer reads as a layer. */
   function colourKeyOf(node) {
     if (state.colourBy === 'cat') return node.cat;
-    if (state.colourBy === 'role') return tierOf(node);
     return clusters ? clusters.of[node.id] : node.cat;   // clusters land after boot
   }
 
@@ -307,14 +326,16 @@
     return node.kind === 'solution' ? '__levers__' : colourKeyOf(node);
   }
 
+  /* Every cluster gets a name, including the ones past the sixth. Only the COLOUR
+   * runs out at six — the palette is validated at six hues and a seventh cannot
+   * clear the colourblind gates — so those fold to grey. Labelling them "Other (7)"
+   * as well threw away the one thing that made them legible, and the number read
+   * like an index when it was actually a member count already shown alongside. */
   function groupTitle(key) {
     if (key === '__levers__') return 'Responses & levers';
-    if (state.colourBy === 'role') return TIER_LABEL[key] || key;
     if (state.colourBy === 'cat') return E.cats[key].label;
     const index = Number(key);
-    return index < CAT_KEYS.length
-      ? `C${index + 1} · ${clusterLabel.get(index)}`
-      : `Other (${clusterMembers.get(index).length})`;
+    return `C${index + 1} · ${clusterLabel.get(index)}`;
   }
 
   /* Base visibility: the category legend and the solutions layer. Degree pruning
@@ -467,8 +488,7 @@
       outgoing: id => outgoing.get(id),
       incoming: id => incoming.get(id),
       weightOf: link => weightOf(link),
-      tier: node => tierOf(node),
-      tierLabel: TIER_LABEL,
+      inLoop: node => node.kind !== 'solution' && loopSets.nodes.has(node.id),
       /* Loops are indexed against the global list so the panel can hand an index
        * straight back for tracing. */
       loopsThrough: node => (node.kind === 'solution' ? [] :
@@ -500,9 +520,7 @@
   }
 
   function groupTitleForCluster(index) {
-    return index < CAT_KEYS.length
-      ? `Cluster ${index + 1} · ${clusterLabel.get(index)}`
-      : 'Small cluster';
+    return `Cluster ${index + 1} · ${clusterLabel.get(index)}`;
   }
 
   function renderDetail(node) {
@@ -566,13 +584,6 @@
     if (state.colourBy === 'cat') {
       return CAT_KEYS.map(key => ({
         key, label: E.cats[key].label, colour: catColour(key), count: counts(key)
-      }));
-    }
-    if (state.colourBy === 'role') {
-      const order = ['root', 'mechanism', 'symptom', 'loop'];
-      if (state.solutions) order.push('lever');
-      return order.map(key => ({
-        key, label: TIER_LABEL[key], colour: roleColour(key), count: counts(key)
       }));
     }
     return [...clusterMembers.keys()].sort((a, b) => a - b).map(index => ({
@@ -873,9 +884,12 @@
     buildLegend();
     afterFilterChange();          // link ranks are per-source, so the filter moves
     describeWeights();
+    const extra = clusters.count > CAT_KEYS.length
+      ? ` The palette is validated at six hues, so anything past C${CAT_KEYS.length} shares a muted grey.`
+      : '';
     document.getElementById('cluster-note').textContent =
       `${clusters.count} clusters found by Louvain modularity (Q = ` +
-      `${clusters.modularity.toFixed(2)}) on link structure.`;
+      `${clusters.modularity.toFixed(2)}) on link structure.` + extra;
     if (state.colourBy === 'cluster') applyGrouping();
     renderLocalTop();
     if (state.tableOpen) openTable(); else renderDetail(graph.selected());
