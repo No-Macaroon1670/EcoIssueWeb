@@ -215,9 +215,9 @@
   "redirected_from": null,
   "missing": false
  },
- "cleantech-waste": {
-  "title": null,
-  "quality": "unmapped",
+ "battery-waste": {
+  "title": "Battery recycling",
+  "quality": "exact",
   "redirected_from": null,
   "missing": false
  },

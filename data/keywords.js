@@ -45,7 +45,9 @@
   k('light-pollution', ['sky glow', 'skyglow', 'dark sky', 'led', 'streetlight', 'stargazing', 'artificial light at night']);
   k('noise-pollution', ['noise', 'sonar', 'shipping noise', 'traffic noise', 'aircraft noise', 'decibels']);
   k('nuclear-waste', ['nuclear', 'radioactive', 'spent fuel', 'reactor', 'chernobyl', 'fukushima', 'yucca', 'uranium', 'deep geological repository']);
-  k('cleantech-waste', ['solar panel waste', 'turbine blade', 'wind blade', 'battery waste', 'ev battery', 'photovoltaic recycling', 'end of life']);
+  k('battery-waste', ['battery recycling', 'battery waste', 'ev battery', 'lithium-ion', 'li-ion',
+                      'second life', 'black mass', 'battery fire', 'cell recycling',
+                      'solar panel waste', 'turbine blade', 'end of life']);
 
   /* Water & oceans */
   k('water-scarcity', ['water stress', 'water shortage', 'day zero', 'water security', 'thirst']);

@@ -35,6 +35,7 @@
     'ice-loss': 'Glacier & ice loss', 'albedo': 'Ice–albedo', 'carbon-sinks': 'Carbon sinks',
     'amoc': 'Ocean circulation', 'overconsumption': 'Overconsumption',
     'pfas': 'PFAS', 'heavy-metals': 'Heavy metals', 'air-pollution': 'Air pollution',
+    'battery-waste': 'Battery waste',
     'pesticides': 'Pesticides', 'ewaste': 'E-waste', 'oil-spills': 'Oil spills',
     'pharma-residues': 'Pharma residues', 'landfill-waste': 'Landfill & waste',
     'water-scarcity': 'Water scarcity', 'unsafe-water': 'Unsafe water',

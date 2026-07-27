@@ -156,13 +156,38 @@ Where they part company is legible:
 **Known limits.** The dump only includes links clicked more than ten times a month, so
 niche articles are under-covered — stacking three months cut the no-signal links from
 151 to 88, and more months would cut it further. 22 of 102 nodes map to a *broad* or
-*proxy* article rather than an exact one, and one (clean-tech end-of-life waste) has no
-usable article at all and keeps my weights. Wikipedia readers are not the public.
+*proxy* article rather than an exact one. Every node now maps to a real article, so
+no link falls back to editorial weights — see "when a missing article is a finding"
+below. Wikipedia readers are not the public.
 Graph geometry deliberately does **not** change with the source, so switching is a
 clean A/B on colour and clustering alone.
 
 Regenerate with `python tools/clickstream.py fetch && ... extract && ... build`. The
 484 MB dumps are gitignored; the derived weights are committed.
+
+### When a missing article is a finding
+
+One node originally had no Wikipedia article: *clean-tech end-of-life waste*, bundling
+solar panels, turbine blades and EV batteries. The first response was to mark it
+unmapped and let it keep editorial weights. That was treating a symptom.
+
+The absence was the signal. Wikipedia has articles for every *component* — battery
+recycling, fibre-reinforced plastic recycling, the environmental impact of wind power
+— and nothing for the bundle, because the bundle is not a mechanism. It is an
+argument: *"what about all that solar panel waste?"* Every other node on this map
+names something that happens in the world; that one named a talking point, which is
+why nothing had ever been written about it as a single subject.
+
+It is now **battery waste & recycling**, anchored on `Battery recycling`: a material
+stream with defined inputs, outputs and recovery economics. Batteries are the largest
+and fastest-growing of the three streams, and panels and blades are named in the
+summary as the smaller ones behind it. The narrower node also sharpened its links —
+electrification drives it at full strength rather than partial, and it gained an edge
+back to mining, because metal not recovered has to be dug up again.
+
+The knock-on: with every node mapped, **no link falls back to editorial weights at
+all**, which removes the scale-mismatch bug described above at source rather than
+patching it. The rescaling code stays as a guard for any future unmapped node.
 
 **Clustering runs on link structure, and the default weights are editorial.** Each link
 has a weight from 1 to 3 estimating how tightly the two issues are discussed together.
@@ -220,10 +245,10 @@ overlaps outstanding.
 - **Nothing leaves the machine.** The "find local organisations" button is an ordinary
   link to a Google search that opens only when you click it.
 - **The newer topics are argued, not settled.** Data centres, solar geoengineering,
-  offset integrity, nuclear waste, clean-tech waste and deep-sea mining are all live
+  offset integrity, nuclear waste, battery waste and deep-sea mining are all live
   disputes, and the summaries try to state the strongest version of each side rather
   than pick a winner — including where an argument is usually made in bad faith, as
-  with clean-tech waste being compared against nothing rather than against coal.
+  with battery waste being compared against nothing rather than against coal.
 - **Quantities are stated loosely on purpose** ("millions of premature deaths a year",
   "roughly a third") where the precise figure is contested or revised often, and the
   genuinely uncertain items say so — insect-decline magnitude and AMOC weakening both

@@ -56,9 +56,7 @@ TITLES = {
     'light-pollution':     ('Light pollution', 'exact'),
     'noise-pollution':     ('Noise pollution', 'exact'),
     'nuclear-waste':       ('Radioactive waste', 'exact'),
-    # no single article covers panels + blades + EV batteries reaching end of life.
-    # Forcing a proxy would inject noise, so this node keeps its editorial weights.
-    'cleantech-waste':     (None, 'unmapped'),
+    'battery-waste':       ('Battery recycling', 'exact'),
 
     # ── water & oceans ────────────────────────────────────────────────────────
     'water-scarcity':      ('Water scarcity', 'exact'),

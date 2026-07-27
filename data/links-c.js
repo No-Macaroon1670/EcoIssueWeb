@@ -30,8 +30,11 @@
   l('nuclear-waste', 'worsens', 'env-injustice', 2, 'Siting has repeatedly landed on communities with the least power to refuse.');
   l('nuclear-waste', 'contaminates', 'unsafe-water', 1);
 
-  l('cleantech-waste', 'drives', 'landfill-waste', 2);
-  l('cleantech-waste', 'releases', 'heavy-metals', 1);
+  l('battery-waste', 'drives', 'landfill-waste', 2);
+  l('battery-waste', 'releases', 'heavy-metals', 2,
+    'Lithium, cobalt, nickel and lead, plus the fires that loose cells start in waste facilities.');
+  l('battery-waste', 'drives', 'mining', 2,
+    'The other half of the ledger: metal not recovered has to be dug up again.');
 
   l('deep-sea-mining', 'threatens', 'extinction', 2, 'The nodules are themselves the habitat for much of the life down there.');
   l('deep-sea-mining', 'causes', 'habitat-loss', 2, 'Recovery from disturbance appears to take decades to centuries.');
@@ -43,7 +46,7 @@
   l('renewables', 'reduces', 'air-pollution', 2);
   l('renewables', 'reduces', 'energy-poverty', 2, 'Distributed solar reaches remote areas faster than grid extension.');
   l('renewables', 'drives', 'mining', 2, 'The material cost of the transition, and a real one.');
-  l('renewables', 'drives', 'cleantech-waste', 2);
+  l('renewables', 'drives', 'battery-waste', 1, 'Indirectly, through the grid storage that variable generation needs.');
   l('grid-storage', 'enables', 'renewables', 3, 'This is what decides how far variable generation can actually go.');
   l('grid-storage', 'drives', 'mining', 2);
   l('electrification', 'requires', 'renewables', 3,
@@ -52,7 +55,7 @@
   l('electrification', 'reduces', 'air-pollution', 3, 'Removes combustion from the street and from the kitchen.');
   l('electrification', 'reduces', 'noise-pollution', 1);
   l('electrification', 'drives', 'mining', 2);
-  l('electrification', 'drives', 'cleantech-waste', 2);
+  l('electrification', 'drives', 'battery-waste', 3, 'Every electric vehicle eventually becomes a battery to deal with.');
   l('electrification', 'drives', 'deep-sea-mining', 1, 'Battery metal demand is the case being made for opening the seabed.');
   l('nuclear-power', 'displaces', 'fossil-fuels', 2);
   l('nuclear-power', 'reduces', 'ghg-emissions', 2);
@@ -76,12 +79,12 @@
   l('circular-economy', 'reduces', 'landfill-waste', 3);
   l('circular-economy', 'reduces', 'plastic', 2);
   l('circular-economy', 'reduces', 'overconsumption', 2);
-  l('circular-economy', 'reduces', 'cleantech-waste', 2);
+  l('circular-economy', 'reduces', 'battery-waste', 3, 'Recovery is the supply that grows as the first fleets age out.');
   l('circular-economy', 'reduces', 'deep-sea-mining', 2, 'Recovery is the supply that grows as the first fleets age out.');
   l('product-standards', 'enables', 'circular-economy', 3, 'Repair is only possible if the product was designed to come apart.');
   l('product-standards', 'reduces', 'ewaste', 3);
   l('product-standards', 'reduces', 'overconsumption', 2);
-  l('product-standards', 'reduces', 'cleantech-waste', 2);
+  l('product-standards', 'reduces', 'battery-waste', 2, 'Replaceable packs and design-for-disassembly decide whether recovery is even possible.');
   l('new-materials', 'reduces', 'ghg-emissions', 2, 'Cement and steel need different chemistry, not just cleaner electricity.');
   l('new-materials', 'reduces', 'plastic', 2);
   l('new-materials', 'reduces', 'microplastics', 2);
