@@ -43,12 +43,15 @@
     </div>
 
     <div class="control">
-      <span class="control-label">Show links</span>
-      <div class="segmented" role="radiogroup" aria-label="Link strength">
-        <button class="seg active" data-weight="1" role="radio" aria-checked="true">All</button>
-        <button class="seg" data-weight="2" role="radio" aria-checked="false">Closer</button>
-        <button class="seg" data-weight="3" role="radio" aria-checked="false">Tightest</button>
-      </div>
+      <label class="control-label" for="slider-links">Strongest links only</label>
+      <input type="range" id="slider-links" min="5" max="100" step="5" value="100">
+      <p id="links-note" class="control-hint"></p>
+    </div>
+
+    <div class="control">
+      <label class="control-label" for="slider-degree">Minimum connections</label>
+      <input type="range" id="slider-degree" min="0" max="10" step="1" value="0">
+      <p id="degree-note" class="control-hint"></p>
     </div>
 
     <div class="control">
@@ -70,6 +73,9 @@
         <option value="">— none —</option>
         <option value="__custom__">Describe my area…</option>
       </select>
+      <label class="check" id="local-focus-wrap" hidden>
+        <input type="checkbox" id="opt-local-focus"> Local focus — fade what does not feed this place
+      </label>
       <fieldset id="custom-profile" class="custom" hidden>
         <legend>My area</legend>
         <label class="control-label" for="custom-income">Income group</label>

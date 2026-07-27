@@ -43,6 +43,12 @@ also works.
   greenhouse gas emissions; "hurricane" finds tropical cyclones; "heat pump" finds
   electrification even while the solutions layer is off. Roughly 600 keywords across
   the nodes, and the result row shows which term matched.
+- **Two pruning sliders.** "Strongest links only" keeps the top N% of links; "minimum
+  connections" drops nodes below a degree floor, so the keystone structure emerges —
+  at a floor of 10 you are left with 15 nodes, led by food insecurity, temperature
+  rise, species extinction and greenhouse gas emissions.
+- **Local focus.** With a place selected, fade everything that does not feed its
+  top-ranked issues.
 - **Feedback loops.** 50 of them up to six steps, 40 reinforcing and 10 balancing.
   Turn on highlighting and every issue on a loop gets an outer ring; open an issue
   and each loop is written out as the sentence it is, clickable to trace on the map.
@@ -192,10 +198,6 @@ share one label policy, or the groups get laid out too tight to ever separate. T
 anchor pull-back inside declutter also tapers off after the first third of the passes;
 left running to the end it exactly cancels the separation and the solve stalls with
 overlaps outstanding.
-
-**268 links over 73 nodes is a hairball at full strength**, so the resting edge state
-is deliberately faint and interaction supplies the detail: hovering isolates a node
-and its neighbours, and the "Show links" control drops to the closer-coupled subsets.
 
 ## Honest limits
 

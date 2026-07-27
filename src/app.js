@@ -94,6 +94,28 @@
     return row && row.w != null ? row.w : link.w;   // unmapped pairs keep editorial
   }
 
+  /* Raw weights are not comparable across sources: editorial runs 1..3 while reader
+   * weights cluster near 0.15. An absolute threshold that means "most links" for one
+   * means "almost none" for the other, so everything downstream — filtering, edge
+   * width, edge alpha — works off each link's RANK within the active source instead. */
+  const strengthCache = {};
+  function strengthTable(source) {
+    if (!strengthCache[source]) {
+      const sorted = E.links.map(l => weightOf(l, source)).sort((a, b) => a - b);
+      const table = new Map();
+      E.links.forEach(l => {
+        const w = weightOf(l, source);
+        // fraction of links this one is at least as strong as
+        let lo = 0, hi = sorted.length;
+        while (lo < hi) { const mid = (lo + hi) >> 1; if (sorted[mid] < w) lo = mid + 1; else hi = mid; }
+        table.set(l, sorted.length > 1 ? lo / (sorted.length - 1) : 1);
+      });
+      strengthCache[source] = table;
+    }
+    return strengthCache[source];
+  }
+  function strengthOf(link) { return strengthTable(state.weights).get(link) || 0; }
+
   /* Clustering runs over issues only, so the communities do not shift when the
    * solutions layer is toggled. Each lever then inherits the cluster of whatever
    * it acts on most heavily. */
@@ -206,7 +228,9 @@
     group: store.get('group', true),
     verbs: store.get('verbs', false),
     hiddenGroups: new Set(),
-    minWeight: store.get('minWeight', 1),
+    linkKeep: store.get('linkKeep', 1),      // fraction of links kept, strongest first
+    minDegree: store.get('minDegree', 0),
+    localFocus: false,
     solutions: store.get('solutions', false),
     weights: CS ? store.get('weights', 'editorial') : 'editorial',
     loops: store.get('loops', false),
@@ -276,7 +300,7 @@
   function colourKeyOf(node) {
     if (state.colourBy === 'cat') return node.cat;
     if (state.colourBy === 'role') return tierOf(node);
-    return clusters.of[node.id];
+    return clusters ? clusters.of[node.id] : node.cat;   // clusters land after boot
   }
 
   function groupKeyOf(node) {
@@ -293,10 +317,64 @@
       : `Other (${clusterMembers.get(index).length})`;
   }
 
-  function nodeVisible(node) {
+  /* Base visibility: the category legend and the solutions layer. Degree pruning
+   * builds on top of this rather than replacing it. */
+  function baseVisible(node) {
     if (node.kind === 'solution' && !state.solutions) return false;
     return !state.hiddenGroups.has(String(colourKeyOf(node)));
   }
+
+  /* One pass, in a fixed order, so the result is explainable:
+   *   1. drop links below the strength cutoff
+   *   2. count each node's surviving links
+   *   3. drop nodes under the degree floor
+   *   4. drop links that just lost an endpoint
+   * Deliberately not iterated to a fixpoint — cascading removals would let one
+   * slider notch cause an avalanche, which is impossible to reason about. */
+  let visibleNodes = new Set(), visibleLinks = new Set();
+
+  function recomputeVisibility() {
+    const eligible = E.links.filter(l =>
+      baseVisible(byId.get(l.source)) && baseVisible(byId.get(l.target)));
+
+    /* Take the strongest N outright rather than thresholding on a percentile.
+     * Editorial weights have only three distinct values, so a percentile cutoff
+     * jumps in huge steps and the slider lies about what it is showing — 60% and
+     * 30% both landed on the same 70 links. Top-N always matches the label. */
+    const key = l => l.source + '\t' + l.target;
+    const ranked = eligible.slice().sort((x, y) =>
+      weightOf(y) - weightOf(x) || key(x).localeCompare(key(y)));
+    const passing = ranked.slice(0, Math.max(1, Math.round(state.linkKeep * ranked.length)));
+
+    const degree = new Map();
+    passing.forEach(l => {
+      degree.set(l.source, (degree.get(l.source) || 0) + 1);
+      degree.set(l.target, (degree.get(l.target) || 0) + 1);
+    });
+
+    visibleNodes = new Set(E.nodes
+      .filter(n => baseVisible(n) && (degree.get(n.id) || 0) >= state.minDegree)
+      .map(n => n.id));
+    visibleLinks = new Set(passing
+      .filter(l => visibleNodes.has(l.source) && visibleNodes.has(l.target))
+      .map(l => l.source + '\t' + l.target));
+
+    const linksNote = document.getElementById('links-note');
+    if (linksNote) {
+      linksNote.textContent = `${visibleLinks.size} of ${eligible.length} links shown` +
+        (state.weights === 'readers' ? ', ranked by reader navigation' : '');
+    }
+    const degreeNote = document.getElementById('degree-note');
+    if (degreeNote) {
+      const hidden = E.nodes.filter(baseVisible).length - visibleNodes.size;
+      degreeNote.textContent = state.minDegree === 0
+        ? 'Showing every node.'
+        : `${visibleNodes.size} keystone nodes; ${hidden} pruned for having fewer than ${state.minDegree}.`;
+    }
+  }
+
+  function nodeVisible(node) { return visibleNodes.has(node.id); }
+  function linkVisible(link) { return visibleLinks.has(link.source + '\t' + link.target); }
 
   /* ── graph & layout ──────────────────────────────────────────────────────── */
   const canvas = document.getElementById('graph');
@@ -313,9 +391,10 @@
     onHover: () => {},
     onDrag: () => layout.reheat(0.35)
   });
+  recomputeVisibility();
   graph.setVisibility(nodeVisible);
-  graph.setLinkFilter(link => weightOf(link) >= state.minWeight);
-  graph.setWeightOf(link => weightOf(link));
+  graph.setLinkFilter(linkVisible);
+  graph.setStrengthOf(strengthOf);
   layout.setActive(nodeVisible);
 
   function applyGrouping() {
@@ -465,6 +544,14 @@
       }
       state.hiddenGroups.delete(String(colourKeyOf(node)));
       buildLegend();
+      recomputeVisibility();
+    }
+    if (!visibleNodes.has(node.id)) {   // pruned by a slider — relax it rather than
+      state.minDegree = 0;              // silently select something invisible
+      sliderDegree.value = '0';
+      state.linkKeep = 1;
+      sliderLinks.value = '100';
+      afterFilterChange();
     }
     graph.select(node);
     graph.centreOn(node);
@@ -516,6 +603,7 @@
     if (ev.target.checked) state.hiddenGroups.delete(key);
     else state.hiddenGroups.add(key);
     buildLegend();
+    afterFilterChange();
     layout.reheat(0.4);
   });
 
@@ -632,6 +720,53 @@
     `<label title="${f.hint}"><input type="checkbox" data-flag="${key}"
        ${state.custom.flags.includes(key) ? 'checked' : ''}><span>${f.label}</span></label>`).join('');
 
+  /* Local focus: the place's top-ranked issues, plus what most drives them.
+   *
+   * Following *every* upstream edge two hops pulls in 78 of 102 nodes — with a
+   * 27-node strongly-connected core, "ancestors of" quickly means "everything", and
+   * highlighting everything is the same as highlighting nothing. So it walks only
+   * the two strongest drivers of each issue, which lands at roughly a quarter of the
+   * map across places as different as Maldives, the Great Lakes and Mongolia. */
+  const FOCUS_SEEDS = 8, FOCUS_HOPS = 2, FOCUS_DRIVERS = 2;
+  const localFocusWrap = document.getElementById('local-focus-wrap');
+  const optLocalFocus = document.getElementById('opt-local-focus');
+
+  function localFocusSet() {
+    const p = profile();
+    if (!p) return null;
+    const { exposed } = window.ECO_LOCALE.assess(E.nodes, E.links, p);
+    const seed = exposed.slice(0, FOCUS_SEEDS).map(r => r.node.id)
+      .filter(id => visibleNodes.has(id));
+    if (!seed.length) return null;
+
+    const set = new Set(seed);
+    let frontier = seed;
+    for (let hop = 0; hop < FOCUS_HOPS; hop++) {
+      const next = [];
+      frontier.forEach(id => {
+        incoming.get(id)
+          .filter(({ link, other }) => visibleNodes.has(other.id) && linkVisible(link))
+          .sort((a, b) => weightOf(b.link) - weightOf(a.link))
+          .slice(0, FOCUS_DRIVERS)
+          .forEach(({ other }) => {
+            if (!set.has(other.id)) { set.add(other.id); next.push(other.id); }
+          });
+      });
+      frontier = next;
+    }
+    return set;
+  }
+
+  function refreshLocalFocus() {
+    const on = state.localFocus && profile();
+    graph.setContext(on ? localFocusSet() : null);
+  }
+
+  optLocalFocus.addEventListener('change', () => {
+    state.localFocus = optLocalFocus.checked;
+    refreshLocalFocus();
+  });
+
   function renderLocalTop() {
     const p = profile();
     if (!p) { localTop.innerHTML = ''; return; }
@@ -665,6 +800,9 @@
     state.place = placeSelect.value;
     store.set('place', state.place);
     customBox.hidden = state.place !== '__custom__';
+    localFocusWrap.hidden = !profile();
+    if (!profile()) { state.localFocus = false; optLocalFocus.checked = false; }
+    refreshLocalFocus();
     renderLocalTop();
     const selected = graph.selected();
     if (state.tableOpen) openTable(); else renderDetail(selected);
@@ -698,6 +836,7 @@
         b.setAttribute('aria-checked', String(on));
       });
       buildLegend();
+      afterFilterChange();
       applyGrouping();
       renderLocalTop();
       if (state.tableOpen) openTable(); else renderDetail(graph.selected());
@@ -732,6 +871,7 @@
     });
     applyClusters(next);
     buildLegend();
+    afterFilterChange();          // link ranks are per-source, so the filter moves
     describeWeights();
     document.getElementById('cluster-note').textContent =
       `${clusters.count} clusters found by Louvain modularity (Q = ` +
@@ -745,24 +885,30 @@
     btn.addEventListener('click', () => setWeightSource(btn.dataset.weights));
   });
 
-  document.querySelectorAll('[data-weight]').forEach(btn => {
-    const value = Number(btn.dataset.weight);
-    if (value === state.minWeight) {
-      document.querySelectorAll('[data-weight]').forEach(b => {
-        b.classList.toggle('active', b === btn);
-        b.setAttribute('aria-checked', String(b === btn));
-      });
-    }
-    btn.addEventListener('click', () => {
-      state.minWeight = value;
-      store.set('minWeight', value);
-      document.querySelectorAll('[data-weight]').forEach(b => {
-        const on = b === btn;
-        b.classList.toggle('active', on);
-        b.setAttribute('aria-checked', String(on));
-      });
-    });
+  /* Both sliders are pure view filters: no reheat, no relayout. Nodes keep their
+   * positions as neighbours disappear, so the keystone structure emerges in place
+   * instead of the whole map lurching on every notch. */
+  const sliderLinks = document.getElementById('slider-links');
+  const sliderDegree = document.getElementById('slider-degree');
+  sliderLinks.value = String(Math.round(state.linkKeep * 100));
+  sliderDegree.value = String(state.minDegree);
+
+  function afterFilterChange() {
+    recomputeVisibility();
+    refreshLocalFocus();
+  }
+
+  sliderLinks.addEventListener('input', () => {
+    state.linkKeep = Number(sliderLinks.value) / 100;
+    afterFilterChange();
   });
+  sliderLinks.addEventListener('change', () => store.set('linkKeep', state.linkKeep));
+
+  sliderDegree.addEventListener('input', () => {
+    state.minDegree = Number(sliderDegree.value);
+    afterFilterChange();
+  });
+  sliderDegree.addEventListener('change', () => store.set('minDegree', state.minDegree));
 
   const optLoops = document.getElementById('opt-loops');
   optLoops.checked = state.loops;
@@ -880,6 +1026,7 @@
   applyLoopHighlight();
   document.getElementById('key-lever').hidden = !state.solutions;
   customBox.hidden = state.place !== '__custom__';
+  localFocusWrap.hidden = !profile();
   renderLocalTop();
   renderDetail(null);
 
@@ -898,6 +1045,7 @@
    * boxes only for the labels actually drawn at overview, and the rest of the
    * labels wait for a deeper zoom, where circle spacing is wide enough for them. */
   function relayout() {
+    recomputeVisibility();
     refreshLabelPriority();
 
     const visible = E.nodes.filter(nodeVisible).length;

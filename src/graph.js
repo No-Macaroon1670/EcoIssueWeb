@@ -33,10 +33,11 @@ window.ECO_GRAPH = (function () {
     let hovered = null, selected = null, dragging = null, panning = null;
     let isVisible = () => true;
     let linkVisible = () => true;
-    let weightOf = link => link.w;
+    let strengthOf = () => 0.5;   // link rank in 0..1 within the active weight source
     let showAllVerbs = false;
     let loopNodes = null, loopLinks = null;   // emphasis when loop highlighting is on
     let trace = null;                          // {nodes:Set, links:Set} for one loop
+    let context = null;                        // local-focus set; dims everything else
     let groupLabels = [];        // [{text, x, y}] drawn faintly behind everything
     let theme = readTheme();
 
@@ -125,7 +126,7 @@ window.ECO_GRAPH = (function () {
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.strokeStyle = emphasis ? theme.edgeStrong : theme.edge;
-      ctx.lineWidth = (emphasis ? 2 : 1.2) * (0.62 + weightOf(link) * 0.18);
+      ctx.lineWidth = (emphasis ? 2 : 1.2) * (0.5 + strengthOf(link) * 1.0);
       ctx.lineCap = 'round';
       if (negative) ctx.setLineDash([6 * view.scale, 5 * view.scale]);
 
@@ -305,13 +306,19 @@ window.ECO_GRAPH = (function () {
         : focus && focus.has(link.source) && focus.has(link.target);
 
       /* Nearly 400 links is a hairball at full strength, so the resting state is
-       * deliberately faint and interaction supplies the detail. */
+       * deliberately faint. Rather than one flat alpha for every edge, resting
+       * opacity tracks the link's rank: the weakest half sinks toward the surface
+       * and the strongest stand out, which separates the structure without hiding
+       * anything. (--edge is itself ~34% opaque, so these multiply down further.) */
       for (const link of links) {
         if (!visible(link._a) || !visible(link._b) || !linkVisible(link)) continue;
         const inFocus = inFocusOf(link);
         const looped = loopLinks && loopLinks.has(linkKey(link));
-        // --edge is itself ~34% opaque, so these multiply down to a light grey
-        const alpha = focus ? (inFocus ? 0.95 : 0.07) : (looped ? 0.9 : 0.40);
+        const resting = 0.16 + strengthOf(link) * 0.46;
+        let alpha = focus ? (inFocus ? 0.95 : 0.07) : (looped ? 0.9 : resting);
+        if (!focus && context && !(context.has(link.source) && context.has(link.target))) {
+          alpha *= 0.22;                      // outside the local-focus set
+        }
         drawEdge(link, alpha, !!inFocus || (!focus && !!looped));
       }
 
@@ -324,7 +331,7 @@ window.ECO_GRAPH = (function () {
       }
 
       for (const node of shown) {
-        const dim = focus && !focus.has(node.id);
+        const dim = focus ? !focus.has(node.id) : (context && !context.has(node.id));
         drawNode(node, dim ? 0.16 : 1, !!focus);
       }
       /* Label thinning, as a map does it. Every label cannot fit at overview zoom
@@ -333,9 +340,11 @@ window.ECO_GRAPH = (function () {
       for (const node of shown) {
         const inFocus = focus && focus.has(node.id);
         if (focus && !inFocus && view.scale < 1.15) continue;
+        const outOfContext = !focus && context && !context.has(node.id);
+        if (outOfContext && view.scale < 1.15) continue;
         const show = inFocus || view.scale >= LABEL_ALL_SCALE || node.labelPriority;
         if (!show) continue;
-        drawNodeLabel(node, focus && !inFocus ? 0.2 : 1);
+        drawNodeLabel(node, (focus && !inFocus) || outOfContext ? 0.2 : 1);
       }
     }
 
@@ -482,7 +491,7 @@ window.ECO_GRAPH = (function () {
       refreshTheme() { theme = readTheme(); },
       setVisibility(fn) { isVisible = fn || (() => true); },
       setLinkFilter(fn) { linkVisible = fn || (() => true); },
-      setWeightOf(fn) { weightOf = fn || (link => link.w); },
+      setStrengthOf(fn) { strengthOf = fn || (() => 0.5); },
       /** sets = {nodes:Set, links:Set} to emphasise loop members, or null for off. */
       setLoopSets(sets) {
         loopNodes = sets ? sets.nodes : null;
@@ -490,6 +499,8 @@ window.ECO_GRAPH = (function () {
       },
       /** trace = {nodes:Set, links:Set} for one loop, or null to clear. */
       setTrace(t) { trace = t || null; },
+      /** context = Set of node ids to keep bright when nothing is hovered. */
+      setContext(set) { context = set || null; },
       tracing: () => !!trace,
       setLabelAllScale(v) { LABEL_ALL_SCALE = v; },
       setShowAllVerbs(on) { showAllVerbs = on; },
