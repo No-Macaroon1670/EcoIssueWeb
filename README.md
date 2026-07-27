@@ -5,14 +5,19 @@ Every arrow carries a verb, so a path reads as a sentence: *fossil fuel dependen
 **drives** greenhouse gas emissions, which **intensifies** the greenhouse effect,
 which **causes** global temperature rise, which **thaws** permafrost*.
 
-## Running it
+**Live:** <https://no-macaroon1670.github.io/EcoIssueWeb/>
+
+## Running it locally
+
+No build step, no dependencies, no network calls — plain scripts and a canvas. Any
+static file server will do:
 
 ```bash
-C:\Users\ziyi_\anaconda3\python.exe -m http.server 4186 --directory eco-web
+python -m http.server 4186
 ```
 
-Then open <http://localhost:4186>. No build step, no dependencies, no network calls —
-plain scripts and a canvas. It is also registered in `.claude/launch.json` as `eco-web`.
+Then open <http://localhost:4186>. Opening `index.html` directly off the filesystem
+also works.
 
 ## What's in it
 
