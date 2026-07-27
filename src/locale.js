@@ -7,6 +7,23 @@
 window.ECO_LOCALE = (function () {
   const R = window.ECO_REGIONS;
 
+  /* How distinctive is a flag? Almost every big place is a `megacity`, so matching
+   * on it says little; `freshwater` or `sids` picks out a much smaller set and says
+   * a lot. Used to break score ties, so a place's list leads with what is
+   * characteristic of it rather than with whatever sorts first alphabetically. */
+  const FREQ = (() => {
+    const counts = {};
+    R.PLACES.forEach(p => {
+      p.flags.forEach(f => { counts[f] = (counts[f] || 0) + 1; });
+      counts[p.income] = (counts[p.income] || 0) + 1;
+    });
+    return counts;
+  })();
+  const TOTAL = R.PLACES.length;
+  function specificity(token) {
+    return Math.log(TOTAL / (FREQ[token] || 1)) / Math.log(TOTAL);
+  }
+
   function tokenLabel(token) {
     if (R.FLAGS[token]) return R.FLAGS[token].label;
     if (R.INCOME[token]) return R.INCOME[token];
@@ -29,7 +46,11 @@ window.ECO_LOCALE = (function () {
     }
     const level = exposure.some(e => e.level === 'high') ? 'high'
       : exposure.length ? 'elevated' : 'general';
-    return { level, exposure, drivers, score: exposure.reduce((s, e) => s + (e.level === 'high' ? 3 : 1.5), 0) };
+    return {
+      level, exposure, drivers,
+      score: exposure.reduce((s, e) => s + (e.level === 'high' ? 3 : 1.5), 0),
+      specificity: exposure.reduce((s, e) => Math.max(s, specificity(e.token)), 0)
+    };
   }
 
   /** Rank every issue for a place. */
@@ -40,7 +61,9 @@ window.ECO_LOCALE = (function () {
     const rows = nodes.map(node => ({ node, ...forNode(node, profile) }));
     const exposed = rows
       .filter(r => r.score > 0)
-      .sort((a, b) => b.score - a.score || a.node.label.localeCompare(b.node.label));
+      .sort((a, b) => b.score - a.score
+        || b.specificity - a.specificity
+        || a.node.label.localeCompare(b.node.label));
     const contributing = rows
       .filter(r => r.drivers.length)
       .sort((a, b) => outDegree.get(b.node.id) - outDegree.get(a.node.id));

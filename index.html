@@ -36,7 +36,8 @@
       <span class="control-label">Colour by</span>
       <div class="segmented" role="radiogroup" aria-label="Colour by">
         <button class="seg active" data-colour="cat" role="radio" aria-checked="true">Category</button>
-        <button class="seg" data-colour="cluster" role="radio" aria-checked="false">Detected cluster</button>
+        <button class="seg" data-colour="cluster" role="radio" aria-checked="false">Cluster</button>
+        <button class="seg" data-colour="role" role="radio" aria-checked="false">Causal role</button>
       </div>
       <p id="cluster-note" class="control-hint"></p>
     </div>
@@ -51,6 +52,8 @@
     </div>
 
     <div class="control">
+      <label class="check"><input type="checkbox" id="opt-loops"> Highlight feedback loops</label>
+      <p id="loop-note" class="control-hint"></p>
       <label class="check"><input type="checkbox" id="opt-solutions"> Show solutions layer</label>
       <label class="check"><input type="checkbox" id="opt-group" checked> Pull groups apart on screen</label>
       <label class="check"><input type="checkbox" id="opt-verbs"> Show every verb at once</label>
@@ -111,6 +114,7 @@
 <script src="data/weights-clickstream.js"></script>
 <script src="data/regions.js"></script>
 <script src="src/cluster.js"></script>
+<script src="src/loops.js"></script>
 <script src="src/layout.js"></script>
 <script src="src/graph.js"></script>
 <script src="src/locale.js"></script>

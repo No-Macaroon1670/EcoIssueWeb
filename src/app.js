@@ -109,6 +109,32 @@
     return window.ECO_CLUSTER.run(issues.map(n => n.id), weighted, 1);
   }
 
+  /* ── feedback loops & causal hierarchy ───────────────────────────────────── */
+
+  /* Run on issues only. Levers are interventions, not links in the causal chain:
+   * including them would make every one of them an in-degree-zero "root cause",
+   * which is exactly the wrong reading. */
+  const graphAnalysis = window.ECO_LOOPS.analyse(issues, issueLinks, { maxLen: 6 });
+  const loopSets = {
+    nodes: new Set(graphAnalysis.loopNodes.keys()),
+    links: graphAnalysis.loopLinks
+  };
+  const TIER_LABEL = {
+    root: 'Root cause',
+    mechanism: 'Mechanism',
+    symptom: 'Symptom',
+    loop: 'In a feedback loop',
+    lever: 'Lever'
+  };
+  function tierOf(node) {
+    if (node.kind === 'solution') return 'lever';
+    return graphAnalysis.tier.get(node.id) || 'mechanism';
+  }
+  /** Loops passing through a node, shortest first. */
+  function loopsThrough(id) {
+    return graphAnalysis.loops.filter(c => c.nodes.includes(id));
+  }
+
   const clusterCache = {};
   let clusters = null;
   const clusterMembers = new Map();
@@ -183,6 +209,8 @@
     minWeight: store.get('minWeight', 1),
     solutions: store.get('solutions', false),
     weights: CS ? store.get('weights', 'editorial') : 'editorial',
+    loops: store.get('loops', false),
+    tracedLoop: null,
     place: store.get('place', ''),
     custom: store.get('custom', { income: 'high', flags: [] }),
     tableOpen: false
@@ -219,15 +247,36 @@
     return getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() || '#898781';
   }
 
+  /* Causal role is an ORDINAL scale, not a categorical one, so it gets a single-hue
+   * blue ramp rather than the six hues — validated with validate_palette.js
+   * --ordinal in both modes (monotone lightness, adjacent ΔL >= 0.06, the step
+   * nearest the surface clears 2:1). Loop members and levers take muted grey
+   * because neither has a position on the scale. */
+  const ROLE_RAMP = {
+    light: { root: '#1c5cab', mechanism: '#3987e5', symptom: '#86b6ef' },
+    dark:  { root: '#5598e7', mechanism: '#256abf', symptom: '#184f95' }
+  };
+  function mutedColour() {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue('--text-muted').trim() || '#898781';
+  }
+  function roleColour(tier) {
+    return ROLE_RAMP[activeMode()][tier] || mutedColour();
+  }
+
   function colourOf(node) {
-    return state.colourBy === 'cat' ? catColour(node.cat) : clusterColour(clusters.of[node.id]);
+    if (state.colourBy === 'cat') return catColour(node.cat);
+    if (state.colourBy === 'role') return roleColour(tierOf(node));
+    return clusterColour(clusters.of[node.id]);
   }
 
   /* Colour key drives the legend and hiding; group key drives layout anchoring.
    * They differ for levers, which take their domain's hue but cluster together on
    * screen so the solutions layer reads as a layer. */
   function colourKeyOf(node) {
-    return state.colourBy === 'cat' ? node.cat : clusters.of[node.id];
+    if (state.colourBy === 'cat') return node.cat;
+    if (state.colourBy === 'role') return tierOf(node);
+    return clusters.of[node.id];
   }
 
   function groupKeyOf(node) {
@@ -236,6 +285,7 @@
 
   function groupTitle(key) {
     if (key === '__levers__') return 'Responses & levers';
+    if (state.colourBy === 'role') return TIER_LABEL[key] || key;
     if (state.colourBy === 'cat') return E.cats[key].label;
     const index = Number(key);
     return index < CAT_KEYS.length
@@ -338,6 +388,19 @@
       outgoing: id => outgoing.get(id),
       incoming: id => incoming.get(id),
       weightOf: link => weightOf(link),
+      tier: node => tierOf(node),
+      tierLabel: TIER_LABEL,
+      /* Loops are indexed against the global list so the panel can hand an index
+       * straight back for tracing. */
+      loopsThrough: node => (node.kind === 'solution' ? [] :
+        loopsThrough(node.id).map(loop => ({
+          index: graphAnalysis.loops.indexOf(loop),
+          polarity: loop.polarity,
+          steps: loop.links.map((l, i) => ({
+            from: byId.get(loop.nodes[i]).short || byId.get(loop.nodes[i]).label,
+            verb: l.verb
+          }))
+        }))),
       /* When the reader source is active, say what it is actually based on — a
        * weight derived from 40 clicks should not look like one derived from 600. */
       evidence: link => {
@@ -365,6 +428,7 @@
 
   function renderDetail(node) {
     state.tableOpen = false;
+    clearTrace();
     document.getElementById('btn-table').classList.remove('active');
     detail.innerHTML = node
       ? window.ECO_PANEL.renderNode(node, panelContext())
@@ -380,6 +444,12 @@
   }
 
   detail.addEventListener('click', ev => {
+    const loopRow = ev.target.closest('[data-loop]');
+    if (loopRow) {
+      const index = Number(loopRow.dataset.loop);
+      if (state.tracedLoop === index) clearTrace(); else traceLoop(index);
+      return;
+    }
     const target = ev.target.closest('[data-goto]');
     if (!target) return;
     const node = byId.get(target.dataset.goto);
@@ -409,6 +479,13 @@
     if (state.colourBy === 'cat') {
       return CAT_KEYS.map(key => ({
         key, label: E.cats[key].label, colour: catColour(key), count: counts(key)
+      }));
+    }
+    if (state.colourBy === 'role') {
+      const order = ['root', 'mechanism', 'symptom', 'loop'];
+      if (state.solutions) order.push('lever');
+      return order.map(key => ({
+        key, label: TIER_LABEL[key], colour: roleColour(key), count: counts(key)
       }));
     }
     return [...clusterMembers.keys()].sort((a, b) => a - b).map(index => ({
@@ -687,6 +764,43 @@
     });
   });
 
+  const optLoops = document.getElementById('opt-loops');
+  optLoops.checked = state.loops;
+
+  function applyLoopHighlight() {
+    graph.setLoopSets(state.loops ? loopSets : null);
+    const reinforcing = graphAnalysis.loops.filter(c => c.polarity === 'reinforcing').length;
+    document.getElementById('loop-note').textContent = state.loops
+      ? `${graphAnalysis.loops.length} loops up to 6 steps — ${reinforcing} reinforcing, ` +
+        `${graphAnalysis.loops.length - reinforcing} balancing. ${loopSets.nodes.size} issues sit on one.`
+      : '';
+  }
+
+  optLoops.addEventListener('change', () => {
+    state.loops = optLoops.checked;
+    store.set('loops', state.loops);
+    if (!state.loops) clearTrace();
+    applyLoopHighlight();
+  });
+
+  function clearTrace() {
+    state.tracedLoop = null;
+    graph.setTrace(null);
+    document.querySelectorAll('.loop-row.active').forEach(el => el.classList.remove('active'));
+  }
+
+  function traceLoop(index) {
+    const loop = graphAnalysis.loops[index];
+    if (!loop) return;
+    state.tracedLoop = index;
+    graph.setTrace({
+      nodes: new Set(loop.nodes),
+      links: new Set(loop.links.map(l => l.source + '\t' + l.target))
+    });
+    document.querySelectorAll('.loop-row').forEach(el =>
+      el.classList.toggle('active', Number(el.dataset.loop) === index));
+  }
+
   const optGroup = document.getElementById('opt-group');
   const optVerbs = document.getElementById('opt-verbs');
   const optSolutions = document.getElementById('opt-solutions');
@@ -763,6 +877,7 @@
   applyClusters(state.weights);
   buildLegend();
   graph.setShowAllVerbs(state.verbs);
+  applyLoopHighlight();
   document.getElementById('key-lever').hidden = !state.solutions;
   customBox.hidden = state.place !== '__custom__';
   renderLocalTop();

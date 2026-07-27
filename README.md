@@ -43,6 +43,12 @@ also works.
   greenhouse gas emissions; "hurricane" finds tropical cyclones; "heat pump" finds
   electrification even while the solutions layer is off. Roughly 600 keywords across
   the nodes, and the result row shows which term matched.
+- **Feedback loops.** 50 of them up to six steps, 40 reinforcing and 10 balancing.
+  Turn on highlighting and every issue on a loop gets an outer ring; open an issue
+  and each loop is written out as the sentence it is, clickable to trace on the map.
+- **Causal role.** A third colour mode splitting issues into root cause, mechanism
+  and symptom — with an explicit fourth state for the ones inside a loop, where the
+  question has no answer.
 - **Two weight sources.** Link weights can come from my judgement or from three
   months of English Wikipedia reader navigation, and the clustering re-runs against
   whichever is active. See "Whose distances?" below — they disagree a lot.
@@ -66,6 +72,41 @@ against their surface. The hexes live in one place, `data/schema.js` — **chang
 of them invalidates that run, so re-validate before shipping a new colour.** Six is
 not an arbitrary number: at these constraints seven hues only pass if you accept neon
 chroma, which looks alarming in a graph.
+
+## Loops and hierarchy
+
+These two are one feature, because "root cause" is only meaningful in a graph without
+cycles and this graph is full of them. `src/loops.js` therefore does it in the only
+order that works: enumerate the cycles, condense each strongly-connected component,
+layer the acyclic remainder, and refuse to assign a position to anything still inside
+a loop.
+
+**Loop polarity** follows the systems-dynamics convention — count the suppressing
+edges in the cycle. Even (including zero) means every step amplifies the next all the
+way round: a **reinforcing** loop that runs away. Odd means the loop turns back on
+itself: a **balancing** loop that self-corrects. Greenhouse gases → greenhouse effect
+→ temperature rise → permafrost thaw → greenhouse gases is reinforcing. Temperature
+rise → wildfire → air pollution → *shields* → temperature rise is balancing, and so is
+temperature rise ↔ solar geoengineering. Every balancing loop in the map routes
+through one of those two suppressing edges, which is worth knowing: this system has
+very few brakes.
+
+Cycles are capped at six steps and enumerated once each (canonical entry at the
+lowest-ranked node). The cap is not just performance — the count grows exponentially,
+and a nine-step loop is not something a reader can hold in their head.
+
+**The hierarchy is honest about its own limits.** Of 79 issues, 13 are root causes,
+31 mechanisms, 2 symptoms — and **33 sit inside one 27-node tangle** spanning the
+whole climate–water–land system, where cause and effect genuinely cannot be ordered.
+Those get grey and a label saying so, not a fabricated rank. The 13 roots are all
+upstream human activities (overconsumption, industrial farming, data centres,
+overfishing, urban sprawl); the 2 symptoms are terminal human outcomes (heart and lung
+disease, climate anxiety). Levers are excluded from the analysis entirely — including
+them would make every intervention an in-degree-zero "root cause", which is exactly
+backwards.
+
+Causal role is an **ordinal** scale, so it gets a single-hue blue ramp rather than the
+six categorical hues, validated with `validate_palette.js --ordinal` in both modes.
 
 ## Whose distances? (the weight sources)
 
@@ -163,6 +204,9 @@ and its neighbours, and the "Show links" control drops to the closer-coupled sub
   exposure. Every line of output traces to one flag and one rule, which makes it
   transparent but crude — a single national profile fits a large, varied country
   badly. A few subnational entries are included and you can build a custom profile.
+  Ties are broken by how *distinctive* a matching flag is (almost every big place is a
+  `megacity`, so matching on it says little), which is why the Great Lakes list leads
+  with dead zones and invasives rather than whatever sorts first alphabetically.
 - **Income-group contribution is a generalisation, not a footprint.** "Upper-middle
   income" covers both China and Maldives; the sidebar says so where it matters.
 - **Nothing leaves the machine.** The "find local organisations" button is an ordinary
@@ -194,6 +238,7 @@ and its neighbours, and the "Show links" control drops to the closer-coupled sub
 | `tools/clickstream.py` | fetch / extract / build the reader-navigation weights |
 | `data/regions.js` | ~120 place profiles and the geography-flag vocabulary |
 | `src/cluster.js` | Louvain community detection + modularity |
+| `src/loops.js` | cycle enumeration, SCC condensation, causal-role layering |
 | `src/layout.js` | force simulation and the declutter projection pass |
 | `src/graph.js` | canvas renderer and pointer interaction |
 | `src/locale.js` | the locale rules engine |

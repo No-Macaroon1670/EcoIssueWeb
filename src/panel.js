@@ -63,16 +63,38 @@ window.ECO_PANEL = (function () {
 
   function head(node, ctx) {
     const cat = window.ECO.cats[node.cat];
+    const tier = ctx.tier ? ctx.tier(node) : null;
     return `
       <div class="panel-head">
         <div class="chips">
           ${node.kind === 'solution' ? '<span class="chip chip-lever">Lever</span>' : ''}
           <span class="chip" style="--chip:${ctx.colourOf(node)}">${esc(cat.label)}</span>
+          ${tier && tier !== 'lever'
+            ? `<span class="chip chip-plain">${esc(ctx.tierLabel[tier])}</span>` : ''}
           <span class="chip chip-plain">${esc(ctx.clusterName(node))}</span>
         </div>
         <h2>${esc(node.label)}</h2>
       </div>
       <p class="summary">${esc(node.summary)}</p>`;
+  }
+
+  /* Each loop is written out as the sentence it actually is, so the reader can
+   * check it rather than take the polarity label on trust. */
+  function loopBlock(node, ctx) {
+    const loops = ctx.loopsThrough ? ctx.loopsThrough(node) : [];
+    if (!loops.length) return '';
+    const reinforcing = loops.filter(l => l.polarity === 'reinforcing').length;
+    return `<section class="block">
+      <h3>Feedback loops through this <span class="count">${loops.length}</span></h3>
+      <p class="body" style="margin-bottom:8px">${reinforcing} reinforcing,
+        ${loops.length - reinforcing} balancing. Click one to trace it on the map.</p>
+      <ul class="rel-list">${loops.map(loop => `
+        <li><button class="loop-row ${loop.polarity}" data-loop="${loop.index}">
+          <span class="loop-tag">${loop.polarity === 'reinforcing' ? 'runs away' : 'self-corrects'}</span>
+          <span class="loop-chain">${loop.steps.map(s =>
+            `${esc(s.from)} <em>${esc(s.verb)}</em>`).join(' → ')} → …</span>
+        </button></li>`).join('')}</ul>
+    </section>`;
   }
 
   function renderSolution(node, ctx) {
@@ -140,6 +162,8 @@ window.ECO_PANEL = (function () {
           problems that make this one worse.</p>
         ${relationList(leversAgainst, ctx, '')}
       </section>` : ''}
+
+      ${loopBlock(node, ctx)}
 
       ${node.mitigations.length ? `<section class="block">
         <h3>What actually helps</h3>

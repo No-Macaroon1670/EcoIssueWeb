@@ -203,6 +203,36 @@ button:focus-visible, a:focus-visible {
 .chip-lever { padding-left: 8px; }
 .chip-lever::before { display: none; }
 
+.loop-row {
+  display: block;
+  width: 100%;
+  padding: 6px 7px;
+  margin-bottom: 3px;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  color: var(--text-secondary);
+  background: none;
+  border: 0;
+  border-left: 3px solid var(--text-muted);
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+}
+.loop-row:hover { background: var(--wash); }
+.loop-row.active { background: var(--wash-strong); color: var(--text-primary); }
+.loop-row.reinforcing { border-left-color: var(--critical); }
+.loop-row.balancing { border-left-color: var(--good); }
+.loop-tag {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.loop-chain em { font-style: normal; font-variant: small-caps; color: var(--text-muted); }
+
 .custom[hidden] { display: none; }   /* the display below would otherwise win */
 .custom {
   margin: 4px 0 0;

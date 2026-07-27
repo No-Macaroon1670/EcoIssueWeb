@@ -106,6 +106,7 @@
      'Support upstream restoration — wetlands and floodplains absorb peaks that concrete cannot'],
     { exp: [['monsoon', 'high', 'Monsoon rainfall is becoming more concentrated into intense bursts.'],
             ['lowlying', 'high', 'Flat, low ground drains slowly and floods deeply.'],
+            ['freezethaw', 'elevated', 'Winters spend more time crossing 0 °C, and each cycle levers apart road surfaces, water mains and foundations.'],
             ['megacity', 'elevated', 'Sealed surfaces turn heavy rain into instant runoff.']] },
     'flood resilience stormwater management'),
 
@@ -202,7 +203,8 @@
      'Wash synthetics less often, cooler and fuller; a filter bag or laundry filter catches many fibres',
      'Choose natural fibres where the use case allows',
      'Support standards for tyre wear and textile shedding, the two biggest sources'],
-    { exp: [['coastal', 'elevated', 'Marine and coastal sediments are a major accumulation zone.']],
+    { exp: [['coastal', 'elevated', 'Marine and coastal sediments are a major accumulation zone.'],
+            ['freshwater', 'elevated', 'Great Lakes surface counts rival the ocean gyres; enclosed water has nowhere to flush to.']],
       drv: [['high', 'High vehicle ownership and synthetic textile consumption.']] },
     'microplastics research policy'),
 
@@ -223,6 +225,7 @@
      'Follow local advisories on large predatory fish during pregnancy and childhood',
      'Support formal e-waste collection — informal burning is a major exposure route'],
     { exp: [['mining', 'high', 'Mining and smelting districts carry the heaviest soil and water burden.'],
+            ['freshwater', 'elevated', 'A century of industry left metals in lake and river sediment that dredging keeps re-suspending.'],
             ['megacity', 'elevated', 'Legacy industry, old housing stock and traffic residues overlap.']],
       drv: [['upper', 'Heavy industry and smelting are concentrated here.'],
             ['high', 'Historical contamination and exported e-waste.']] },
@@ -258,6 +261,7 @@
      'Support wetland restoration and cover-crop incentives, which intercept nutrients cheaply',
      'Reduce dairy and beef consumption — feed production drives much of the fertiliser demand'],
     { exp: [['coastal', 'high', 'River mouths and enclosed seas accumulate nutrients.'],
+            ['freshwater', 'high', 'The signature inland problem: farm runoff drives the summer algal blooms in Erie, Winnipeg and Tai.'],
             ['monsoon', 'elevated', 'Intense rain flushes fertiliser off fields in pulses.']],
       drv: [['high', 'Intensive fertiliser use per hectare.'], ['upper', 'Rapidly rising fertiliser application.']] },
     'nutrient pollution watershed protection'),
@@ -418,12 +422,13 @@
             ['highlat', 'high', 'Cold water absorbs more carbon dioxide, so polar seas acidify fastest.']] },
     'ocean acidification shellfish'),
 
-  n('dead-zones', 'Ocean dead zones', 'water',
-    'More than 500 coastal areas now suffer oxygen levels too low to support most animal life, up from a few dozen in the 1960s. Algal blooms fed by nutrient runoff die, sink and decay, consuming the oxygen as they go. Warming makes it worse, because warm water holds less oxygen and resists the mixing that would replenish it.',
+  n('dead-zones', 'Aquatic dead zones', 'water',
+    'More than 500 coastal areas now suffer oxygen levels too low to support most animal life, up from a few dozen in the 1960s. Large lakes do it too. Algal blooms fed by nutrient runoff die, sink and decay, consuming the oxygen as they go. Warming makes it worse, because warm water holds less oxygen and resists the mixing that would replenish it.',
     ['Address the upstream nutrient source; dead zones are a symptom, not a cause',
      'Support wetland restoration in the contributing watershed — the most cost-effective intervention',
      'Back nutrient trading or discharge caps for the river basin as a whole'],
     { exp: [['coastal', 'high', 'Enclosed bays and river mouths are the classic locations.'],
+            ['freshwater', 'high', 'Lake Erie\'s central basin goes hypoxic most summers; it is not only a marine problem.'],
             ['lowlying', 'elevated', 'Large deltas concentrate nutrient loads.']] },
     'hypoxia dead zone watershed');
 
