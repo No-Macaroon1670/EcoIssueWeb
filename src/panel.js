@@ -5,11 +5,14 @@ window.ECO_PANEL = (function () {
   const isNegative = verb => window.ECO.negativeVerbs.includes(verb);
 
   function swatch(node, ctx) {
-    return `<span class="swatch" style="background:${ctx.colourOf(node)}"></span>`;
+    const colour = ctx.colourOf(node);
+    return node.kind === 'solution'
+      ? `<span class="swatch ring" style="border-color:${colour}"></span>`
+      : `<span class="swatch" style="background:${colour}"></span>`;
   }
 
-  function relationList(rows, ctx, direction) {
-    if (!rows.length) return `<p class="empty-note">Nothing recorded ${direction === 'out' ? 'downstream' : 'upstream'}.</p>`;
+  function relationList(rows, ctx, emptyText) {
+    if (!rows.length) return `<p class="empty-note">${emptyText}</p>`;
     return `<ul class="rel-list">` + rows.map(({ link, other }) => `
       <li class="${isNegative(link.verb) ? 'neg' : ''}">
         <button class="rel" data-goto="${esc(other.id)}">
@@ -54,38 +57,96 @@ window.ECO_PANEL = (function () {
     </section>`;
   }
 
-  function renderNode(node, ctx) {
-    const out = ctx.outgoing(node.id);
-    const inc = ctx.incoming(node.id);
+  function head(node, ctx) {
     const cat = window.ECO.cats[node.cat];
-
     return `
       <div class="panel-head">
         <div class="chips">
+          ${node.kind === 'solution' ? '<span class="chip chip-lever">Lever</span>' : ''}
           <span class="chip" style="--chip:${ctx.colourOf(node)}">${esc(cat.label)}</span>
           <span class="chip chip-plain">${esc(ctx.clusterName(node))}</span>
         </div>
         <h2>${esc(node.label)}</h2>
       </div>
-      <p class="summary">${esc(node.summary)}</p>
+      <p class="summary">${esc(node.summary)}</p>`;
+  }
+
+  function renderSolution(node, ctx) {
+    const out = ctx.outgoing(node.id);
+    const inc = ctx.incoming(node.id);
+    const reduces = out.filter(r => isNegative(r.link.verb));
+    const costs = out.filter(r => !isNegative(r.link.verb) && r.other.kind !== 'solution');
+    const depends = out.filter(r => r.other.kind === 'solution')
+      .concat(inc.filter(r => r.other.kind === 'solution'));
+
+    return `
+      ${head(node, ctx)}
+
+      <section class="block">
+        <h3>What this reduces <span class="count">${reduces.length}</span></h3>
+        ${relationList(reduces, ctx, 'No suppressing links recorded.')}
+      </section>
+
+      ${costs.length ? `<section class="block">
+        <h3>What it costs <span class="count">${costs.length}</span></h3>
+        <p class="body" style="margin-bottom:8px">Most real levers pay for themselves somewhere and charge for it
+          somewhere else. These are this one's charges.</p>
+        ${relationList(costs, ctx, '')}
+      </section>` : ''}
+
+      ${depends.length ? `<section class="block">
+        <h3>Depends on <span class="count">${depends.length}</span></h3>
+        ${relationList(depends, ctx, '')}
+      </section>` : ''}
+
+      ${node.mitigations.length ? `<section class="block">
+        <h3>What it takes</h3>
+        <ul class="mit-list">${node.mitigations.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
+      </section>` : ''}`;
+  }
+
+  function renderIssue(node, ctx) {
+    const out = ctx.outgoing(node.id);
+    const inc = ctx.incoming(node.id);
+    const driven = inc.filter(r => r.other.kind !== 'solution');
+    const leversFor = inc.filter(r => r.other.kind === 'solution' && isNegative(r.link.verb));
+    const leversAgainst = inc.filter(r => r.other.kind === 'solution' && !isNegative(r.link.verb));
+
+    return `
+      ${head(node, ctx)}
 
       <section class="block">
         <h3>This affects <span class="count">${out.length}</span></h3>
-        ${relationList(out, ctx, 'out')}
+        ${relationList(out, ctx, 'Nothing recorded downstream.')}
       </section>
 
       <section class="block">
-        <h3>Driven by <span class="count">${inc.length}</span></h3>
-        ${relationList(inc, ctx, 'in')}
+        <h3>Driven by <span class="count">${driven.length}</span></h3>
+        ${relationList(driven, ctx, 'Nothing recorded upstream — this is a root driver.')}
       </section>
+
+      ${leversFor.length ? `<section class="block">
+        <h3>Levers that reduce this <span class="count">${leversFor.length}</span></h3>
+        ${relationList(leversFor, ctx, '')}
+      </section>` : ''}
+
+      ${leversAgainst.length ? `<section class="block">
+        <h3>Levers that add to this <span class="count">${leversAgainst.length}</span></h3>
+        <p class="body" style="margin-bottom:8px">Kept separate rather than buried: these are responses to other
+          problems that make this one worse.</p>
+        ${relationList(leversAgainst, ctx, '')}
+      </section>` : ''}
 
       ${node.mitigations.length ? `<section class="block">
         <h3>What actually helps</h3>
         <ul class="mit-list">${node.mitigations.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
       </section>` : ''}
 
-      ${localeBlock(node, ctx)}
-    `;
+      ${localeBlock(node, ctx)}`;
+  }
+
+  function renderNode(node, ctx) {
+    return node.kind === 'solution' ? renderSolution(node, ctx) : renderIssue(node, ctx);
   }
 
   function renderEmpty(ctx) {
@@ -93,9 +154,10 @@ window.ECO_PANEL = (function () {
       `<li><span class="swatch" style="background:${ctx.colourOfCat(key)}"></span>${esc(c.label)}</li>`).join('');
     return `
       <div class="panel-head"><h2>Environmental issue web</h2></div>
-      <p class="summary">${ctx.nodeCount} issues, ${ctx.linkCount} directed links. Every arrow carries a verb, so a
-        path through the map reads as a sentence: <em>fossil fuel dependence drives greenhouse gas emissions,
-        which intensifies the greenhouse effect, which causes global temperature rise</em>.</p>
+      <p class="summary">${ctx.issueCount} issues, ${ctx.solutionCount} levers, ${ctx.linkCount} directed links.
+        Every arrow carries a verb, so a path through the map reads as a sentence: <em>fossil fuel dependence
+        drives greenhouse gas emissions, which intensifies the greenhouse effect, which causes global
+        temperature rise</em>.</p>
       <section class="block">
         <h3>Click any circle</h3>
         <p class="body">You get a summary, what it drives, what drives it, and what genuinely helps. Hovering
@@ -112,6 +174,14 @@ window.ECO_PANEL = (function () {
           depends on. Those tensions are where the difficult decisions actually live.</p>
       </section>
       <section class="block">
+        <h3>The solutions layer</h3>
+        <p class="body">Switch it on in the sidebar to add ${ctx.solutionCount} levers, drawn as hollow rings in the
+          colour of the domain they act on. They mostly emit dashed suppressing arrows — and several also emit an
+          ordinary solid one, because most real levers charge for themselves somewhere. Renewables need mined metal,
+          nuclear makes waste, carbon pricing lands on the people least able to absorb it. Those edges are the point,
+          not an oversight.</p>
+      </section>
+      <section class="block">
         <h3>Categories</h3>
         <ul class="key-list swatch-list">${cats}</ul>
       </section>`;
@@ -122,6 +192,7 @@ window.ECO_PANEL = (function () {
       .sort((a, b) => a.cat.localeCompare(b.cat) || a.label.localeCompare(b.label))
       .map(n => `<tr>
         <td>${swatch(n, ctx)}<button class="link-btn" data-goto="${esc(n.id)}">${esc(n.label)}</button></td>
+        <td>${n.kind === 'solution' ? 'Lever' : 'Issue'}</td>
         <td>${esc(window.ECO.cats[n.cat].label)}</td>
         <td>${esc(ctx.clusterName(n))}</td>
         <td class="num">${ctx.outgoing(n.id).length}</td>
@@ -140,9 +211,9 @@ window.ECO_PANEL = (function () {
       <div class="panel-head"><h2>Table view</h2></div>
       <p class="summary">The same data without relying on colour or position.</p>
       <section class="block">
-        <h3>Issues <span class="count">${window.ECO.nodes.length}</span></h3>
+        <h3>Nodes <span class="count">${window.ECO.nodes.length}</span></h3>
         <div class="table-scroll"><table>
-          <thead><tr><th>Issue</th><th>Category</th><th>Cluster</th><th class="num">Affects</th><th class="num">Driven by</th></tr></thead>
+          <thead><tr><th>Name</th><th>Type</th><th>Category</th><th>Cluster</th><th class="num">Affects</th><th class="num">Driven by</th></tr></thead>
           <tbody>${nodeRows}</tbody>
         </table></div>
       </section>

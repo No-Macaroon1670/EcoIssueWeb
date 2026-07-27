@@ -44,10 +44,23 @@ window.ECO_LAYOUT = (function () {
     let alpha = 1;
     let anchors = new Map();     // groupKey -> {x, y}
     let anchorOf = null;         // node -> groupKey, or null to disable
+    let active = () => true;     // hidden nodes must not distort the visible layout
+    let labelScale = 1;          // how much label room to reserve, vs 11.5px at 1:1
+    let labelled = () => true;   // which nodes get label room at all
 
     const api = {
       alpha: () => alpha,
       reheat(a) { alpha = Math.max(alpha, a == null ? 0.85 : a); },
+
+      /** Only nodes passing this take part in the simulation and in declutter. */
+      setActive(fn) { active = fn || (() => true); },
+
+      /* Ring sizing and declutter must agree about how much label room is being
+       * reserved, or the groups are laid out too tight to ever separate. */
+      setLabelPolicy(opts) {
+        labelScale = (opts && opts.scale) || 1;
+        labelled = (opts && opts.labelled) || (() => true);
+      },
 
       /** groups: Map(groupKey -> node[]) laid out on a ring, or null for free layout. */
       setGroups(groups) {
@@ -59,8 +72,11 @@ window.ECO_LAYOUT = (function () {
          * centres sit about one group-diameter apart, so chord = 2R sin(pi/k). */
         let groupRadius = 0;
         groups.forEach(members => {
-          const area = members.reduce((sum, n) =>
-            sum + (Math.max(2 * n.r, n.lw || 0) + cfg.padX) * (2 * n.r + (n.lh || 0) + cfg.padY), 0);
+          const area = members.reduce((sum, n) => {
+            const lw = labelled(n) ? (n.lw || 0) * labelScale : 0;
+            const lh = labelled(n) ? (n.lh || 0) * labelScale : 0;
+            return sum + (Math.max(2 * n.r, lw) + cfg.padX) * (2 * n.r + lh + cfg.padY);
+          }, 0);
           groupRadius = Math.max(groupRadius, Math.sqrt(area * 1.25 / Math.PI));
         });
         const radius = keys.length <= 1 ? 0
@@ -84,18 +100,19 @@ window.ECO_LAYOUT = (function () {
        * back toward the group anchor keeps it from unravelling the structure.
        * Returns the number of overlapping pairs still outstanding. */
       declutter(iterations, opts) {
-        const labelScale = (opts && opts.labelScale) || 1;
-        const labelled = (opts && opts.labelled) || (() => true);
-        const lwOf = n => (labelled(n) ? (n.lw || 0) * labelScale : 0);
-        const lhOf = n => (labelled(n) ? (n.lh || 0) * labelScale : 0);
+        const scale = (opts && opts.labelScale) || labelScale;
+        const has = (opts && opts.labelled) || labelled;
+        const lwOf = n => (has(n) ? (n.lw || 0) * scale : 0);
+        const lhOf = n => (has(n) ? (n.lh || 0) * scale : 0);
 
         let remaining = 0;
+        const live = nodes.filter(active);
         for (let pass = 0; pass < iterations; pass++) {
           remaining = 0;
-          for (let i = 0; i < nodes.length; i++) {
-            const a = nodes[i];
-            for (let j = i + 1; j < nodes.length; j++) {
-              const b = nodes[j];
+          for (let i = 0; i < live.length; i++) {
+            const a = live[i];
+            for (let j = i + 1; j < live.length; j++) {
+              const b = live[j];
               const ahw = Math.max(a.r, lwOf(a) / 2) + cfg.padX / 2;
               const bhw = Math.max(b.r, lwOf(b) / 2) + cfg.padX / 2;
               const dx = b.x - a.x;
@@ -126,8 +143,12 @@ window.ECO_LAYOUT = (function () {
           }
           if (!remaining) break;
 
-          if (anchorOf) {                       // ease back toward the group centre
-            for (const n of nodes) {
+          /* Ease back toward the group centre — but only for the first stretch of
+           * passes. Left running to the end it exactly cancels the separation and
+           * the solve stalls with overlaps still outstanding; tapering it off lets
+           * the group re-form early and then finish cleanly. */
+          if (anchorOf && pass < iterations * 0.35) {
+            for (const n of live) {
               if (n.fixed) continue;
               const anchor = anchors.get(anchorOf.get(n));
               if (!anchor) continue;
@@ -136,19 +157,39 @@ window.ECO_LAYOUT = (function () {
             }
           }
         }
-        for (const n of nodes) { n.vx = 0; n.vy = 0; }
-        return remaining;
+        for (const n of live) { n.vx = 0; n.vy = 0; }
+
+        /* Recount without moving anything, and without the padding the solve aims
+         * for — `remaining` above is what the final pass *found* before resolving
+         * it, and the padding target is comfort rather than correctness. What is
+         * returned is therefore the number of pairs that genuinely still collide. */
+        let outstanding = 0;
+        for (let i = 0; i < live.length; i++) {
+          const a = live[i];
+          for (let j = i + 1; j < live.length; j++) {
+            const b = live[j];
+            const ahw = Math.max(a.r, lwOf(a) / 2);
+            const bhw = Math.max(b.r, lwOf(b) / 2);
+            if ((ahw + bhw) - Math.abs(b.x - a.x) <= 0) continue;
+            const aHalfH = a.r + lhOf(a) / 2;
+            const bHalfH = b.r + lhOf(b) / 2;
+            const dy = (b.y + lhOf(b) / 2) - (a.y + lhOf(a) / 2);
+            if ((aHalfH + bHalfH) - Math.abs(dy) > 0) outstanding++;
+          }
+        }
+        return outstanding;
       },
 
       step() {
         if (alpha < 0.008) return false;
+        const live = nodes.filter(active);
 
-        for (const n of nodes) { n.fx = 0; n.fy = 0; }
+        for (const n of live) { n.fx = 0; n.fy = 0; }
 
-        for (let i = 0; i < nodes.length; i++) {
-          const a = nodes[i];
-          for (let j = i + 1; j < nodes.length; j++) {
-            const b = nodes[j];
+        for (let i = 0; i < live.length; i++) {
+          const a = live[i];
+          for (let j = i + 1; j < live.length; j++) {
+            const b = live[j];
             let dx = b.x - a.x, dy = b.y - a.y;
             let d2 = dx * dx + dy * dy;
             if (d2 < 1) { dx = (i - j) * 0.7 + 0.1; dy = 0.3; d2 = dx * dx + dy * dy; }
@@ -169,6 +210,7 @@ window.ECO_LAYOUT = (function () {
         }
 
         for (const e of edges) {
+          if (!active(e.a) || !active(e.b)) continue;
           const dx = e.b.x - e.a.x, dy = e.b.y - e.a.y;
           const d = Math.max(1, Math.hypot(dx, dy));
           const rest = cfg.springLength + e.a.r + e.b.r - 28;
@@ -178,7 +220,7 @@ window.ECO_LAYOUT = (function () {
           e.b.fx -= ux * f; e.b.fy -= uy * f;
         }
 
-        for (const n of nodes) {
+        for (const n of live) {
           n.fx -= n.x * cfg.centerPull;
           n.fy -= n.y * cfg.centerPull;
           if (anchorOf) {
@@ -190,7 +232,7 @@ window.ECO_LAYOUT = (function () {
           }
         }
 
-        for (const n of nodes) {
+        for (const n of live) {
           if (n.fixed) { n.vx = n.vy = 0; continue; }
           n.vx = (n.vx + n.fx * alpha) * cfg.damping;
           n.vy = (n.vy + n.fy * alpha) * cfg.damping;

@@ -22,17 +22,35 @@ window.ECO = {
 
   /* Verbs that describe a *suppressing* influence. Edges using these are drawn
    * dashed with an open arrowhead so polarity survives without reading the label. */
-  negativeVerbs: ['reduces', 'prevents', 'limits', 'buffers', 'slows', 'absorbs', 'shields'],
+  negativeVerbs: ['reduces', 'prevents', 'limits', 'buffers', 'slows', 'absorbs',
+                  'shields', 'displaces', 'cuts', 'avoids', 'replaces'],
 
-  /** Register a node. */
+  /** Register an issue node. */
   n(id, label, cat, summary, mitigations, local, search) {
     this.nodes.push({
       id, label, cat, summary,
+      kind: 'issue',
       mitigations: mitigations || [],
       local: local || {},
       search: search || label
     });
   },
+
+  /** Register a solution node — a lever rather than a problem.
+   *  `how` is what it actually takes to do, including the awkward parts. */
+  s(id, label, cat, summary, how, search) {
+    this.nodes.push({
+      id, label, cat, summary,
+      kind: 'solution',
+      mitigations: how || [],
+      local: {},
+      search: search || label
+    });
+  },
+
+  /** Extra search terms for a node: synonyms, chemicals, the words people type. */
+  k(id, terms) { (this.keywords[id] = this.keywords[id] || []).push(...terms); },
+  keywords: {},
 
   /** Register a directed link. w = editorial estimate of how tightly the pair is
    *  discussed together (1 loose .. 3 near-inseparable); feeds the clustering. */

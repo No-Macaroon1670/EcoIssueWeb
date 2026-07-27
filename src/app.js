@@ -55,6 +55,9 @@
   /* Wrap once, up front: the layout needs label extents to keep them from
    * colliding, and the renderer needs the same lines to draw. */
   const LABEL_WIDTH = 96, LINE_HEIGHT = 13;
+  /* Past this many visible nodes the whole graph no longer fits at a readable
+   * size, so it becomes a pannable map opened at a fixed working zoom. */
+  const DENSE_ABOVE = 85, DENSE_VIEW = 0.75, OPEN_VIEW = 0.8;
   (function measureLabels() {
     const probe = document.createElement('canvas').getContext('2d');
     probe.font = '600 11.5px system-ui, -apple-system, "Segoe UI", sans-serif';
@@ -72,12 +75,29 @@
       n.lw = Math.max(...n.lines.map(l => probe.measureText(l).width));
       n.lh = n.lines.length * LINE_HEIGHT + 5;
     });
-    // the best-connected half keep their labels at overview zoom
-    const ranked = E.nodes.slice().sort((a, b) => b.weight - a.weight);
-    ranked.forEach((n, i) => { n.labelPriority = i < 30; });
   })();
 
-  const clusters = window.ECO_CLUSTER.run(E.nodes.map(n => n.id), E.links, 1);
+  /* Clustering runs over issues only, so the communities do not shift when the
+   * solutions layer is toggled. Each lever then inherits the cluster of whatever
+   * it acts on most heavily. */
+  const issues = E.nodes.filter(n => n.kind !== 'solution');
+  const solutions = E.nodes.filter(n => n.kind === 'solution');
+  const issueIds = new Set(issues.map(n => n.id));
+  const clusters = window.ECO_CLUSTER.run(
+    issues.map(n => n.id),
+    E.links.filter(l => issueIds.has(l.source) && issueIds.has(l.target)),
+    1
+  );
+  solutions.forEach(sol => {
+    const tally = new Map();
+    outgoing.get(sol.id).forEach(({ link, other }) => {
+      const c = clusters.of[other.id];
+      if (c != null) tally.set(c, (tally.get(c) || 0) + link.w);
+    });
+    const best = [...tally.entries()].sort((a, b) => b[1] - a[1])[0];
+    clusters.of[sol.id] = best ? best[0] : 0;
+  });
+
   const clusterMembers = new Map();
   E.nodes.forEach(n => {
     const c = clusters.of[n.id];
@@ -108,6 +128,7 @@
     verbs: store.get('verbs', false),
     hiddenGroups: new Set(),
     minWeight: store.get('minWeight', 1),
+    solutions: store.get('solutions', false),
     place: store.get('place', ''),
     custom: store.get('custom', { income: 'high', flags: [] }),
     tableOpen: false
@@ -148,11 +169,19 @@
     return state.colourBy === 'cat' ? catColour(node.cat) : clusterColour(clusters.of[node.id]);
   }
 
-  function groupKeyOf(node) {
+  /* Colour key drives the legend and hiding; group key drives layout anchoring.
+   * They differ for levers, which take their domain's hue but cluster together on
+   * screen so the solutions layer reads as a layer. */
+  function colourKeyOf(node) {
     return state.colourBy === 'cat' ? node.cat : clusters.of[node.id];
   }
 
+  function groupKeyOf(node) {
+    return node.kind === 'solution' ? '__levers__' : colourKeyOf(node);
+  }
+
   function groupTitle(key) {
+    if (key === '__levers__') return 'Responses & levers';
     if (state.colourBy === 'cat') return E.cats[key].label;
     const index = Number(key);
     return index < CAT_KEYS.length
@@ -160,7 +189,10 @@
       : `Other (${clusterMembers.get(index).length})`;
   }
 
-  function nodeVisible(node) { return !state.hiddenGroups.has(String(groupKeyOf(node))); }
+  function nodeVisible(node) {
+    if (node.kind === 'solution' && !state.solutions) return false;
+    return !state.hiddenGroups.has(String(colourKeyOf(node)));
+  }
 
   /* ── graph & layout ──────────────────────────────────────────────────────── */
   const canvas = document.getElementById('graph');
@@ -179,17 +211,42 @@
   });
   graph.setVisibility(nodeVisible);
   graph.setLinkFilter(link => link.w >= state.minWeight);
+  layout.setActive(nodeVisible);
 
   function applyGrouping() {
     if (!state.group) { layout.setGroups(null); return; }
     const groups = new Map();
-    E.nodes.forEach(n => {
+    E.nodes.filter(nodeVisible).forEach(n => {
       const key = groupKeyOf(n);
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(n);
     });
     layout.setGroups(groups);
     layout.reheat(0.9);
+  }
+
+  /* Which labels survive the thinned overview.
+   *
+   * Allocated per group rather than globally: ranking all nodes by degree and
+   * taking the top 40% leaves the levers almost entirely unnamed, because a lever
+   * has far fewer links than a hub issue like global temperature rise. Every group
+   * keeps its own best-connected share, so no region of the map goes anonymous. */
+  function refreshLabelPriority() {
+    E.nodes.forEach(n => { n.labelPriority = false; });
+    const shown = E.nodes.filter(nodeVisible);
+    const dense = shown.length > DENSE_ABOVE;
+
+    const groups = new Map();
+    shown.forEach(n => {
+      const key = String(groupKeyOf(n));
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(n);
+    });
+    groups.forEach(members => {
+      members.sort((a, b) => b.weight - a.weight);
+      const keep = dense ? Math.max(3, Math.round(members.length * 0.42)) : members.length;
+      members.slice(0, keep).forEach(n => { n.labelPriority = true; });
+    });
   }
 
   function updateGroupLabels() {
@@ -226,7 +283,8 @@
       outgoing: id => outgoing.get(id),
       incoming: id => incoming.get(id),
       profile: profile(),
-      nodeCount: E.nodes.length,
+      issueCount: issues.length,
+      solutionCount: solutions.length,
       linkCount: E.links.length
     };
   }
@@ -263,7 +321,11 @@
 
   function focusNode(node) {
     if (!nodeVisible(node)) {
-      state.hiddenGroups.delete(String(groupKeyOf(node)));
+      if (node.kind === 'solution' && !state.solutions) {
+        document.getElementById('opt-solutions').checked = true;
+        document.getElementById('opt-solutions').dispatchEvent(new Event('change'));
+      }
+      state.hiddenGroups.delete(String(colourKeyOf(node)));
       buildLegend();
     }
     graph.select(node);
@@ -274,19 +336,18 @@
   const legendEl = document.getElementById('legend');
 
   function legendEntries() {
+    const counts = id => E.nodes.filter(n =>
+      (state.solutions || n.kind !== 'solution') && String(colourKeyOf(n)) === String(id)).length;
     if (state.colourBy === 'cat') {
       return CAT_KEYS.map(key => ({
-        key,
-        label: E.cats[key].label,
-        colour: catColour(key),
-        count: E.nodes.filter(n => n.cat === key).length
+        key, label: E.cats[key].label, colour: catColour(key), count: counts(key)
       }));
     }
     return [...clusterMembers.keys()].sort((a, b) => a - b).map(index => ({
       key: String(index),
       label: groupTitle(index),
       colour: clusterColour(index),
-      count: clusterMembers.get(index).length
+      count: counts(index)
     }));
   }
 
@@ -318,20 +379,56 @@
   const searchResults = document.getElementById('search-results');
   let searchMatches = [];
 
+  /* Rank by how direct the match is, and remember *why* a node matched so the
+   * result row can show it — searching "carbon dioxide" should visibly explain
+   * why it returned greenhouse gas emissions. */
+  function scoreNode(node, q) {
+    const label = node.label.toLowerCase();
+    const terms = E.keywords[node.id] || [];
+    if (label === q) return { rank: 0 };
+    if (label.startsWith(q)) return { rank: 1 };
+    // an exact keyword hit beats a mid-word label match: "co2" means this node
+    if (terms.includes(q)) return { rank: 2, hint: q };
+    if (label.includes(q)) return { rank: 3 };
+    if ((node.short || '').toLowerCase().includes(q)) return { rank: 4 };
+    // ids carry names the label does not: "electrification", "amoc", "pfas"
+    if (node.id.replace(/-/g, ' ').includes(q)) return { rank: 4 };
+
+    let best = null;
+    for (const term of terms) {
+      if (term.startsWith(q)) { best = { rank: 5, hint: term }; break; }
+      if (term.includes(q) && !best) best = { rank: 6, hint: term };
+    }
+    if (best) return best;
+
+    if (E.cats[node.cat].label.toLowerCase().includes(q)) return { rank: 7 };
+    if (node.summary.toLowerCase().includes(q)) return { rank: 8, hint: 'in summary' };
+    return null;
+  }
+
   function runSearch() {
     const q = searchInput.value.trim().toLowerCase();
     if (!q) { searchResults.hidden = true; searchMatches = []; return; }
+
+    // deliberately not filtered to visible nodes: picking a hidden one reveals it,
+    // so a lever stays findable while the solutions layer is off
     searchMatches = E.nodes
-      .filter(n => n.label.toLowerCase().includes(q) || E.cats[n.cat].label.toLowerCase().includes(q))
-      .slice(0, 8);
+      .map(node => ({ node, ...(scoreNode(node, q) || {}) }))
+      .filter(row => row.rank !== undefined)
+      .sort((a, b) => a.rank - b.rank || b.node.weight - a.node.weight)
+      .slice(0, 9);
+
     if (!searchMatches.length) {
       searchResults.innerHTML = '<li><span class="empty-note" style="padding:6px 7px">No match</span></li>';
       searchResults.hidden = false;
       return;
     }
-    searchResults.innerHTML = searchMatches.map((n, i) =>
-      `<li><button data-pick="${n.id}" class="${i === 0 ? 'active' : ''}">
-        <span class="swatch" style="background:${colourOf(n)}"></span>${n.label}
+    searchResults.innerHTML = searchMatches.map((row, i) => `
+      <li><button data-pick="${row.node.id}" class="${i === 0 ? 'active' : ''}">
+        <span class="swatch ${row.node.kind === 'solution' ? 'ring' : ''}"
+              style="${row.node.kind === 'solution' ? 'border-color' : 'background'}:${colourOf(row.node)}"></span>
+        <span>${row.node.label}</span>
+        ${row.hint ? `<span class="hit">${row.hint}</span>` : ''}
       </button></li>`).join('');
     searchResults.hidden = false;
   }
@@ -340,7 +437,7 @@
   searchInput.addEventListener('keydown', ev => {
     if (ev.key === 'Enter' && searchMatches.length) {
       ev.preventDefault();
-      pick(searchMatches[0]);
+      pick(searchMatches[0].node);
     } else if (ev.key === 'Escape') {
       searchInput.value = '';
       searchResults.hidden = true;
@@ -483,8 +580,22 @@
 
   const optGroup = document.getElementById('opt-group');
   const optVerbs = document.getElementById('opt-verbs');
+  const optSolutions = document.getElementById('opt-solutions');
   optGroup.checked = state.group;
   optVerbs.checked = state.verbs;
+  optSolutions.checked = state.solutions;
+
+  optSolutions.addEventListener('change', () => {
+    state.solutions = optSolutions.checked;
+    store.set('solutions', state.solutions);
+    document.getElementById('key-lever').hidden = !state.solutions;
+    if (!state.solutions && graph.selected() && graph.selected().kind === 'solution') {
+      graph.select(null);
+    }
+    buildLegend();
+    relayout();
+    if (state.tableOpen) openTable(); else renderDetail(graph.selected());
+  });
 
   optGroup.addEventListener('change', () => {
     state.group = optGroup.checked;
@@ -539,6 +650,7 @@
   applyTheme();
   buildLegend();
   graph.setShowAllVerbs(state.verbs);
+  document.getElementById('key-lever').hidden = !state.solutions;
   customBox.hidden = state.place !== '__custom__';
   renderLocalTop();
   renderDetail(null);
@@ -547,17 +659,45 @@
     `${clusters.count} clusters found by Louvain modularity (Q = ${clusters.modularity.toFixed(2)}) on link structure.`;
 
   graph.resize();
-  applyGrouping();
 
   /* Settle, then declutter, before the first paint so nothing visibly explodes.
    * declutter() separates boxes that enclose circle *and* label, sized for 11.5px
    * type at 1:1 — so no label can touch another label or another circle at any
    * zoom of 1.0 or above, which is exactly when every label is drawn. */
+  /* Reserving a full label box for every node guarantees a clean map at 1:1, and
+   * costs world area proportional to the node count. Below ~85 nodes that is
+   * affordable. With the solutions layer on it is not — the world would grow until
+   * the whole graph shrank to a third of usable size — so the dense case reserves
+   * boxes only for the labels actually drawn at overview, and the rest of the
+   * labels wait for a deeper zoom, where circle spacing is wide enough for them. */
   function relayout() {
+    refreshLabelPriority();
+
+    const visible = E.nodes.filter(nodeVisible).length;
+    const isDense = visible > DENSE_ABOVE;
+    layout.setLabelPolicy({
+      scale: 1 / (isDense ? DENSE_VIEW : OPEN_VIEW),
+      labelled: isDense ? (n => n.labelPriority) : (() => true)
+    });
+
+    applyGrouping();
+    layout.reheat(1);
     for (let i = 0; i < 600; i++) layout.step();
-    const left = layout.declutter(500);
+
+    /* Label type is a fixed 11.5px on screen while the layout reserves world units,
+     * so the two only agree at one zoom. Chasing the fit scale in a feedback loop
+     * diverges — inflating the boxes grows the world, which lowers the scale, which
+     * demands more inflation — so instead we *commit* to the zoom the map will open
+     * at and reserve for exactly that. */
+    const target = isDense ? DENSE_VIEW : OPEN_VIEW;
+    const left = layout.declutter(600);
     if (left) console.warn(`${left} label boxes still overlap after declutter`);
+
+    // sparse: every label is clean at the opening zoom. dense: only the drawn ones,
+    // and the rest wait for a zoom where circle spacing can hold a label.
+    graph.setLabelAllScale(isDense ? 1.9 : target);
     graph.fit();
+    if (graph.view.scale < target) graph.setView(target);
   }
   relayout();
 
@@ -565,7 +705,7 @@
   (function frame() {
     const moving = layout.step();
     if (moving) settled = false;
-    if (!moving && !settled) { settled = true; layout.declutter(60); }
+    if (!moving && !settled) { settled = true; layout.declutter(250); }
     updateGroupLabels();
     graph.draw();
     requestAnimationFrame(frame);

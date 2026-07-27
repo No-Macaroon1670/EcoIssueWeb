@@ -187,6 +187,21 @@ button:focus-visible, a:focus-visible {
   border-radius: 50%;
   box-shadow: 0 0 0 1px var(--border) inset;
 }
+/* levers are a class of thing, not a seventh hue: hollow ring, same palette */
+.swatch.ring {
+  background: var(--surface-1);
+  border: 3px solid currentColor;
+  box-shadow: none;
+}
+.hit {
+  margin-left: auto;
+  padding-left: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.chip-lever { padding-left: 8px; }
+.chip-lever::before { display: none; }
 
 .custom[hidden] { display: none; }   /* the display below would otherwise win */
 .custom {
@@ -279,6 +294,13 @@ button:focus-visible, a:focus-visible {
 .stage-key span { display: flex; align-items: center; gap: 6px; }
 .key-line { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--edge-strong); }
 .key-line.dashed { border-top-style: dashed; }
+.key-ring {
+  display: inline-block;
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: var(--surface-1);
+  border: 3px solid var(--text-secondary);
+}
 
 /* ── detail panel ─────────────────────────────────────────────────────────── */
 
