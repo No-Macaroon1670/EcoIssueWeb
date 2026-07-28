@@ -13,7 +13,12 @@
   l('data-centres', 'depletes', 'water-scarcity', 2, 'Evaporative cooling, often sited where water is already short.');
   l('data-centres', 'drives', 'mining', 2, 'Chips, servers and the copper to connect them.');
   l('data-centres', 'drives', 'ewaste', 2, 'Server refresh cycles are short.');
-  l('data-centres', 'causes', 'air-pollution', 1, 'Backup diesel generators, tested regularly and concentrated on one site.');
+  l('data-centres', 'drives', 'fossil-fuels', 2,
+    'The pathway that actually matters. Load arriving faster than clean generation can be added keeps existing fossil plants running, and has deferred coal retirements outright in several markets.');
+  l('data-centres', 'causes', 'air-pollution', 1,
+    'The direct but minor path: backup diesel generators tested monthly, and on-site gas turbines at a handful of sites. Most of the air-quality effect runs indirectly, through the grid.');
+  l('data-centres', 'drives', 'noise-pollution', 2,
+    'The most consistent local complaint by some distance — chillers and fan walls run every hour of the year, and the tone carries further than the volume suggests.');
   l('data-centres', 'worsens', 'energy-poverty', 1, 'Contested: large new loads can raise system costs that land on all bill-payers.');
 
   l('warming', 'drives', 'geoengineering', 2, 'The pressure to attempt it grows with every year of missed targets.');

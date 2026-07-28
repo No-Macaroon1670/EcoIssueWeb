@@ -130,6 +130,8 @@
   l('water-scarcity', 'worsens', 'unsafe-water', 2);
   l('groundwater', 'drives', 'salinization', 2, 'Over-pumping near a coast pulls seawater into the aquifer.');
   l('groundwater', 'raises', 'sea-level', 1, 'Water pumped from aquifers ultimately ends up in the ocean.');
+  l('groundwater', 'threatens', 'food-insecurity', 2,
+    'A large share of irrigated food is grown on groundwater, and the aquifers under the Punjab, the North China Plain and the Ogallala are all being drawn down faster than they refill.');
   l('salinization', 'causes', 'land-degradation', 2);
   l('salinization', 'threatens', 'food-insecurity', 2);
   l('salinization', 'contaminates', 'unsafe-water', 2);
@@ -214,6 +216,7 @@
   l('mining', 'worsens', 'env-injustice', 2, 'Frequently on Indigenous land, often without meaningful consent.');
   l('mining', 'causes', 'land-degradation', 2);
   l('mining', 'contaminates', 'unsafe-water', 2, 'Acid drainage from tailings can persist for centuries.');
+  l('mining', 'causes', 'air-pollution', 1, 'Smelter sulphur dioxide, and dust off haul roads and tailings.');
   l('mining', 'reduces', 'ghg-emissions', 1,
     'The transition\'s own dependency: copper, lithium and nickel are what a low-carbon grid is built from.');
 
