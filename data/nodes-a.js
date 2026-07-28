@@ -422,6 +422,17 @@
             ['highlat', 'high', 'Cold water absorbs more carbon dioxide, so polar seas acidify fastest.']] },
     'ocean acidification shellfish'),
 
+  n('thermal-pollution', 'Thermal pollution', 'water',
+    'Power stations and heavy industry draw in river, lake or sea water for cooling and return it eight to twelve degrees warmer. Warm water holds less dissolved oxygen — the same physics that drives hypoxia — and it changes which species can live in the receiving water. Intake screens kill fish and larvae in their own right. This is the routine water impact of any steam-cycle plant, nuclear and fossil alike: not contamination, but a change in the physics of the water.',
+    ['Closed-loop cooling towers cut both withdrawal and discharge sharply, at a small efficiency cost',
+     'Support intake velocity limits and screening, which is what stops fish and larvae being drawn in',
+     'Back discharge limits set against the receiving water rather than a fixed number — the same plume matters far more in a shallow river than in open sea'],
+    { exp: [['freshwater', 'elevated', 'Inland plants discharge into lakes and rivers with little to dilute the plume.'],
+            ['coastal', 'elevated', 'Coastal once-through cooling moves the largest volumes.']],
+      drv: [['high', 'Large legacy fleets of once-through-cooled thermal plants.'],
+            ['upper', 'Rapid thermal build-out.']] },
+    'thermal pollution cooling water discharge'),
+
   n('dead-zones', 'Aquatic dead zones', 'water',
     'More than 500 coastal areas now suffer oxygen levels too low to support most animal life, up from a few dozen in the 1960s. Large lakes do it too. Algal blooms fed by nutrient runoff die, sink and decay, consuming the oxygen as they go. Warming makes it worse, because warm water holds less oxygen and resists the mixing that would replenish it.',
     ['Address the upstream nutrient source; dead zones are a symptom, not a cause',

@@ -58,7 +58,10 @@
   k('dams', ['hydropower', 'hydroelectric', 'reservoir', 'weir', 'barrage', 'three gorges', 'fish ladder', 'dam removal']);
   k('ocean-warming', ['marine heatwave', 'sea surface temperature', 'the blob', 'ocean heat content', 'coral heat stress']);
   k('acidification', ['ph', 'carbonic acid', 'calcification', 'shells', 'aragonite', 'oyster', 'pteropod']);
-  k('dead-zones', ['hypoxia', 'anoxia', 'oxygen minimum', 'gulf of mexico', 'baltic', 'fish kill']);
+  k('dead-zones', ['hypoxia', 'anoxia', 'oxygen minimum', 'gulf of mexico', 'baltic', 'fish kill',
+                   'algal bloom', 'cyanobacteria', 'red tide', 'eutrophic']);
+  k('thermal-pollution', ['thermal pollution', 'cooling water', 'once-through cooling', 'warm discharge',
+                          'thermal plume', 'entrainment', 'impingement', 'cooling tower', 'waste heat']);
   k('deep-sea-mining', ['seabed mining', 'polymetallic nodules', 'clarion clipperton', 'isa', 'manganese nodules', 'abyssal', 'hydrothermal vents']);
 
   /* Biodiversity & ecosystems */

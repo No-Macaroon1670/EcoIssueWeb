@@ -42,6 +42,7 @@
     'salinization': 'Salinization', 'glacier-water': 'Glacier-fed water',
     'dams': 'Dams & barriers', 'ocean-warming': 'Ocean warming',
     'acidification': 'Acidification', 'dead-zones': 'Dead zones',
+    'thermal-pollution': 'Thermal pollution',
     'habitat-loss': 'Habitat loss', 'wetland-loss': 'Wetland loss',
     'kelp-seagrass': 'Kelp & seagrass', 'wildlife-trade': 'Wildlife trade',
     'soil-life': 'Soil biodiversity', 'industrial-ag': 'Industrial farming',

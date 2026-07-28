@@ -33,7 +33,12 @@
   l('nuclear-power', 'causes', 'nuclear-waste', 3, 'The unavoidable ledger entry: very low carbon, and custody measured in millennia.');
   l('nuclear-waste', 'drives', 'mining', 1, 'Uranium extraction and milling.');
   l('nuclear-waste', 'worsens', 'env-injustice', 2, 'Siting has repeatedly landed on communities with the least power to refuse.');
-  l('nuclear-waste', 'contaminates', 'unsafe-water', 1);
+  /* No nuclear-waste -> unsafe-water edge. A reactor's routine effect on water is
+   * thermal, not contaminative, and "unsafe water" here is a human drinking-water and
+   * sanitation node. The genuine contamination pathway is uranium mining and milling,
+   * which already reaches unsafe water through the mining node. */
+  l('nuclear-power', 'causes', 'thermal-pollution', 2,
+    'Once-through cooling returns the water warmer, which is the everyday water impact of any steam-cycle plant.');
 
   l('battery-waste', 'drives', 'landfill-waste', 2);
   l('battery-waste', 'releases', 'heavy-metals', 2,

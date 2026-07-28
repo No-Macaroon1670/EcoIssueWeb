@@ -275,6 +275,12 @@
   "redirected_from": null,
   "missing": false
  },
+ "thermal-pollution": {
+  "title": "Thermal pollution",
+  "quality": "exact",
+  "redirected_from": null,
+  "missing": false
+ },
  "deep-sea-mining": {
   "title": "Deep sea mining",
   "quality": "exact",

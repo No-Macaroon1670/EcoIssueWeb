@@ -146,7 +146,14 @@
   l('dams', 'reduces', 'ghg-emissions', 1, 'Hydropower displaces fossil generation.');
   l('unsafe-water', 'causes', 'waterborne', 3);
   l('unsafe-water', 'worsens', 'env-injustice', 2);
-  l('nutrient-runoff', 'causes', 'dead-zones', 3);
+  l('nutrient-runoff', 'causes', 'dead-zones', 3,
+    'Nutrients feed the bloom, the bloom dies, and its decay strips the oxygen. This is the whole mechanism — dead zones are not caused by contaminated drinking water, which runs the other way as a human outcome.');
+  l('thermal-pollution', 'worsens', 'dead-zones', 2,
+    'Warm water holds less dissolved oxygen, so a thermal plume pushes an already-stressed basin further toward hypoxia.');
+  l('thermal-pollution', 'threatens', 'extinction', 1);
+  l('heatwaves', 'worsens', 'thermal-pollution', 1,
+    'Hot summers push discharge temperatures past permit limits, which is why French and US thermal plants derate or shut down in heatwaves.');
+  l('fossil-fuels', 'causes', 'thermal-pollution', 2, 'Coal and gas plants are steam-cycle too, and there are far more of them.');
   l('nutrient-runoff', 'contaminates', 'unsafe-water', 2);
   l('nutrient-runoff', 'kills', 'kelp-seagrass', 2, 'Murky, nutrient-rich water stops light reaching the seabed.');
   l('nutrient-runoff', 'worsens', 'coral-bleaching', 2);

@@ -68,6 +68,7 @@ TITLES = {
     'ocean-warming':       ('Marine heatwave', 'exact'),
     'acidification':       ('Ocean acidification', 'exact'),
     'dead-zones':          ('Dead zone (ecology)', 'exact'),
+    'thermal-pollution':   ('Thermal pollution', 'exact'),
     'deep-sea-mining':     ('Deep sea mining', 'exact'),
 
     # ── biodiversity & ecosystems ─────────────────────────────────────────────
