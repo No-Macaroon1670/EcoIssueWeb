@@ -145,7 +145,8 @@
   l('water-efficiency', 'reduces', 'water-scarcity', 3);
   l('water-efficiency', 'reduces', 'groundwater', 3);
   l('water-efficiency', 'reduces', 'salinization', 2);
-  l('water-efficiency', 'limits', 'food-insecurity', 1);
+  l('water-efficiency', 'limits', 'food-insecurity', 1,
+    'More crop per drop — but only where allocation is also capped, or the saved water just irrigates more land.');
   l('wastewater-upgrade', 'reduces', 'unsafe-water', 3);
   l('wastewater-upgrade', 'prevents', 'waterborne', 3);
   l('wastewater-upgrade', 'reduces', 'nutrient-runoff', 2);

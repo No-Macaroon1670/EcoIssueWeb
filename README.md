@@ -230,6 +230,31 @@ anchor pull-back inside declutter also tapers off after the first third of the p
 left running to the end it exactly cancels the separation and the solve stalls with
 overlaps outstanding.
 
+### The vague-verb rule
+
+`tools/lint_links.py` enforces one narrow thing: an edge using a placeholder verb
+(`threatens`, `worsens`, `affects`, `impacts`, `influences`) must state a mechanism.
+
+Some verbs carry their own. *PFAS **contaminates** unsafe water* is one step and needs
+no gloss. *Plastic **threatens** extinction* explains nothing — the verb is a
+placeholder standing in for three or four steps that were never thought through, and
+it reads as authoritative anyway.
+
+This was not hypothetical. Food insecurity had accumulated **32 inbound edges, 20 of
+them unexplained**, becoming the highest-degree node in the map on the strength of
+"this is bad, therefore bad for food". Two were removed outright — `kelp & seagrass →
+food insecurity` and `extinction → food insecurity`, both restating pathways the map
+already carried specifically — and the rest were given mechanisms. Species extinction
+had the same cluster forming from pollutant nodes.
+
+Note what the rule deliberately does *not* flag: 201 of 403 links still have no note,
+and that is fine, because their verbs are concrete and one-step. Screening on "no note"
+alone was too broad to act on; the signal is the vague verb.
+
+The lint also reports in-degree concentration as a soft warning, since a node
+collecting many weakly-justified inbound edges is that failure mode forming again.
+Currently flagged: greenhouse gas emissions, climate displacement, habitat loss.
+
 ## Honest limits
 
 - **The locale model is coarse by construction.** A country gets physical-geography
