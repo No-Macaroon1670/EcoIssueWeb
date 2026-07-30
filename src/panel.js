@@ -4,6 +4,12 @@ window.ECO_PANEL = (function () {
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const isNegative = verb => window.ECO.negativeVerbs.includes(verb);
 
+  /* Every link now carries a mechanism, which is right for the data and unreadable in
+   * the panel: food insecurity has 30 inbound links and ran to five screens of
+   * scrolling. Notes past this length collapse to two lines and expand on click, so
+   * the reasoning stays available without burying the relationships themselves. */
+  const NOTE_CLAMP = 90;
+
   function swatch(node, ctx) {
     const colour = ctx.colourOf(node);
     return node.kind === 'solution'
@@ -22,7 +28,9 @@ window.ECO_PANEL = (function () {
           ${swatch(other, ctx)}<span class="rel-label">${esc(other.label)}</span>
           ${evidence ? `<span class="hit">${esc(evidence)}</span>` : ''}
         </button>
-        ${link.note ? `<p class="rel-note">${esc(link.note)}</p>` : ''}
+        ${link.note ? (link.note.length > NOTE_CLAMP
+            ? `<p class="rel-note clamp" title="${esc(link.note)}">${esc(link.note)}</p>`
+            : `<p class="rel-note">${esc(link.note)}</p>`) : ''}
       </li>`;
     }).join('') + `</ul>`;
   }

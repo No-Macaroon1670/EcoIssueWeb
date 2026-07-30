@@ -1,0 +1,41 @@
+#!/bin/sh
+# Blocks a commit that adds a vague-verb link with no mechanism, or a link pointing
+# at a node id that does not exist. Install with:
+#   powershell -File tools/install-hooks.ps1
+#
+# Deliberately avoids external tools like grep. An earlier version piped the staged
+# file list through grep, and on a shell where grep was not on PATH the condition
+# evaluated false, the lint never ran, and the hook exited 0 -- a guard that silently
+# does nothing is worse than no guard, because it is trusted. Pattern matching is
+# done with the shell's own `case` instead, and a missing interpreter fails loudly.
+
+relevant=0
+while IFS= read -r staged; do
+    case "$staged" in
+        data/links*.js|data/nodes*.js|data/solutions*.js) relevant=1 ;;
+    esac
+done <<EOF
+$(git diff --cached --name-only)
+EOF
+
+[ "$relevant" -eq 0 ] && exit 0
+
+# Candidates are validated by actually executing them, not just by being on PATH:
+# Windows ships a `python.exe` App Execution Alias that resolves via `command -v` and
+# then refuses to run, which would have failed every commit with a confusing error.
+py=""
+for candidate in "$USERPROFILE/anaconda3/python.exe" python3 python; do
+    if "$candidate" -c "" >/dev/null 2>&1; then py="$candidate"; break; fi
+done
+
+if [ -z "$py" ]; then
+    echo "pre-commit: no python interpreter found, so the link lint cannot run." >&2
+    echo "            Install python, or commit with --no-verify to skip deliberately." >&2
+    exit 1
+fi
+
+"$py" tools/lint_links.py || {
+    echo "" >&2
+    echo "pre-commit: link lint failed. Fix the above, or --no-verify to override." >&2
+    exit 1
+}

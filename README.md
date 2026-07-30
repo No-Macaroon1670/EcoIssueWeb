@@ -242,10 +242,22 @@ it reads as authoritative anyway.
 
 This was not hypothetical. Food insecurity had accumulated **32 inbound edges, 20 of
 them unexplained**, becoming the highest-degree node in the map on the strength of
-"this is bad, therefore bad for food". Two were removed outright — `kelp & seagrass →
-food insecurity` and `extinction → food insecurity`, both restating pathways the map
-already carried specifically — and the rest were given mechanisms. Species extinction
-had the same cluster forming from pollutant nodes.
+"this is bad, therefore bad for food". `kelp & seagrass → food insecurity` was removed
+as a restatement of the nursery route already on wetland loss, and the rest were given
+mechanisms. Species extinction had the same cluster forming from the pollutant nodes.
+
+`extinction → food insecurity` was removed in the same pass and then **reinstated**,
+because deleting it left species extinction with 23 inbound edges and zero outbound —
+the map's central biodiversity outcome affecting nothing, which is a worse error than
+the vague edge was. It is back with the specific mechanism (crop wild relatives are the
+gene pool breeders draw on and cannot be recovered), alongside `extinction → weakens →
+carbon sinks` for the empty-forest effect. Closing that gap took the loop count from 67
+to 90, 23 of them now running through extinction: a node with no outbound edges cannot
+participate in feedback, which is how the omission stayed invisible.
+
+The second check is cheaper and catches a different silent failure: **every endpoint
+must name a real node.** A typo'd id otherwise passes the lint, gets dropped at runtime
+by `app.js` with a `console.error` nobody reads, and the edge simply vanishes.
 
 Note what the rule deliberately does *not* flag: 201 of 403 links still have no note,
 and that is fine, because their verbs are concrete and one-step. Screening on "no note"
@@ -254,6 +266,21 @@ alone was too broad to act on; the signal is the vague verb.
 The lint also reports in-degree concentration as a soft warning, since a node
 collecting many weakly-justified inbound edges is that failure mode forming again.
 Currently flagged: greenhouse gas emissions, climate displacement, habitat loss.
+
+**Install the hook, or the guard does nothing:**
+
+```bash
+powershell -File tools/install-hooks.ps1
+```
+
+`.git/hooks` is not version-controlled, so this is once per clone. The hook only runs
+when link or node data is staged. It deliberately avoids `grep` — an earlier version
+piped the staged file list through it, and on a shell without `grep` on PATH the
+condition read false, the lint never ran, and the hook exited 0. A guard that silently
+does nothing is worse than none, because it is trusted. For the same reason a missing
+python interpreter fails loudly rather than skipping, and candidate interpreters are
+validated by executing them, since Windows ships a `python.exe` alias that resolves on
+PATH and then refuses to run.
 
 ## Honest limits
 
@@ -292,6 +319,9 @@ Currently flagged: greenhouse gas emissions, climate displacement, habitat loss.
 | `data/links-c.js` | links for the newer issues and the whole solutions layer |
 | `data/keywords.js` | search synonyms — chemicals, place names, plain-language terms |
 | `data/weights-clickstream.js` | **generated** — reader-navigation weights + the article mapping |
+| `tools/linkdata.py` | the one parser for `data/` — links, labels, valid ids |
+| `tools/lint_links.py` | vague-verb and unknown-endpoint checks; exits non-zero |
+| `tools/pre-commit` + `install-hooks.ps1` | runs the lint on commits touching the data |
 | `tools/wiki_titles.py` | node → Wikipedia article mapping, with a live validator |
 | `tools/clickstream.py` | fetch / extract / build the reader-navigation weights |
 | `data/regions.js` | ~120 place profiles and the geography-flag vocabulary |

@@ -543,6 +543,9 @@
   }
 
   detail.addEventListener('click', ev => {
+    const clamped = ev.target.closest('.rel-note.clamp');
+    if (clamped) { clamped.classList.toggle('open'); return; }
+
     const loopRow = ev.target.closest('[data-loop]');
     if (loopRow) {
       const index = Number(loopRow.dataset.loop);

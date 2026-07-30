@@ -152,15 +152,12 @@ def cosine(va, vb):
 
 
 def read_links():
-    """Pull (source, target, verb, editorial weight) out of the app's own data files."""
-    import re
-    links = []
-    for name in ("links.js", "links-c.js"):
-        with open(os.path.join(ROOT, "data", name), encoding="utf-8") as fh:
-            for m in re.finditer(
-                    r"\bl\(\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*(\d+)", fh.read()):
-                links.append((m.group(1), m.group(3), m.group(2), int(m.group(4))))
-    return links
+    """Pull (source, target, verb, editorial weight) out of the app's own data files.
+
+    Parsing lives in tools/linkdata.py so this and lint_links.py cannot drift apart
+    about which files or which links exist."""
+    import linkdata
+    return [(l["s"], l["t"], l["verb"], l["w"]) for l in linkdata.load()[0]]
 
 
 def build():

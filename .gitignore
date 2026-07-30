@@ -6,3 +6,5 @@ desktop.ini
 # Wikipedia clickstream dumps: ~484 MB each, re-downloadable with
 # `python tools/clickstream.py fetch`. The derived weights are committed instead.
 tools/clickstream-*.tsv.gz
+
+__pycache__/

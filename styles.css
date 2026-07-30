@@ -419,6 +419,20 @@ input[type="range"] {
 .rel-list li.neg .verb { color: var(--text-primary); font-style: italic; }
 .rel .swatch { align-self: center; }
 .rel-note { margin: 0 0 6px 13px; font-size: 12px; color: var(--text-muted); }
+/* Long mechanisms collapse to two lines; click toggles. Without this the panel for a
+   high-in-degree node runs to several screens of prose. */
+.rel-note.clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  cursor: pointer;
+}
+.rel-note.clamp.open {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
 
 .mit-list li, .reason-list li {
   position: relative;

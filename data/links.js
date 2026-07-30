@@ -209,7 +209,8 @@
   l('monoculture', 'increases', 'pesticides', 2);
   l('monoculture', 'degrades', 'soil-life', 2);
   l('monoculture', 'threatens', 'food-insecurity', 1, 'Genetic uniformity means one new disease can hit a whole region at once.');
-  l('pesticides', 'harms', 'pollinators', 3);
+  l('pesticides', 'harms', 'pollinators', 3,
+    'Neonicotinoids are systemic, so the insecticide is in the pollen and nectar rather than only on the surface, and sub-lethal doses wreck navigation and foraging.');
   l('pesticides', 'drives', 'insect-decline', 3);
   l('pesticides', 'degrades', 'soil-life', 2);
   l('pesticides', 'contaminates', 'unsafe-water', 2);
@@ -265,7 +266,8 @@
   l('deforestation', 'expands', 'vector-disease', 1, 'Forest edges bring people, mosquitoes and wildlife into contact.');
   l('deforestation', 'enables', 'wildlife-trade', 1, 'Logging roads are trafficking routes.');
   l('habitat-loss', 'drives', 'extinction', 3);
-  l('habitat-loss', 'harms', 'pollinators', 2);
+  l('habitat-loss', 'harms', 'pollinators', 2,
+    'Most wild bees nest in bare ground or dead stems within a few hundred metres of forage, so tidy, fragmented landscapes remove the nesting site and the flowers together.');
   l('habitat-loss', 'drives', 'insect-decline', 2);
   l('habitat-loss', 'enables', 'invasives', 1, 'Disturbed ground is where introduced species establish first.');
   l('wetland-loss', 'increases', 'displacement', 2, 'Removing the natural surge buffer makes storms costlier to survive.');
@@ -293,7 +295,8 @@
   l('invasives', 'causes', 'habitat-loss', 1);
   l('invasives', 'threatens', 'food-insecurity', 1,
     'Fall armyworm across African maize, locust outbreaks, and water hyacinth choking the inland fisheries people eat from.');
-  l('invasives', 'harms', 'pollinators', 1);
+  l('invasives', 'harms', 'pollinators', 1,
+    'Introduced parasites and diseases spread from managed hives into wild populations, and invasive plants can monopolise pollinator visits.');
   l('wildlife-trade', 'drives', 'extinction', 3);
   l('wildlife-trade', 'spreads', 'invasives', 1);
   l('coral-bleaching', 'drives', 'extinction', 2);
@@ -301,13 +304,16 @@
     'Reef fisheries are a primary protein source across the tropics, and a bleached reef supports a small fraction of the fish a living one does.');
   l('coral-bleaching', 'increases', 'displacement', 1, 'Reefs break waves; without them, coastlines erode faster.');
   l('kelp-seagrass', 'weakens', 'carbon-sinks', 1);
-  /* Dropped: kelp-seagrass -> food-insecurity and extinction -> food-insecurity.
-   * Both were weight-1 edges with no stated mechanism, and both were the vague
-   * umbrella version of pathways the map already carries specifically. The
-   * nursery-habitat route to fisheries is on wetland-loss, which explains itself;
-   * extinction's routes to food are pollinator decline, overfishing and soil
-   * biodiversity, all of them already edges. "Biodiversity loss is bad for food"
-   * is not a mechanism. */
+  l('kelp-seagrass', 'drives', 'extinction', 1,
+    'An urchin barren holds a fraction of the species a kelp forest does, and the loss is of the structure itself rather than of any one animal.');
+
+  /* Extinction is terminal for a species but not for the system, so it needs
+   * downstream edges — without them the map's central biodiversity outcome affects
+   * nothing. Both below are specific mechanisms, not "biodiversity loss is bad". */
+  l('extinction', 'weakens', 'carbon-sinks', 2,
+    'The empty-forest effect: lose the large frugivores and nobody disperses the large-seeded hardwoods, so a structurally intact forest slowly stores less carbon.');
+  l('extinction', 'threatens', 'food-insecurity', 1,
+    'Crop wild relatives are the gene pool breeders draw on for drought and disease resistance, and they cannot be recovered once gone.');
 
   /* ── Consumption & waste ────────────────────────────────────────────────── */
   l('overconsumption', 'drives', 'ghg-emissions', 3);
