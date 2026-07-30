@@ -34,6 +34,7 @@
     'rainfall-shift': 'Rainfall shifts', 'cyclones': 'Tropical cyclones',
     'ice-loss': 'Glacier & ice loss', 'albedo': 'Ice–albedo', 'carbon-sinks': 'Carbon sinks',
     'amoc': 'Ocean circulation', 'overconsumption': 'Overconsumption',
+    'carbon-offsets': 'Carbon offsets',
     'pfas': 'PFAS', 'heavy-metals': 'Heavy metals', 'air-pollution': 'Air pollution',
     'battery-waste': 'Battery waste',
     'pesticides': 'Pesticides', 'ewaste': 'E-waste', 'oil-spills': 'Oil spills',

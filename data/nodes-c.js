@@ -25,14 +25,9 @@
             ['equatorial', 'elevated', 'Tropical regions bear the most modelled downside with the least say in deployment.']] },
     'solar geoengineering governance research'),
 
-  n('carbon-offsets', 'Offset & net-zero claims', 'climate',
-    'Carbon credits let a buyer pay for a reduction elsewhere instead of cutting their own emissions. The mechanism is sound in principle and has been badly executed in practice: repeated investigations have found forest credits claiming avoided deforestation that was never going to happen, and permanence is undermined every time a credited forest burns. The deeper problem is that offsets substitute for cuts, which is why "net zero" claims deserve to be read closely.',
-    ['Treat "carbon neutral" labels as a prompt to ask what was actually reduced, not as a verified fact',
-     'Prefer removals with durable storage over avoidance credits, and prefer direct cuts over both',
-     'Support disclosure rules that separate a company\'s own reductions from its purchased credits',
-     'Back regulation of offset quality; voluntary standards have repeatedly failed this market'],
-    { drv: [['high', 'The main buyers of credits and the main source of net-zero claims.']] },
-    'carbon offset integrity greenwashing'),
+  /* Carbon offsetting lives in solutions.js, not here. It is an instrument someone
+   * chooses to deploy, and it was already shaped like a lever — a suppressing edge to
+   * the thing it targets plus a cost edge — while being typed as an issue. */
 
   n('nuclear-waste', 'Nuclear power & waste', 'pollution',
     'Nuclear generation is among the lowest-carbon electricity sources and has a very low death rate per unit of energy, including accidents. It also produces waste that stays hazardous for tens of thousands of years, and after seventy years only Finland has an operating deep geological repository. Public argument tends to collapse into either "too dangerous" or "obviously the answer" when the real questions are cost, construction time and long-term custody.',

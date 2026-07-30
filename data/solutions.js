@@ -52,6 +52,14 @@
      'It does nothing about the emissions from burning the gas, which remain the larger share'],
     'methane leak detection repair'),
 
+  s('carbon-offsets', 'Carbon offsetting & credits', 'climate',
+    'Paying for a reduction elsewhere instead of cutting your own emissions. Sound in principle, badly executed in practice: repeated investigations have found forest credits claiming avoided deforestation that was never going to happen, and permanence collapses every time a credited forest burns. The deeper problem is not fraud but substitution — an offset that looks credible removes the pressure to cut at source, which is why this lever is filed with the ones that charge for themselves.',
+    ['Treat "carbon neutral" as a prompt to ask what was actually reduced, not as a verified fact',
+     'Prefer removals with durable storage over avoidance credits, and prefer direct cuts over both',
+     'Support disclosure that separates an organisation\'s own reductions from its purchased credits',
+     'Back regulation of credit quality; voluntary standards have repeatedly failed this market'],
+    'carbon offset integrity greenwashing'),
+
   s('carbon-pricing', 'Carbon pricing & subsidy reform', 'climate',
     'Putting a price on emissions and removing the subsidies that currently discount them. Economically the cleanest instrument available, and politically the most fragile — carbon prices that hit household bills without visible compensation have repeatedly been reversed.',
     ['Redistribute the revenue visibly, or the policy gets repealed and sets the field back years',
