@@ -5,10 +5,16 @@
  * measured co-mention count from a corpus -- the clustering below is only as
  * good as these weights, and the UI says so.
  *
- * Verbs in ECO.negativeVerbs (reduces / prevents / limits / buffers / slows /
- * absorbs / shields) mark a SUPPRESSING influence and render dashed with an
- * open arrowhead. Most of those edges are genuine tradeoffs rather than good
+ * Verbs in ECO.negativeVerbs mark a SUPPRESSING influence and render dashed with
+ * an open arrowhead. Most of those edges are genuine tradeoffs rather than good
  * news -- the note explains each one.
+ *
+ * Do not restate that list here. This comment used to name seven of the eleven
+ * verbs, went stale when the other four were added, and duly convinced a careful
+ * reviewer that `cuts` and `displaces` were rendering as driving edges. The list
+ * lives in data/schema.js and nowhere else; tools/lint_links.py reads it from there
+ * and fails on any verb declared in neither that set nor its own DRIVING set, so a
+ * new verb cannot slip in and silently default to a solid arrow.
  */
 (function (E) {
   const l = E.l.bind(E);
@@ -50,7 +56,8 @@
   l('warming', 'thaws', 'permafrost', 3);
   l('warming', 'raises', 'sea-level', 3);
   l('warming', 'drives', 'ocean-warming', 3);
-  l('warming', 'weakens', 'amoc', 2);
+  l('warming', 'drives', 'amoc', 2,
+    'Meltwater and warming both freshen and warm the north Atlantic surface, which is what drives the sinking that keeps the overturning going. The verb points at the disruption, not at the circulation — warming weakens the current, which is the same thing as driving the node this edge lands on.');
   l('warming', 'drives', 'carbon-sink-decline', 2);
   l('warming', 'increases', 'cooling-demand', 2);
   l('warming', 'expands', 'vector-disease', 2);

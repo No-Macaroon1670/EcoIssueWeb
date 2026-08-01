@@ -170,10 +170,8 @@
   l('wastewater-upgrade', 'reduces', 'dead-zones', 2);
   l('wastewater-upgrade', 'reduces', 'pharma-residues', 2,
     'Ozonation and activated carbon do remove most pharmaceutical residues, and Switzerland has made that stage mandatory at larger plants — this is an upgrade with a demonstrated result.');
-  /* No wastewater-upgrade -> pfas edge. The carbon-fluorine bond survives conventional
-   * treatment, which concentrates PFAS into sludge and residual streams rather than
-   * destroying them — so the upgrade moves the problem and the edge claimed it solved
-   * it. Removal needs dedicated separation or destruction, which is a different lever. */
+  l('wastewater-upgrade', 'reduces', 'pfas', 1,
+    'The weakest edge on this lever, and restored deliberately: it is the same shape as the pharmaceutical one above, where an ordinary plant does little and a deliberate treatment stage does a lot. Activated carbon and ion exchange do cut what reaches the river. They do not destroy anything — the carbon-fluorine bond survives, so the PFAS moves into sludge or a concentrated residual and the disposal problem goes with it.');
 
   /* ── People levers ──────────────────────────────────────────────────────── */
   l('clean-cooking', 'reduces', 'indoor-air', 3);
