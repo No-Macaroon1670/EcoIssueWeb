@@ -118,11 +118,11 @@
   l('new-materials', 'reduces', 'mining', 1);
   l('organics-diversion', 'cuts', 'methane', 3);
   l('organics-diversion', 'reduces', 'landfill-waste', 3);
-  l('organics-diversion', 'reduces', 'soil-life', 2, 'Compost returns carbon and structure to soil that tillage stripped out.');
+  l('organics-diversion', 'reduces', 'soil-biodiversity-loss', 2, 'Compost returns carbon and structure to soil that tillage stripped out.');
 
   /* ── Land & food levers ─────────────────────────────────────────────────── */
   l('regen-ag', 'reduces', 'soil-erosion', 3);
-  l('regen-ag', 'reduces', 'soil-life', 3);
+  l('regen-ag', 'reduces', 'soil-biodiversity-loss', 3);
   l('regen-ag', 'reduces', 'nutrient-runoff', 2);
   l('regen-ag', 'reduces', 'pesticides', 2);
   l('regen-ag', 'reduces', 'land-degradation', 2);
@@ -130,7 +130,7 @@
   l('agroforestry', 'reduces', 'soil-erosion', 2);
   l('agroforestry', 'reduces', 'desertification', 2);
   l('agroforestry', 'reduces', 'land-degradation', 2);
-  l('agroforestry', 'reduces', 'pollinators', 2, 'Field-margin flower resources are what wild pollinators actually need.');
+  l('agroforestry', 'reduces', 'pollinator-decline', 2, 'Field-margin flower resources are what wild pollinators actually need.');
   l('agroforestry', 'absorbs', 'ghg-emissions', 2);
   l('diet-shift', 'reduces', 'livestock', 3);
   l('diet-shift', 'reduces', 'deforestation', 2, 'Pasture is the largest single driver of tropical clearing.');
@@ -156,11 +156,11 @@
   l('coastal-restoration', 'absorbs', 'ghg-emissions', 2, 'Rewetting peat is among the cheapest large-scale reductions available.');
   l('fisheries-mgmt', 'reduces', 'overfishing', 3);
   l('fisheries-mgmt', 'reduces', 'extinction', 2);
-  l('fisheries-mgmt', 'reduces', 'kelp-seagrass', 2, 'Predator recovery is what stops urchins stripping kelp to barrens.');
+  l('fisheries-mgmt', 'reduces', 'kelp-seagrass-loss', 2, 'Predator recovery is what stops urchins stripping kelp to barrens.');
   l('fisheries-mgmt', 'reduces', 'coral-bleaching', 1, 'Herbivore recovery decides whether a heat-stressed reef comes back.');
   l('fisheries-mgmt', 'limits', 'food-insecurity', 2, 'Restraint measurably raises long-run catch — this is the clearest such case here.');
   l('water-efficiency', 'reduces', 'water-scarcity', 3);
-  l('water-efficiency', 'reduces', 'groundwater', 3);
+  l('water-efficiency', 'reduces', 'groundwater-depletion', 3);
   l('water-efficiency', 'reduces', 'salinization', 2);
   l('water-efficiency', 'limits', 'food-insecurity', 1,
     'More crop per drop — but only where allocation is also capped, or the saved water just irrigates more land.');

@@ -157,7 +157,7 @@
             ['highlat', 'high', 'Thaw is already damaging northern infrastructure and hunting grounds.']] },
     'permafrost thaw arctic carbon'),
 
-  n('carbon-sinks', 'Weakening carbon sinks', 'climate',
+  n('carbon-sink-decline', 'Weakening carbon sinks', 'climate',
     'Land and ocean absorb roughly half of the carbon dioxide humans emit — an enormous unpaid subsidy. But warmer, drier forests take up less, warmer water dissolves less gas, and cleared or burned land can flip from sink to source. If sinks weaken, the same emissions produce more warming.',
     ['Protect intact ecosystems first — mature forests, peat and seagrass store more than new plantings can quickly replace',
      'Treat offset claims sceptically; many rest on a sink continuing to perform as assumed',
@@ -352,7 +352,7 @@
             ['sids', 'high', 'Small islands have little surface water and thin, vulnerable aquifers.']] },
     'water conservation watershed protection'),
 
-  n('groundwater', 'Groundwater depletion', 'water',
+  n('groundwater-depletion', 'Groundwater depletion', 'water',
     'About two billion people drink groundwater and it irrigates a large share of the world\'s food, but many major aquifers are being pumped faster than they refill. Some hold water thousands of years old that will not come back. Over-pumping also causes land to sink permanently, which destroys the aquifer\'s own storage capacity.',
     ['Find out whether your water is groundwater, and whether that aquifer is in decline',
      'Support metering and extraction limits; unmeasured aquifers are almost always over-drawn',
@@ -384,7 +384,7 @@
             ['sids', 'high', 'Thin island aquifers salinize quickly and have no alternative.']] },
     'saltwater intrusion soil salinity'),
 
-  n('glacier-water', 'Loss of glacier-fed water', 'water',
+  n('glacier-water-loss', 'Loss of glacier-fed water', 'water',
     'Glaciers act as a savings account: they store winter precipitation and release it through the dry season, when rivers would otherwise run low. As they shrink, flow first increases — which can look like abundance — and then falls permanently. Hundreds of millions of people downstream of the Himalaya, Andes and Alps depend on that timing.',
     ['Plan for the timing shift, not just the volume; reservoirs must replace a service ice used to provide free',
      'Support transboundary river agreements, since most glacier-fed basins cross borders',

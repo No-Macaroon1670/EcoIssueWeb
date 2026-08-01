@@ -122,7 +122,14 @@ def extract():
 
 
 def combine():
-    """Sum the per-month caches into one direct-count map and one neighbourhood map."""
+    """Sum the per-month caches into one direct-count map and one neighbourhood map.
+
+    NOTE: the caches are keyed by NODE ID -- 'direct' by "source\\ttarget" and
+    'neighbourhood' by node id. Renaming a node id therefore silently orphans its
+    cached vector, and the link quietly downgrades from "measured" to "no-signal"
+    rather than erroring. After any id rename, either re-run `extract` or remap the
+    cache keys, then check that the measured/no-signal counts are unchanged.
+    """
     direct = defaultdict(int)
     neighbourhood = defaultdict(lambda: defaultdict(int))
     used = []

@@ -89,7 +89,7 @@
   "redirected_from": null,
   "missing": false
  },
- "carbon-sinks": {
+ "carbon-sink-decline": {
   "title": "Carbon sink",
   "quality": "exact",
   "redirected_from": null,
@@ -227,7 +227,7 @@
   "redirected_from": null,
   "missing": false
  },
- "groundwater": {
+ "groundwater-depletion": {
   "title": "Groundwater depletion",
   "quality": "exact",
   "redirected_from": "Overdrafting",
@@ -245,7 +245,7 @@
   "redirected_from": null,
   "missing": false
  },
- "glacier-water": {
+ "glacier-water-loss": {
   "title": "Meltwater",
   "quality": "broad",
   "redirected_from": null,
@@ -311,7 +311,7 @@
   "redirected_from": null,
   "missing": false
  },
- "pollinators": {
+ "pollinator-decline": {
   "title": "Pollinator decline",
   "quality": "exact",
   "redirected_from": null,
@@ -323,7 +323,7 @@
   "redirected_from": null,
   "missing": false
  },
- "soil-life": {
+ "soil-biodiversity-loss": {
   "title": "Soil biology",
   "quality": "exact",
   "redirected_from": null,
@@ -341,7 +341,7 @@
   "redirected_from": null,
   "missing": false
  },
- "kelp-seagrass": {
+ "kelp-seagrass-loss": {
   "title": "Kelp forest",
   "quality": "proxy",
   "redirected_from": null,

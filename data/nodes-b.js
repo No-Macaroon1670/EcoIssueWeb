@@ -51,7 +51,7 @@
             ['reef', 'high', 'Reefs support a quarter of marine species in a fraction of the area.']] },
     'endangered species conservation biodiversity'),
 
-  n('pollinators', 'Pollinator decline', 'bio',
+  n('pollinator-decline', 'Pollinator decline', 'bio',
     'Around three-quarters of leading food crops benefit to some degree from animal pollination, and those crops make up roughly a third of global crop volume. That is not the same as a third of the food supply being at risk: most of the calorie staples — wheat, rice, maize — are wind-pollinated, and the crops that do depend on pollinators carry a disproportionate share of the vitamins and micronutrients. Wild bees, hoverflies, moths and bats are declining under a combination of habitat loss, pesticides, disease and climate shifts. Managed honeybees are not a substitute — they are livestock, and they compete with the wild species doing much of the work.',
     ['Plant a succession of flowering species so something is in bloom from early spring to late autumn',
      'Stop using insecticides in gardens, and check ornamental plants are not neonicotinoid-treated',
@@ -73,7 +73,7 @@
       drv: [['high', 'Intensive land management, pesticide use and lighting.']] },
     'insect conservation monitoring'),
 
-  n('soil-life', 'Soil biodiversity loss', 'bio',
+  n('soil-biodiversity-loss', 'Soil biodiversity loss', 'bio',
     'A handful of healthy soil holds more organisms than there are people on Earth, and they do the work of cycling nutrients, building structure and storing carbon. Ploughing, bare fallows, compaction, fungicides and fertiliser substitution all degrade that community. Once the biology goes, chemical inputs are needed to do its job — which degrades it further.',
     ['Keep soil covered and living roots in the ground year-round; bare soil is the core problem',
      'Disturb soil as little as the situation allows — no-dig beds work remarkably well at garden scale',
@@ -106,7 +106,7 @@
             ['equatorial', 'high', 'Warmest waters and the most frequent bleaching.']] },
     'coral reef restoration protection'),
 
-  n('kelp-seagrass', 'Kelp & seagrass loss', 'bio',
+  n('kelp-seagrass-loss', 'Kelp & seagrass loss', 'bio',
     'The temperate equivalents of reefs, and just as productive. Kelp forests are being replaced by barren urchin grounds as marine heatwaves kill kelp and predator loss lets urchins multiply. Seagrass meadows, which store carbon efficiently and nurse young fish, are declining from dredging, anchoring and murky nutrient-rich water.',
     ['Support urchin removal and predator recovery projects, which have restored kelp in several regions',
      'Anchor in sand, never in seagrass; use mooring buoys where provided',

@@ -51,7 +51,7 @@
   l('warming', 'raises', 'sea-level', 3);
   l('warming', 'drives', 'ocean-warming', 3);
   l('warming', 'weakens', 'amoc', 2);
-  l('warming', 'weakens', 'carbon-sinks', 2);
+  l('warming', 'drives', 'carbon-sink-decline', 2);
   l('warming', 'increases', 'cooling-demand', 2);
   l('warming', 'expands', 'vector-disease', 2);
   l('warming', 'increases', 'ozone-smog', 1, 'Ozone forms faster in heat, so the same pollution yields more smog.');
@@ -60,11 +60,11 @@
   /* ── Ice, feedbacks & circulation ───────────────────────────────────────── */
   l('ice-loss', 'raises', 'sea-level', 3);
   l('ice-loss', 'triggers', 'albedo', 2);
-  l('ice-loss', 'causes', 'glacier-water', 3);
+  l('ice-loss', 'causes', 'glacier-water-loss', 3);
   l('albedo', 'amplifies', 'warming', 3, 'A self-reinforcing loop: less ice means more absorbed heat means less ice.');
   l('permafrost', 'releases', 'ghg-emissions', 3,
     'Frozen ground holds roughly twice the carbon now in the atmosphere.');
-  l('carbon-sinks', 'amplifies', 'warming', 2,
+  l('carbon-sink-decline', 'amplifies', 'warming', 2,
     'Land and ocean currently absorb about half of emissions; weaker sinks mean the same emissions warm more.');
   l('amoc', 'disrupts', 'rainfall-shift', 2);
   l('air-pollution', 'accelerates', 'ice-loss', 2, 'Soot darkens snow and ice, so it absorbs more sunlight.');
@@ -73,7 +73,7 @@
 
   /* ── Ocean ──────────────────────────────────────────────────────────────── */
   l('ocean-warming', 'causes', 'coral-bleaching', 3);
-  l('ocean-warming', 'kills', 'kelp-seagrass', 2);
+  l('ocean-warming', 'causes', 'kelp-seagrass-loss', 2);
   l('ocean-warming', 'worsens', 'dead-zones', 2, 'Warm water holds less oxygen and resists mixing.');
   l('ocean-warming', 'fuels', 'cyclones', 2);
   l('ocean-warming', 'raises', 'sea-level', 2, 'Thermal expansion accounts for a large share of observed rise.');
@@ -108,7 +108,7 @@
   l('drought', 'drives', 'food-insecurity', 3,
     'Rain-fed farming simply fails. After conflict, this is the largest single driver of acute food crises.');
   l('drought', 'accelerates', 'desertification', 3);
-  l('drought', 'accelerates', 'groundwater', 2, 'When rain fails, pumping increases.');
+  l('drought', 'accelerates', 'groundwater-depletion', 2, 'When rain fails, pumping increases.');
   l('drought', 'drives', 'displacement', 2);
   l('drought', 'worsens', 'resource-conflict', 2,
     'A failed season pushes herders onto cropland and neighbours onto the same well. Scarcity rarely starts a war, but it reliably sharpens a dispute that already exists.');
@@ -118,7 +118,7 @@
   l('wildfire', 'releases', 'ghg-emissions', 2);
   l('wildfire', 'causes', 'habitat-loss', 2);
   l('wildfire', 'increases', 'soil-erosion', 2, 'Bare, water-repellent burnt ground erodes badly in the first rains.');
-  l('wildfire', 'weakens', 'carbon-sinks', 2);
+  l('wildfire', 'drives', 'carbon-sink-decline', 2);
   l('rainfall-shift', 'drives', 'drought', 3,
     'The supply side of drought. The map already had the demand side — thirstier air pulling moisture out of soil — but a rainfall deficit is what the word means first.');
   l('rainfall-shift', 'worsens', 'water-scarcity', 2,
@@ -132,22 +132,22 @@
     'Heavy rain overwhelms combined sewers, which then discharge into the water people drink from downstream.');
 
   /* ── Water ──────────────────────────────────────────────────────────────── */
-  l('glacier-water', 'worsens', 'water-scarcity', 2,
+  l('glacier-water-loss', 'worsens', 'water-scarcity', 2,
     'Losing the ice means losing the timing: the water arrives in spring melt instead of through the dry season when it is needed.');
-  l('glacier-water', 'worsens', 'resource-conflict', 1,
+  l('glacier-water-loss', 'worsens', 'resource-conflict', 1,
     'Glacier-fed basins almost all cross borders, and upstream storage decisions are felt downstream immediately.');
-  l('glacier-water', 'threatens', 'food-insecurity', 1,
+  l('glacier-water-loss', 'threatens', 'food-insecurity', 1,
     'Dry-season irrigation across the Indo-Gangetic plain runs on water that spent the winter as mountain ice.');
-  l('water-scarcity', 'drives', 'groundwater', 3);
+  l('water-scarcity', 'drives', 'groundwater-depletion', 3);
   l('water-scarcity', 'threatens', 'food-insecurity', 2,
     'Irrigation is the first allocation cut when water is short, and irrigated land grows a disproportionate share of the world\'s calories.');
   l('water-scarcity', 'worsens', 'resource-conflict', 2,
     'Most large river basins cross a border and many have no binding allocation agreement, so shortage becomes a negotiation with no referee.');
   l('water-scarcity', 'worsens', 'unsafe-water', 2,
     'When the safe source runs dry people switch to an unsafe one, and less dilution concentrates whatever is already in the water.');
-  l('groundwater', 'drives', 'salinization', 2, 'Over-pumping near a coast pulls seawater into the aquifer.');
-  l('groundwater', 'raises', 'sea-level', 1, 'Water pumped from aquifers ultimately ends up in the ocean.');
-  l('groundwater', 'threatens', 'food-insecurity', 2,
+  l('groundwater-depletion', 'drives', 'salinization', 2, 'Over-pumping near a coast pulls seawater into the aquifer.');
+  l('groundwater-depletion', 'raises', 'sea-level', 1, 'Water pumped from aquifers ultimately ends up in the ocean.');
+  l('groundwater-depletion', 'threatens', 'food-insecurity', 2,
     'A large share of irrigated food is grown on groundwater, and the aquifers under the Punjab, the North China Plain and the Ogallala are all being drawn down faster than they refill.');
   l('salinization', 'causes', 'land-degradation', 2);
   l('salinization', 'threatens', 'food-insecurity', 2,
@@ -176,7 +176,7 @@
     'Hot summers push discharge temperatures past permit limits, which is why French and US thermal plants derate or shut down in heatwaves.');
   l('fossil-fuels', 'causes', 'thermal-pollution', 2, 'Coal and gas plants are steam-cycle too, and there are far more of them.');
   l('nutrient-runoff', 'contaminates', 'unsafe-water', 2);
-  l('nutrient-runoff', 'kills', 'kelp-seagrass', 2, 'Murky, nutrient-rich water stops light reaching the seabed.');
+  l('nutrient-runoff', 'causes', 'kelp-seagrass-loss', 2, 'Murky, nutrient-rich water stops light reaching the seabed.');
   l('nutrient-runoff', 'worsens', 'coral-bleaching', 2,
     'Nutrient-loaded water lowers the heat threshold at which coral bleaches, and feeds the algae that colonise it afterwards.');
   l('nutrient-runoff', 'worsens', 'acidification', 1, 'Decaying blooms release CO2, acidifying coastal water further.');
@@ -189,11 +189,11 @@
   l('industrial-ag', 'drives', 'nutrient-runoff', 3);
   l('industrial-ag', 'drives', 'pesticides', 3);
   l('industrial-ag', 'drives', 'soil-erosion', 3);
-  l('industrial-ag', 'degrades', 'soil-life', 3);
+  l('industrial-ag', 'drives', 'soil-biodiversity-loss', 3);
   l('industrial-ag', 'drives', 'monoculture', 3);
   l('industrial-ag', 'drives', 'habitat-loss', 3);
   l('industrial-ag', 'depletes', 'water-scarcity', 2, 'Agriculture takes roughly 70% of all freshwater withdrawals.');
-  l('industrial-ag', 'depletes', 'groundwater', 2);
+  l('industrial-ag', 'drives', 'groundwater-depletion', 2);
   l('industrial-ag', 'releases', 'ghg-emissions', 2, 'Fertiliser manufacture, nitrous oxide from soils, and machinery.');
   l('industrial-ag', 'drives', 'deforestation', 2);
   l('industrial-ag', 'limits', 'food-insecurity', 2,
@@ -206,14 +206,14 @@
   l('livestock', 'drives', 'pharma-residues', 2, 'Routine antibiotic use in intensive operations.');
   l('livestock', 'drives', 'habitat-loss', 2);
   l('livestock', 'releases', 'ghg-emissions', 2);
-  l('monoculture', 'harms', 'pollinators', 2, 'A monoculture offers a two-week glut and then nothing.');
+  l('monoculture', 'drives', 'pollinator-decline', 2, 'A monoculture offers a two-week glut and then nothing.');
   l('monoculture', 'increases', 'pesticides', 2);
-  l('monoculture', 'degrades', 'soil-life', 2);
+  l('monoculture', 'drives', 'soil-biodiversity-loss', 2);
   l('monoculture', 'threatens', 'food-insecurity', 1, 'Genetic uniformity means one new disease can hit a whole region at once.');
-  l('pesticides', 'harms', 'pollinators', 3,
+  l('pesticides', 'drives', 'pollinator-decline', 3,
     'Neonicotinoids are systemic, so the insecticide is in the pollen and nectar rather than only on the surface, and sub-lethal doses wreck navigation and foraging.');
   l('pesticides', 'drives', 'insect-decline', 3);
-  l('pesticides', 'degrades', 'soil-life', 2);
+  l('pesticides', 'drives', 'soil-biodiversity-loss', 2);
   l('pesticides', 'contaminates', 'unsafe-water', 2);
   l('pesticides', 'worsens', 'env-injustice', 2, 'Exposure falls overwhelmingly on farmworkers and nearby communities.');
   l('pesticides', 'limits', 'food-insecurity', 1,
@@ -222,9 +222,9 @@
   l('soil-erosion', 'threatens', 'food-insecurity', 2,
     'Yield tracks topsoil depth fairly directly, and topsoil is being lost far faster than it forms.');
   l('soil-erosion', 'smothers', 'coral-bleaching', 1, 'Sediment plumes stress reefs already weakened by heat.');
-  l('soil-erosion', 'weakens', 'carbon-sinks', 1);
-  l('soil-life', 'increases', 'soil-erosion', 2, 'Without fungal networks and roots, soil loses the structure that holds it together.');
-  l('soil-life', 'causes', 'land-degradation', 2);
+  l('soil-erosion', 'drives', 'carbon-sink-decline', 1);
+  l('soil-biodiversity-loss', 'increases', 'soil-erosion', 2, 'Without fungal networks and roots, soil loses the structure that holds it together.');
+  l('soil-biodiversity-loss', 'causes', 'land-degradation', 2);
   l('land-degradation', 'accelerates', 'desertification', 2);
   l('land-degradation', 'drives', 'food-insecurity', 3,
     'The cumulative endpoint of the others: land that no longer grows what it used to, and needs bought inputs to produce anything.');
@@ -263,13 +263,13 @@
   l('deforestation', 'releases', 'ghg-emissions', 3);
   l('deforestation', 'drives', 'extinction', 3);
   l('deforestation', 'increases', 'soil-erosion', 3);
-  l('deforestation', 'weakens', 'carbon-sinks', 3);
+  l('deforestation', 'drives', 'carbon-sink-decline', 3);
   l('deforestation', 'disrupts', 'rainfall-shift', 2, 'Large forests generate much of their own rainfall; clearing them dries the region.');
   l('deforestation', 'causes', 'land-degradation', 2);
   l('deforestation', 'expands', 'vector-disease', 1, 'Forest edges bring people, mosquitoes and wildlife into contact.');
   l('deforestation', 'enables', 'wildlife-trade', 1, 'Logging roads are trafficking routes.');
   l('habitat-loss', 'drives', 'extinction', 3);
-  l('habitat-loss', 'harms', 'pollinators', 2,
+  l('habitat-loss', 'drives', 'pollinator-decline', 2,
     'Most wild bees nest in bare ground or dead stems within a few hundred metres of forage, so tidy, fragmented landscapes remove the nesting site and the flowers together.');
   l('habitat-loss', 'drives', 'insect-decline', 2);
   l('habitat-loss', 'enables', 'invasives', 1, 'Disturbed ground is where introduced species establish first.');
@@ -278,7 +278,7 @@
   l('wetland-loss', 'drives', 'extinction', 2);
   l('wetland-loss', 'worsens', 'dead-zones', 2, 'Wetlands were intercepting the nutrients before they reached the sea.');
   l('wetland-loss', 'threatens', 'food-insecurity', 1, 'Most commercial fish species use wetlands as nurseries.');
-  l('pollinators', 'threatens', 'food-insecurity', 2,
+  l('pollinator-decline', 'threatens', 'food-insecurity', 2,
     'Roughly a third of global crop volume depends on animal pollination.');
   l('insect-decline', 'drives', 'extinction', 2, 'Insects are the food supply for most birds, bats and freshwater fish.');
   l('insect-decline', 'threatens', 'food-insecurity', 1,
@@ -293,13 +293,13 @@
   l('overfishing', 'threatens', 'food-insecurity', 2,
     'Fish is the main animal protein for billions of people, and the stocks fished hardest are often the ones they depend on directly.');
   l('overfishing', 'worsens', 'coral-bleaching', 2, 'Removing herbivores lets algae take over a weakened reef.');
-  l('overfishing', 'drives', 'kelp-seagrass', 2, 'Losing predators lets urchins strip kelp forests to barrens.');
+  l('overfishing', 'drives', 'kelp-seagrass-loss', 2, 'Losing predators lets urchins strip kelp forests to barrens.');
   l('overfishing', 'causes', 'habitat-loss', 2, 'Bottom trawling flattens seabed structure.');
   l('invasives', 'drives', 'extinction', 3);
   l('invasives', 'causes', 'habitat-loss', 1);
   l('invasives', 'threatens', 'food-insecurity', 1,
     'Fall armyworm across African maize, locust outbreaks, and water hyacinth choking the inland fisheries people eat from.');
-  l('invasives', 'harms', 'pollinators', 1,
+  l('invasives', 'drives', 'pollinator-decline', 1,
     'Introduced parasites and diseases spread from managed hives into wild populations, and invasive plants can monopolise pollinator visits.');
   l('wildlife-trade', 'drives', 'extinction', 3);
   l('wildlife-trade', 'spreads', 'invasives', 1);
@@ -308,14 +308,14 @@
     'Reef fisheries are a primary protein source across the tropics, and a bleached reef supports a small fraction of the fish a living one does.');
   l('coral-bleaching', 'increases', 'displacement', 1,
     'Reefs break waves before they reach shore. A degraded reef loses that structure, so surge runs further inland and the beach behind it erodes faster — a slow pressure on low-lying island and coastal settlement rather than a sudden displacement event.');
-  l('kelp-seagrass', 'weakens', 'carbon-sinks', 1);
-  l('kelp-seagrass', 'causes', 'habitat-loss', 2,
+  l('kelp-seagrass-loss', 'drives', 'carbon-sink-decline', 1);
+  l('kelp-seagrass-loss', 'causes', 'habitat-loss', 2,
     'An urchin barren holds a fraction of the species a kelp forest does. The loss is of the structure itself rather than of any one animal, which is why this now points at habitat loss instead of at extinction — the marine equivalent of clearing a forest.');
 
   /* Extinction is terminal for a species but not for the system, so it needs
    * downstream edges — without them the map's central biodiversity outcome affects
    * nothing. Both below are specific mechanisms, not "biodiversity loss is bad". */
-  l('extinction', 'weakens', 'carbon-sinks', 2,
+  l('extinction', 'drives', 'carbon-sink-decline', 2,
     'The empty-forest effect: lose the large frugivores and nobody disperses the large-seeded hardwoods, so a structurally intact forest slowly stores less carbon.');
   l('extinction', 'threatens', 'food-insecurity', 1,
     'Crop wild relatives are the gene pool breeders draw on for drought and disease resistance, and they cannot be recovered once gone.');
@@ -337,7 +337,7 @@
    * is established; population-level effects in the wild are not, and an edge asserting
    * one from the other was speculation. The plastic -> extinction edge above already
    * carries the documented version of this claim. */
-  l('microplastics', 'degrades', 'soil-life', 1);
+  l('microplastics', 'drives', 'soil-biodiversity-loss', 1);
   l('pfas', 'contaminates', 'unsafe-water', 3);
   l('pfas', 'worsens', 'env-injustice', 2,
     'Contamination clusters around military bases, airports and fluorochemical plants, and the water systems least able to afford treatment are the ones that get it.');

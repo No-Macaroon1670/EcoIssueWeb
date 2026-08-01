@@ -20,7 +20,7 @@
   k('ice-loss', ['glacier', 'glaciers', 'ice sheet', 'greenland', 'antarctica', 'sea ice', 'melting', 'ice melt', 'calving']);
   k('albedo', ['reflectivity', 'arctic amplification', 'ice albedo', 'snow cover', 'feedback loop']);
   k('permafrost', ['tundra', 'frozen ground', 'arctic carbon', 'thermokarst', 'siberia', 'methane bomb']);
-  k('carbon-sinks', ['carbon sink', 'sequestration', 'carbon uptake', 'land sink', 'ocean sink']);
+  k('carbon-sink-decline', ['carbon sink', 'sequestration', 'carbon uptake', 'land sink', 'ocean sink']);
   k('amoc', ['amoc', 'gulf stream', 'thermohaline', 'ocean current', 'overturning', 'tipping point']);
   k('data-centres', ['data center', 'data centre', 'ai', 'artificial intelligence', 'compute', 'server farm', 'cloud', 'gpu', 'training run', 'bitcoin', 'crypto', 'cryptocurrency', 'mining rig', 'hyperscale']);
   k('geoengineering', ['solar radiation management', 'srm', 'stratospheric aerosol injection', 'sai', 'albedo modification', 'cloud brightening', 'termination shock', 'solar geoengineering']);
@@ -51,10 +51,10 @@
 
   /* Water & oceans */
   k('water-scarcity', ['water stress', 'water shortage', 'day zero', 'water security', 'thirst']);
-  k('groundwater', ['aquifer', 'well', 'borehole', 'water table', 'subsidence', 'ogallala', 'tube well', 'over-abstraction']);
+  k('groundwater-depletion', ['aquifer', 'well', 'borehole', 'water table', 'subsidence', 'ogallala', 'tube well', 'over-abstraction']);
   k('unsafe-water', ['sanitation', 'wash', 'sewage', 'drinking water', 'toilets', 'open defecation', 'water treatment']);
   k('salinization', ['saltwater intrusion', 'salinity', 'brackish', 'salt', 'saline soil']);
-  k('glacier-water', ['snowmelt', 'meltwater', 'himalaya', 'andes', 'water tower', 'third pole', 'snowpack']);
+  k('glacier-water-loss', ['snowmelt', 'meltwater', 'himalaya', 'andes', 'water tower', 'third pole', 'snowpack']);
   k('dams', ['hydropower', 'hydroelectric', 'reservoir', 'weir', 'barrage', 'three gorges', 'fish ladder', 'dam removal']);
   k('ocean-warming', ['marine heatwave', 'sea surface temperature', 'the blob', 'ocean heat content', 'coral heat stress']);
   k('acidification', ['ph', 'carbonic acid', 'calcification', 'shells', 'aragonite', 'oyster', 'pteropod']);
@@ -69,12 +69,12 @@
   k('deforestation', ['logging', 'forest clearing', 'amazon', 'rainforest', 'palm oil', 'soy', 'timber', 'slash and burn', 'congo basin', 'eudr']);
   k('wetland-loss', ['mangrove', 'marsh', 'peatland', 'bog', 'swamp', 'drainage', 'saltmarsh', 'ramsar', 'blue carbon']);
   k('extinction', ['species loss', 'endangered', 'biodiversity loss', 'red list', 'sixth extinction', 'defaunation', 'iucn']);
-  k('pollinators', ['bees', 'honeybee', 'bumblebee', 'butterflies', 'pollination', 'colony collapse', 'hoverfly']);
+  k('pollinator-decline', ['bees', 'honeybee', 'bumblebee', 'butterflies', 'pollination', 'colony collapse', 'hoverfly']);
   k('insect-decline', ['insects', 'bugs', 'invertebrates', 'windscreen phenomenon', 'entomofauna', 'moths']);
-  k('soil-life', ['soil microbes', 'mycorrhizal', 'fungi', 'earthworms', 'soil health', 'soil carbon', 'rhizosphere']);
+  k('soil-biodiversity-loss', ['soil microbes', 'mycorrhizal', 'fungi', 'earthworms', 'soil health', 'soil carbon', 'rhizosphere']);
   k('overfishing', ['trawling', 'bottom trawling', 'bycatch', 'fish stocks', 'iuu', 'illegal fishing', 'quota', 'cod collapse']);
   k('coral-bleaching', ['reef', 'corals', 'great barrier reef', 'zooxanthellae', 'bleaching event']);
-  k('kelp-seagrass', ['kelp', 'seagrass', 'urchin barrens', 'seaweed', 'posidonia', 'kelp forest']);
+  k('kelp-seagrass-loss', ['kelp', 'seagrass', 'urchin barrens', 'seaweed', 'posidonia', 'kelp forest']);
   k('invasives', ['invasive species', 'alien species', 'ballast water', 'non-native', 'lionfish', 'zebra mussel', 'knotweed', 'biosecurity']);
   k('wildlife-trade', ['poaching', 'ivory', 'trafficking', 'bushmeat', 'cites', 'rhino horn', 'pangolin', 'exotic pets']);
 
