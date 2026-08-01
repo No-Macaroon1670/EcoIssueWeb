@@ -130,7 +130,7 @@
   /* ── Nature & water ─────────────────────────────────────────────────────── */
 
   s('protected-areas', 'Protection & restoration', 'bio',
-    'Protecting intact ecosystems and restoring degraded ones, including the 30-by-30 target. The evidence is consistent that protection works when it is funded and enforced, and that Indigenous-managed land performs as well as or better than formal reserves.',
+    'Protecting intact ecosystems and restoring degraded ones, including the 30-by-30 target. The evidence is consistent that protection works when it is funded and enforced, and that Indigenous-managed land performs as well as or better than formal reserves. Recovery is real but partial and slow: a restored or protected system regains structure and abundance far sooner than it regains its original species composition, and some of it does not come back at all.',
     ['Protecting intact habitat beats restoring cleared habitat by a wide margin — restoration is slower and rarely complete',
      '"Paper parks" with no funding or enforcement do very little; the budget line is the policy',
      'Support Indigenous land tenure, which is empirically among the most effective forest protection there is'],

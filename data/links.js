@@ -30,7 +30,7 @@
   l('fossil-fuels', 'supplies', 'plastic', 2, 'Almost all plastic is made from oil and gas feedstock.');
   l('fossil-fuels', 'drives', 'mining', 1);
   l('fossil-fuels', 'reduces', 'energy-poverty', 2,
-    'The honest tension: fossil energy has powered most of the world\'s gains in energy access, and any transition has to keep delivering that.');
+    'The honest tension, stated in the past tense on purpose: fossil energy powered most of the historical gains in energy access, and any transition has to keep delivering that. It is not the cheapest way to extend access now — solar with storage already wins for most off-grid and weak-grid situations — so this edge records a debt, not a recommendation.');
   l('cooling-demand', 'increases', 'ghg-emissions', 2);
   l('cooling-demand', 'prevents', 'heat-mortality', 2,
     'The central adaptation trap: air conditioning saves lives now while its power draw and refrigerant leaks add warming later.');
@@ -78,8 +78,8 @@
   l('ocean-warming', 'fuels', 'cyclones', 2);
   l('ocean-warming', 'raises', 'sea-level', 2, 'Thermal expansion accounts for a large share of observed rise.');
   l('ocean-warming', 'threatens', 'food-insecurity', 1, 'Fish stocks shift poleward, away from the communities that depend on them.');
-  l('acidification', 'weakens', 'coral-bleaching', 2,
-    'Lower pH undermines the ability to build the calcium carbonate skeleton in the first place.');
+  l('acidification', 'worsens', 'coral-bleaching', 2,
+    'Acidification reduces calcification and weakens reef growth and recovery before and after a thermal event. It is a separate stressor from heat, not a cause of bleaching itself — the target node is really reef degradation, of which bleaching is the visible part.');
   l('acidification', 'threatens', 'extinction', 1,
     'Anything building a calcium carbonate shell — pteropods, oysters, coccolithophores — has to spend more energy to do it in more acidic water, and some cannot.');
   l('sea-level', 'drives', 'salinization', 3);
@@ -101,8 +101,8 @@
   l('cyclones', 'threatens', 'food-insecurity', 1,
     'Standing crops flattened in hours, and on small islands the port the rest of the food arrives through is often damaged in the same storm.');
   l('cyclones', 'causes', 'waterborne', 1, 'Flooding mixes sewage into drinking water.');
-  l('cyclones', 'causes', 'rainfall-shift', 2,
-    'Note the direction. Rainfall patterns do not brew cyclones — that needs warm sea surface and low wind shear — but in cyclone basins the storms are the dominant source of extreme rainfall totals, and they now carry more water and move more slowly.');
+  l('cyclones', 'intensifies', 'rainfall-shift', 2,
+    'Note the direction: rainfall patterns do not brew cyclones, which needs warm sea surface and low wind shear. This edge is about the extreme half of the node, not the pattern half — in cyclone basins the storms deliver the largest rainfall totals, and a warmer atmosphere lets them carry more water. Cyclones do not shift the background rainfall regime.');
   l('drought', 'increases', 'wildfire', 3);
   l('drought', 'causes', 'water-scarcity', 3);
   l('drought', 'drives', 'food-insecurity', 3,
@@ -161,7 +161,8 @@
   l('dams', 'forces', 'displacement', 2);
   l('dams', 'buffers', 'water-scarcity', 2,
     'Storage is genuinely why dams get built: they move water from the wet season to the dry one.');
-  l('dams', 'reduces', 'ghg-emissions', 1, 'Hydropower displaces fossil generation.');
+  l('dams', 'reduces', 'ghg-emissions', 1,
+    'Hydropower displaces fossil generation, which is the whole case for it. The benefit is not unconditional: reservoirs flooding warm vegetated land emit methane from decomposition for years, and a few tropical projects have started out worse than the gas plant they replaced. Temperate and high-latitude reservoirs are a much cleaner bargain.');
   l('unsafe-water', 'causes', 'waterborne', 3);
   l('unsafe-water', 'worsens', 'env-injustice', 2,
     'Informal settlements sit outside the piped network, so the people with least money pay most per litre — to vendors, in time, or in illness.');
@@ -196,7 +197,7 @@
   l('industrial-ag', 'releases', 'ghg-emissions', 2, 'Fertiliser manufacture, nitrous oxide from soils, and machinery.');
   l('industrial-ag', 'drives', 'deforestation', 2);
   l('industrial-ag', 'limits', 'food-insecurity', 2,
-    'The uncomfortable half of the ledger: industrial agriculture is why food is cheap and abundant. Reform has to preserve that.');
+    'The uncomfortable half of the ledger: industrial agriculture is why calories are cheap and abundant, and any reform has to preserve that. Note the limit of the claim — the food-insecurity node exists because supply is not the binding constraint. Yield gains reduce scarcity; they do not by themselves reach people who cannot afford food.');
   l('livestock', 'drives', 'deforestation', 3, 'Cattle pasture is the single largest driver of tropical forest clearing.');
   l('livestock', 'releases', 'methane', 3);
   l('livestock', 'causes', 'land-degradation', 2);
@@ -252,8 +253,10 @@
   l('mining', 'causes', 'land-degradation', 2);
   l('mining', 'contaminates', 'unsafe-water', 2, 'Acid drainage from tailings can persist for centuries.');
   l('mining', 'causes', 'air-pollution', 1, 'Smelter sulphur dioxide, and dust off haul roads and tailings.');
-  l('mining', 'reduces', 'ghg-emissions', 1,
-    'The transition\'s own dependency: copper, lithium and nickel are what a low-carbon grid is built from.');
+  /* No mining -> reduces -> ghg-emissions edge. Mining does not cut emissions; the
+   * transition it supplies does. That dependency is already on the map in the correct
+   * direction, as renewables -> drives -> mining, and stating it twice with the arrow
+   * reversed drew a suppressing arrow out of an extractive industry. */
 
   /* ── Ecosystems ─────────────────────────────────────────────────────────── */
   l('deforestation', 'causes', 'habitat-loss', 3);
@@ -283,7 +286,8 @@
   l('light-pollution', 'drives', 'insect-decline', 2);
   l('light-pollution', 'drives', 'extinction', 1,
     'Fatal disorientation at scale: fledgling seabirds and turtle hatchlings head for the light instead of the sea, and migrating birds collide with lit towers.');
-  l('noise-pollution', 'drives', 'extinction', 1, 'Ocean noise masks the communication whales rely on across distance.');
+  l('noise-pollution', 'threatens', 'extinction', 1,
+    'Ocean noise masks the communication whales rely on across distance, and shipping and seismic survey have raised the background level a great deal. What is documented is displacement, stress and stranding rather than species loss, so this stays a pressure on populations rather than a driver of extinction.');
   l('noise-pollution', 'worsens', 'respiratory', 2, 'Chronic noise is associated with hypertension and heart disease.');
   l('overfishing', 'drives', 'extinction', 2);
   l('overfishing', 'threatens', 'food-insecurity', 2,
@@ -302,10 +306,11 @@
   l('coral-bleaching', 'drives', 'extinction', 2);
   l('coral-bleaching', 'threatens', 'food-insecurity', 2,
     'Reef fisheries are a primary protein source across the tropics, and a bleached reef supports a small fraction of the fish a living one does.');
-  l('coral-bleaching', 'increases', 'displacement', 1, 'Reefs break waves; without them, coastlines erode faster.');
+  l('coral-bleaching', 'increases', 'displacement', 1,
+    'Reefs break waves before they reach shore. A degraded reef loses that structure, so surge runs further inland and the beach behind it erodes faster — a slow pressure on low-lying island and coastal settlement rather than a sudden displacement event.');
   l('kelp-seagrass', 'weakens', 'carbon-sinks', 1);
-  l('kelp-seagrass', 'drives', 'extinction', 1,
-    'An urchin barren holds a fraction of the species a kelp forest does, and the loss is of the structure itself rather than of any one animal.');
+  l('kelp-seagrass', 'causes', 'habitat-loss', 2,
+    'An urchin barren holds a fraction of the species a kelp forest does. The loss is of the structure itself rather than of any one animal, which is why this now points at habitat loss instead of at extinction — the marine equivalent of clearing a forest.');
 
   /* Extinction is terminal for a species but not for the system, so it needs
    * downstream edges — without them the map's central biodiversity outcome affects
@@ -326,10 +331,12 @@
   l('plastic', 'fragments into', 'microplastics', 3);
   l('plastic', 'drives', 'landfill-waste', 2);
   l('plastic', 'threatens', 'extinction', 1,
-    'Entanglement and gut blockage in seabirds, turtles and cetaceans — a mortality effect on individuals rather than a driver of whole-species loss.');
+    'Entanglement and gut blockage kill individual seabirds, turtles and cetaceans, and are well documented. No species is known to be threatened with extinction primarily by plastic, so this is a mortality effect on individuals rather than a driver of whole-species loss — the weakest edge into this node, kept because the mechanism is real.');
   l('plastic', 'releases', 'ghg-emissions', 1, 'Production and incineration both emit.');
-  l('microplastics', 'threatens', 'extinction', 1,
-    'The weakest claim on this map, kept deliberately weak: laboratory harm to filter feeders and larvae is established, population-level effects in the wild are not.');
+  /* No microplastics -> extinction edge. Laboratory harm to filter feeders and larvae
+   * is established; population-level effects in the wild are not, and an edge asserting
+   * one from the other was speculation. The plastic -> extinction edge above already
+   * carries the documented version of this claim. */
   l('microplastics', 'degrades', 'soil-life', 1);
   l('pfas', 'contaminates', 'unsafe-water', 3);
   l('pfas', 'worsens', 'env-injustice', 2,
@@ -354,7 +361,10 @@
   l('oil-spills', 'contaminates', 'unsafe-water', 1);
   l('pharma-residues', 'threatens', 'extinction', 1, 'Diclofenac residues collapsed South Asian vulture populations.');
   l('pharma-residues', 'contaminates', 'unsafe-water', 2);
-  l('pharma-residues', 'worsens', 'waterborne', 1, 'Environmental antibiotic residues help drive resistance.');
+  /* No pharma-residues -> waterborne edge. Antimicrobial resistance is not the same
+   * outcome as the diarrhoeal and cholera-type disease that node describes, and
+   * pointing one at the other implied a link the evidence does not make. Resistance
+   * warrants its own node rather than being smuggled in through this one. */
 
   /* ── Air & health ───────────────────────────────────────────────────────── */
   l('air-pollution', 'causes', 'respiratory', 3);

@@ -5,7 +5,7 @@
   /* ── Biodiversity & ecosystems ──────────────────────────────────────────── */
 
   n('habitat-loss', 'Habitat loss & fragmentation', 'bio',
-    'The single largest driver of biodiversity decline — not poisoning or hunting, but simply converting wild land to farms, roads and cities. Fragmentation compounds it: a forest cut into pieces by roads loses interior species even where the total area looks adequate, because small populations cannot move, breed or recolonise.',
+    'The single largest driver of biodiversity decline overall: converting wild land to farms, roads and cities. That ranking is global and does not hold everywhere — for large mammals, for tropical bushmeat species and across much of freshwater, direct exploitation is the leading pressure, and for many island species invasives are. Fragmentation compounds it: a forest cut into pieces by roads loses interior species even where the total area looks adequate, because small populations cannot move, breed or recolonise.',
     ['Support land-use planning that concentrates development rather than dispersing it',
      'Back wildlife corridors and crossings, which restore connectivity cheaply relative to buying new land',
      'Let part of any garden or land you manage grow structurally messy — cover matters more than tidiness',
@@ -17,7 +17,7 @@
     'habitat conservation land trust wildlife corridor'),
 
   n('deforestation', 'Deforestation', 'bio',
-    'Around 10 million hectares of forest are cleared each year, overwhelmingly for agriculture — cattle pasture, soy, palm oil, cocoa and timber. Forests hold enormous carbon and generate their own rainfall, so clearing them warms the climate, dries the region and destroys habitat in a single act.',
+    'Deforestation ran at about 10.9 million hectares a year over 2015–2025, down from 13.6 in the fifteen years before that, and agricultural expansion drives the large majority of it — cattle pasture, soy, palm oil, cocoa and timber. Net forest loss is much smaller, around 4 million hectares a year, because regrowth and plantation offset part of the clearing; the two numbers are not interchangeable, and a young plantation is not the ecosystem that was removed. Forests hold enormous carbon and generate their own rainfall, so clearing them warms the climate, dries the region and destroys habitat in a single act.',
     ['Check palm oil, soy, beef, cocoa and timber sourcing; deforestation is embedded in supply chains, not just in forests',
      'Reduce beef consumption specifically — pasture is the largest single driver of tropical clearing',
      'Support Indigenous land tenure, which is empirically among the most effective forest protections',
@@ -29,7 +29,7 @@
     'forest protection reforestation deforestation-free'),
 
   n('wetland-loss', 'Wetland & mangrove loss', 'bio',
-    'The world has lost a large majority of its wetlands since 1900, drained for farmland and building or cleared for shrimp ponds. This is expensive stupidity: mangroves and marshes measurably reduce storm surge and wave damage, store carbon at several times the density of tropical forest per hectare, filter nutrients and nurse most commercial fish species.',
+    'The world has lost about 22% of its wetlands since 1970 — some 411 million hectares — drained for farmland and building or cleared for shrimp ponds, and roughly a quarter of what remains is in poor ecological condition. Wetlands are disappearing faster than any other ecosystem type. This is expensive stupidity: mangroves and marshes measurably reduce storm surge and wave damage, store carbon at several times the density of tropical forest per hectare, filter nutrients, and provide nursery habitat for a large share of commercially fished species.',
     ['Support mangrove and saltmarsh restoration — among the highest-return coastal investments available',
      'Oppose coastal in-fill development; the wetland is doing work that a seawall would have to be paid to do',
      'Back peatland rewetting where you are inland; drained peat is a huge ongoing carbon source',
@@ -41,7 +41,7 @@
     'wetland restoration mangrove protection'),
 
   n('extinction', 'Species extinction', 'bio',
-    'Extinction rates are estimated at tens to hundreds of times the long-term background rate, and around a million species are assessed as threatened. Populations crash long before species disappear — monitored vertebrate populations have fallen dramatically on average. Extinction is the one truly irreversible item on this map.',
+    'Extinction rates are estimated at tens to hundreds of times the long-term background rate. The widely quoted figure of around a million species threatened with extinction is an extrapolation to groups that have never been assessed, not a count: formal assessment covers on the order of 170,000 species, of which roughly 48,000 are classed as threatened. Populations crash long before species disappear — monitored vertebrate populations have fallen dramatically on average, though that average is pulled hard by a minority of collapsing populations. Extinction is the one truly irreversible item on this map.',
     ['Support habitat protection over single-species campaigns; habitat is what most species actually need',
      'Keep cats indoors or contained, especially at dawn and dusk — predation by pets is a major bird and reptile toll',
      'Record what you see on a biodiversity platform; monitoring gaps are a real constraint on conservation',
@@ -52,7 +52,7 @@
     'endangered species conservation biodiversity'),
 
   n('pollinators', 'Pollinator decline', 'bio',
-    'Around three-quarters of leading food crops benefit from animal pollination, and roughly a third of global crop volume depends on it. Wild bees, hoverflies, moths and bats are declining under a combination of habitat loss, pesticides, disease and climate shifts. Managed honeybees are not a substitute — they are livestock, and they compete with the wild species doing much of the work.',
+    'Around three-quarters of leading food crops benefit to some degree from animal pollination, and those crops make up roughly a third of global crop volume. That is not the same as a third of the food supply being at risk: most of the calorie staples — wheat, rice, maize — are wind-pollinated, and the crops that do depend on pollinators carry a disproportionate share of the vitamins and micronutrients. Wild bees, hoverflies, moths and bats are declining under a combination of habitat loss, pesticides, disease and climate shifts. Managed honeybees are not a substitute — they are livestock, and they compete with the wild species doing much of the work.',
     ['Plant a succession of flowering species so something is in bloom from early spring to late autumn',
      'Stop using insecticides in gardens, and check ornamental plants are not neonicotinoid-treated',
      'Leave bare ground, dead stems and leaf litter — most wild bees nest in the ground or in stems',
