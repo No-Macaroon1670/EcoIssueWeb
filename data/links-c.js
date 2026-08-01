@@ -9,8 +9,10 @@
   const l = E.l.bind(E);
 
   /* ── Newer issues ───────────────────────────────────────────────────────── */
-  l('data-centres', 'drives', 'ghg-emissions', 3);
-  l('data-centres', 'depletes', 'water-scarcity', 2, 'Evaporative cooling, often sited where water is already short.');
+  l('data-centres', 'drives', 'ghg-emissions', 2,
+    'Weaker than it looks at first. The emissions are the grid\'s, not the building\'s, so the answer depends on where and when the load lands and whether new clean generation arrives with it. The IEA expects renewables to meet close to half the additional data-centre demand to 2030, with gas and coal supplying much of the rest.');
+  l('data-centres', 'depletes', 'water-scarcity', 2,
+    'Evaporative cooling consumes real water and is often sited where water is already short, but the range across sites is enormous — closed-loop, air-cooled and reclaimed-water designs use far less, and some of the total sits upstream in power generation rather than at the building.');
   l('data-centres', 'drives', 'mining', 2, 'Chips, servers and the copper to connect them.');
   l('data-centres', 'drives', 'ewaste', 2, 'Server refresh cycles are short.');
   l('data-centres', 'drives', 'fossil-fuels', 2,
@@ -24,15 +26,20 @@
   l('warming', 'drives', 'geoengineering', 2, 'The pressure to attempt it grows with every year of missed targets.');
   l('geoengineering', 'shields', 'warming', 3,
     'It would work, and that is the problem: it masks temperature while leaving CO2, and therefore ocean acidification, untouched.');
-  l('geoengineering', 'disrupts', 'rainfall-shift', 2, 'Modelled monsoon disruption is the most serious regional objection.');
-  l('geoengineering', 'worsens', 'resource-conflict', 1, 'No governance regime exists for a technology one state could deploy alone.');
+  l('geoengineering', 'disrupts', 'rainfall-shift', 2,
+    'The most serious regional objection, and an uncertain one. Models agree that reflecting sunlight would alter the hydrological cycle unevenly, and monsoon regions come up repeatedly, but the sign and size of the regional effect depend on the method, the amount and the deployment pattern. There is no single agreed map of who loses rain.');
+  l('geoengineering', 'worsens', 'resource-conflict', 1,
+    'No comprehensive binding regime governs deployment of a technology one state could attempt alone. Existing instruments touch parts of it — non-binding decisions under the Convention on Biological Diversity, and ozone and environmental law that may apply by analogy — but authorisation, liability, monitoring and termination are all unaddressed.');
 
   l('carbon-offsets', 'limits', 'ghg-emissions', 1, 'Only where the credit represents a reduction that would not have happened anyway. Many do not.');
   l('carbon-offsets', 'enables', 'fossil-fuels', 2, 'The core critique: a credible-sounding offset removes the pressure to cut at source.');
 
   l('nuclear-power', 'causes', 'nuclear-waste', 3, 'The unavoidable ledger entry: very low carbon, and custody measured in millennia.');
-  l('nuclear-waste', 'drives', 'mining', 1, 'Uranium extraction and milling.');
-  l('nuclear-waste', 'worsens', 'env-injustice', 2, 'Siting has repeatedly landed on communities with the least power to refuse.');
+  /* Uranium mining hangs off nuclear-power, below, not off nuclear-waste. Fuel demand
+   * is what opens a mine; spent fuel is what comes out the other end. The old
+   * nuclear-waste -> mining edge had the causal arrow running backwards through time. */
+  l('nuclear-waste', 'worsens', 'env-injustice', 2,
+    'Uranium extraction, milling, weapons testing and waste storage have repeatedly landed on Indigenous and politically marginalised communities. Repository siting is where this is being consciously reversed: the Finnish and Canadian processes are built around demonstrated host-community consent, which is a real break from the earlier record rather than a restatement of it.');
   /* No nuclear-waste -> unsafe-water edge. A reactor's routine effect on water is
    * thermal, not contaminative, and "unsafe water" here is a human drinking-water and
    * sanitation node. The genuine contamination pathway is uranium mining and milling,
@@ -42,13 +49,18 @@
 
   l('battery-waste', 'drives', 'landfill-waste', 2);
   l('battery-waste', 'releases', 'heavy-metals', 2,
-    'Lithium, cobalt, nickel and lead, plus the fires that loose cells start in waste facilities.');
+    'Cobalt, nickel and — from the separate and much older lead-acid stream — lead. Lithium itself is not a heavy metal and is not the toxicity concern; the lithium-ion hazard is the corrosive electrolyte and the fires that damaged cells start in collection trucks and sorting halls.');
   l('battery-waste', 'drives', 'mining', 2,
     'The other half of the ledger: metal not recovered has to be dug up again.');
 
-  l('deep-sea-mining', 'threatens', 'extinction', 2, 'The nodules are themselves the habitat for much of the life down there.');
-  l('deep-sea-mining', 'causes', 'habitat-loss', 2, 'Recovery from disturbance appears to take decades to centuries.');
-  l('deep-sea-mining', 'reduces', 'mining', 1, 'The pitch is that it substitutes for land extraction. Whether it would add to it instead is unsettled.');
+  l('deep-sea-mining', 'threatens', 'extinction', 1,
+    'Deliberately weaker than the habitat edge below. Nodule-dependent species may well have ranges small enough that clearing a licence area removes them entirely, but abyssal species distributions are barely described, so the risk cannot be quantified. The uncertainty runs both ways: extinctions here could happen without anyone recording them.');
+  l('deep-sea-mining', 'causes', 'habitat-loss', 3,
+    'The strong claim, and the one worth arguing from. The nodules are the hard substrate much of the life down there grows on, and they form over millions of years. Tracks from an experimental clearance in the 1970s were still visible with measurably altered biology four decades later, with only partial recovery among mobile and sediment-dwelling animals.');
+  /* No deep-sea-mining -> mining edge. The industry's central pitch is that seabed
+   * metal substitutes for land extraction; it could equally add to total supply, lower
+   * prices and raise demand. An edge asserts a sign, and this one has none that the
+   * evidence supports, so the argument belongs in the node summary instead. */
 
   /* ── Energy levers ──────────────────────────────────────────────────────── */
   l('renewables', 'displaces', 'fossil-fuels', 3);
@@ -57,16 +69,19 @@
   l('renewables', 'reduces', 'energy-poverty', 2, 'Distributed solar reaches remote areas faster than grid extension.');
   l('renewables', 'drives', 'mining', 2, 'The material cost of the transition, and a real one.');
   l('renewables', 'drives', 'battery-waste', 1, 'Indirectly, through the grid storage that variable generation needs.');
-  l('grid-storage', 'enables', 'renewables', 3, 'This is what decides how far variable generation can actually go.');
+  l('grid-storage', 'enables', 'renewables', 3,
+    'One of the things that decides how far variable generation can go, not the only one. Transmission, interconnection across weather systems, flexible demand and dispatchable low-carbon plant all buy the same flexibility, and the cheapest mix differs by grid.');
   l('grid-storage', 'drives', 'mining', 2);
   l('electrification', 'requires', 'renewables', 3,
-    'The conditional that gets dropped: electrifying onto a coal-heavy grid moves the emissions rather than removing them.');
+    'The conditional that gets dropped: electrifying onto a coal-heavy grid moves the emissions rather than removing them. What it strictly requires is low-emission electricity — nuclear, hydro and geothermal serve as well, which is why they appear as their own levers — but renewables are where almost all the new supply is being built.');
   l('electrification', 'displaces', 'fossil-fuels', 3);
   l('electrification', 'reduces', 'air-pollution', 3, 'Removes combustion from the street and from the kitchen.');
   l('electrification', 'reduces', 'noise-pollution', 1);
   l('electrification', 'drives', 'mining', 2);
   l('electrification', 'drives', 'battery-waste', 3, 'Every electric vehicle eventually becomes a battery to deal with.');
   l('electrification', 'drives', 'deep-sea-mining', 1, 'Battery metal demand is the case being made for opening the seabed.');
+  l('nuclear-power', 'drives', 'mining', 1,
+    'Fuel demand is what opens a uranium mine, and milling leaves long-lived tailings behind at the extraction site.');
   l('nuclear-power', 'displaces', 'fossil-fuels', 2);
   l('nuclear-power', 'reduces', 'ghg-emissions', 2);
   l('nuclear-power', 'reduces', 'air-pollution', 1);
@@ -76,7 +91,8 @@
   l('efficiency-buildings', 'reduces', 'energy-poverty', 2, 'The cheapest cure for fuel poverty is a home that holds its heat.');
   l('efficiency-buildings', 'prevents', 'heat-mortality', 2);
   l('methane-repair', 'cuts', 'methane', 3, 'Often at negative net cost, because the escaping gas is saleable.');
-  l('carbon-pricing', 'reduces', 'ghg-emissions', 3);
+  l('carbon-pricing', 'reduces', 'ghg-emissions', 2,
+    'Conditional on design rather than automatic. Most schemes in force price too little of an economy at too low a level to move much; the ones that have cut emissions measurably combined a real price with broad coverage, few exemptions, and credible signals that the price would keep rising.');
   l('carbon-pricing', 'reduces', 'fossil-fuels', 2);
   l('carbon-pricing', 'enables', 'renewables', 2);
   l('carbon-pricing', 'enables', 'carbon-offsets', 1, 'Compliance markets create the demand that the credit quality problem then rides on.');
@@ -84,7 +100,8 @@
     'Without visible redistribution it is regressive, unpopular, and then repealed — which is how climate policy loses years.');
 
   /* ── Materials & waste levers ───────────────────────────────────────────── */
-  l('circular-economy', 'reduces', 'mining', 3, 'Recovered metal displaces mined metal close to one for one.');
+  l('circular-economy', 'reduces', 'mining', 3,
+    'A tonne of clean recovered metal substitutes for a tonne of primary metal, which is the strong version of the claim. The system-level version is weaker: collection losses, imperfect yields and demand still growing fast mean recycling slows the growth of mining rather than closing mines.');
   l('circular-economy', 'reduces', 'ewaste', 3);
   l('circular-economy', 'reduces', 'landfill-waste', 3);
   l('circular-economy', 'reduces', 'plastic', 2);
@@ -151,21 +168,27 @@
   l('wastewater-upgrade', 'prevents', 'waterborne', 3);
   l('wastewater-upgrade', 'reduces', 'nutrient-runoff', 2);
   l('wastewater-upgrade', 'reduces', 'dead-zones', 2);
-  l('wastewater-upgrade', 'reduces', 'pharma-residues', 2);
-  l('wastewater-upgrade', 'reduces', 'pfas', 1);
+  l('wastewater-upgrade', 'reduces', 'pharma-residues', 2,
+    'Ozonation and activated carbon do remove most pharmaceutical residues, and Switzerland has made that stage mandatory at larger plants — this is an upgrade with a demonstrated result.');
+  /* No wastewater-upgrade -> pfas edge. The carbon-fluorine bond survives conventional
+   * treatment, which concentrates PFAS into sludge and residual streams rather than
+   * destroying them — so the upgrade moves the problem and the edge claimed it solved
+   * it. Removal needs dedicated separation or destruction, which is a different lever. */
 
   /* ── People levers ──────────────────────────────────────────────────────── */
   l('clean-cooking', 'reduces', 'indoor-air', 3);
   l('clean-cooking', 'prevents', 'respiratory', 2);
   l('clean-cooking', 'reduces', 'energy-poverty', 2);
   l('clean-cooking', 'reduces', 'deforestation', 1, 'Fuelwood and charcoal demand falls with it.');
-  l('urban-greening', 'prevents', 'heat-mortality', 3);
+  l('urban-greening', 'reduces', 'heat-mortality', 2,
+    'Shade and evapotranspiration cut exposure, and the effect is largest where canopy is targeted at the neighbourhoods that have least of it. It lowers the risk rather than removing it: during a severe event, cooling access, housing quality, health care and someone checking on people still decide who dies.');
   l('urban-greening', 'reduces', 'heatwaves', 2, 'Shade and evapotranspiration cut the urban heat island directly.');
   l('urban-greening', 'reduces', 'env-injustice', 2, 'Canopy cover maps onto income almost exactly, so planting order is an equity decision.');
   l('urban-greening', 'buffers', 'rainfall-shift', 1, 'Permeable ground absorbs peaks that sealed surfaces turn into flash floods.');
   l('urban-greening', 'reduces', 'air-pollution', 1);
   l('early-warning', 'prevents', 'heat-mortality', 3);
   l('early-warning', 'prevents', 'waterborne', 1);
-  l('early-warning', 'prevents', 'displacement', 1, 'Warning converts a hazard into an evacuation rather than a permanent loss.');
+  l('early-warning', 'limits', 'displacement', 1,
+    'Overstated in the original phrasing. Warning gets people out alive and turns a disaster into an evacuation, but it does not save the house, the land or the livelihood — whether displacement becomes permanent is decided by what is left to return to, not by the warning.');
 
 })(window.ECO);
