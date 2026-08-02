@@ -740,26 +740,43 @@
   if (state.place && !R.PLACES.some(p => p.name === state.place)) state.place = '';
   placeSelect.value = state.place;
 
-  /* Map picker. Collapsed by default: it is 154 KB of geometry and a second way to do
-   * something the select already does, so it stays out of the way until asked for. */
+  /* Map picker, in an overlay rather than the sidebar. Inline it was about 145px wide,
+   * which is not enough to find a country in; the whole point of a map is being able to
+   * see where you live. The select stays as the keyboard-first path. */
   const mapToggle = document.getElementById('map-toggle');
+  const mapOverlay = document.getElementById('map-overlay');
   const mapPanel = document.getElementById('map-panel');
+  const mapClose = document.getElementById('map-close');
   let mapView = null;
-  mapToggle.addEventListener('click', () => {
-    const open = mapPanel.hidden;
-    mapPanel.hidden = !open;
-    mapToggle.setAttribute('aria-expanded', String(open));
-    mapToggle.textContent = open ? 'Hide map' : 'Pick on a map';
-    if (!open) return;
+  let mapReturnFocus = null;
+
+  function openMap() {
+    mapReturnFocus = document.activeElement;
+    mapOverlay.hidden = false;
     if (!mapView) mapView = window.ECO_MAP.create({
       mount: mapPanel,
       onPick(name) {
         placeSelect.value = name;
         placeSelect.dispatchEvent(new Event('change', { bubbles: true }));
-        mapView.show(name);
+        closeMap();
       },
     });
     mapView.show(state.place);
+    mapClose.focus();
+  }
+
+  function closeMap() {
+    mapOverlay.hidden = true;
+    if (mapReturnFocus && mapReturnFocus.focus) mapReturnFocus.focus();
+  }
+
+  mapToggle.addEventListener('click', openMap);
+  mapClose.addEventListener('click', closeMap);
+  /* Backdrop click closes, but only the backdrop itself -- a click that lands on the
+   * map or the header has already been handled by whatever it hit. */
+  mapOverlay.addEventListener('click', e => { if (e.target === mapOverlay) closeMap(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !mapOverlay.hidden) closeMap();
   });
 
   const incomeSelect = document.getElementById('custom-income');

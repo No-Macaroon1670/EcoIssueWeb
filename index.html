@@ -72,10 +72,9 @@
         <option value="">— none —</option>
         <option value="__custom__">Describe my area…</option>
       </select>
-      <button type="button" id="map-toggle" class="linkish" aria-expanded="false">
+      <button type="button" id="map-toggle" class="linkish" aria-haspopup="dialog">
         Pick on a map
       </button>
-      <div id="map-panel" class="map-panel" hidden></div>
       <label class="check" id="local-focus-wrap" hidden>
         <input type="checkbox" id="opt-local-focus"> Local focus — fade what does not feed this place
       </label>
@@ -110,6 +109,17 @@
   </main>
 
   <aside class="detail" id="detail" tabindex="-1"></aside>
+</div>
+
+<div id="map-overlay" class="map-overlay" hidden role="dialog" aria-modal="true"
+     aria-labelledby="map-overlay-title">
+  <div class="map-overlay-box">
+    <header class="map-overlay-head">
+      <h2 id="map-overlay-title">Pick a place</h2>
+      <button type="button" id="map-close" class="btn" aria-label="Close map">Close</button>
+    </header>
+    <div id="map-panel" class="map-panel"></div>
+  </div>
 </div>
 
 <script src="data/schema.js"></script>
