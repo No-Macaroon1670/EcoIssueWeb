@@ -25,7 +25,8 @@ window.ECO_REGIONS = (function () {
     megacity:       { label: 'Very large city',            hint: 'Heat islands, traffic pollution, unequal exposure' },
     mining:         { label: 'Mining region',              hint: 'Extraction, tailings and water contamination' },
     freshwater:     { label: 'Great lakes & big rivers',   hint: 'Inland freshwater: farm runoff, algal blooms, aquatic invasives' },
-    freezethaw:     { label: 'Freeze–thaw winters',        hint: 'Winters crossing 0°C repeatedly — roads, pipes and foundations' }
+    freezethaw:     { label: 'Freeze–thaw winters',        hint: 'Winters crossing 0°C repeatedly — roads, pipes and foundations' },
+    agriculture:    { label: 'Intensive agriculture',      hint: 'High-input farming: fertiliser, pesticides, irrigation, simplified landscapes' }
   };
 
   const INCOME = {
@@ -94,7 +95,7 @@ window.ECO_REGIONS = (function () {
   r('Vietnam', 'lower', ['coastal', 'lowlying', 'cyclone', 'monsoon', 'megacity', 'tropicalforest']);
 
   /* ── Europe ─────────────────────────────────────────────────────────────── */
-  r('Austria', 'high', ['landlocked', 'glacierfed']);
+  r('Austria', 'high', ['landlocked', 'glacierfed', 'freezethaw', 'freshwater']);
   r('Belgium', 'high', ['coastal', 'lowlying']);
   r('Czechia', 'high', ['landlocked', 'mining', 'freshwater', 'freezethaw']);
   r('Denmark', 'high', ['coastal', 'lowlying']);
@@ -113,7 +114,7 @@ window.ECO_REGIONS = (function () {
   r('Romania', 'high', ['coastal', 'lowlying']);
   r('Spain', 'high', ['coastal', 'medclimate', 'arid']);
   r('Sweden', 'high', ['coastal', 'boreal', 'highlat']);
-  r('Switzerland', 'high', ['landlocked', 'glacierfed']);
+  r('Switzerland', 'high', ['landlocked', 'glacierfed', 'freezethaw']);
   r('Ukraine', 'lower', ['coastal', 'lowlying', 'freshwater', 'freezethaw']);
   r('United Kingdom', 'high', ['coastal', 'lowlying', 'megacity']);
 
@@ -180,6 +181,34 @@ window.ECO_REGIONS = (function () {
   r('Scotland, UK', 'high', ['coastal', 'highlat']);
   r('Queensland, Australia', 'high', ['coastal', 'reef', 'cyclone', 'arid', 'mining']);
   r('British Columbia, Canada', 'high', ['coastal', 'boreal', 'glacierfed', 'medclimate', 'mining']);
+
+  /* Intensive agriculture, applied as one list rather than scattered through the
+   * entries above, because the judgement is comparative and belongs in one place.
+   *
+   * The test is not "does this country farm" -- almost all of them do -- but whether
+   * high-input farming is among the things that dominates its environmental profile:
+   * fertiliser and manure loading, pesticide intensity, irrigation draw, and landscapes
+   * simplified enough to matter for pollinators and soil. Subsistence and low-input
+   * systems are deliberately excluded; they carry different problems, mostly already
+   * covered by `arid`, `monsoon` and `tropicalforest`.
+   *
+   * Added because the locale audit showed the model was blind here. Ireland and Uruguay
+   * returned byte-identical rankings despite both being livestock economies, and
+   * `pesticides` reached only tropical-forest countries, so no temperate farming region
+   * ever surfaced it. */
+  const INTENSIVE_AG = [
+    'Argentina', 'Australia', 'Austria', 'Bangladesh', 'Belgium', 'Brazil', 'Canada',
+    'China', 'Czechia', 'Denmark', 'Egypt', 'France', 'Germany', 'Hungary', 'India',
+    'Indonesia', 'Ireland', 'Italy', 'Malaysia', 'Mexico', 'Netherlands', 'New Zealand',
+    'Pakistan', 'Philippines', 'Poland', 'Romania', 'Spain', 'Switzerland', 'Thailand',
+    'Turkey', 'Ukraine', 'United Kingdom', 'United States', 'Uruguay', 'Vietnam',
+    'England, UK', 'Great Lakes, USA', 'Ontario, Canada'
+  ];
+  INTENSIVE_AG.forEach(name => {
+    const p = PLACES.find(x => x.name === name);
+    if (!p) throw new Error('INTENSIVE_AG names a place that does not exist: ' + name);
+    p.flags.push('agriculture');
+  });
 
   PLACES.sort((a, b) => a.name.localeCompare(b.name));
   return { FLAGS, INCOME, PLACES };

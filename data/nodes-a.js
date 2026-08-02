@@ -13,7 +13,7 @@
      'Electrify the big things first — heating and transport dwarf everything else in a household',
      'Cut the highest-carbon trips: one long-haul flight can outweigh a year of careful choices',
      'Support policies that price carbon or end fossil subsidies; individual action alone cannot shift supply'],
-    { drv: [['high', 'High-income countries burn the most fossil energy per person and built the historical stock of emissions.'],
+    { uniform: true, drv: [['high', 'High-income countries burn the most fossil energy per person and built the historical stock of emissions.'],
             ['upper', 'Upper-middle-income economies now account for the largest share of annual emissions in absolute terms.']] },
     'fossil fuel divestment clean energy transition'),
 
@@ -23,7 +23,7 @@
      'Reduce red meat and dairy, the most emissions-dense foods per calorie',
      'Keep appliances and vehicles longer; manufacturing is a large hidden share',
      'Push your employer or institution to publish and cut its emissions — organisational choices scale further than personal ones'],
-    { drv: [['high', 'Emissions per person are typically several times the global average.'],
+    { uniform: true, drv: [['high', 'Emissions per person are typically several times the global average.'],
             ['upper', 'Large populations plus industrial growth make this the biggest emitting group overall.']] },
     'greenhouse gas emissions reduction'),
 
@@ -33,7 +33,7 @@
      'Compost what you cannot avoid wasting; aerobic decomposition releases far less methane',
      'Back regulations requiring leak detection and repair at oil and gas sites',
      'Where gas is used for cooking or heating, an induction hob or heat pump removes both the leak risk and indoor combustion'],
-    { drv: [['upper', 'Coal mining and expanding livestock herds concentrate here.'],
+    { uniform: true, drv: [['upper', 'Coal mining and expanding livestock herds concentrate here.'],
             ['high', 'Oil and gas infrastructure leaks across production and distribution networks.']] },
     'methane emissions reduction'),
 
@@ -53,7 +53,7 @@
     'The atmosphere naturally keeps Earth about 33 °C warmer than bare sunlight would. Adding greenhouse gases thickens that blanket, so the planet must warm until it radiates heat back to space as fast as it receives it. This is settled nineteenth-century physics — the argument is over how much and how fast, not whether.',
     ['This is a physical mechanism rather than a behaviour, so the leverage sits upstream in emissions',
      'Learn the basic mechanism well enough to explain it — misunderstanding it is what stalls action'],
-    {},
+    { uniform: true },
     'climate science education'),
 
   n('warming', 'Global temperature rise', 'climate',
@@ -181,7 +181,7 @@
      'Repair rather than replace, and support right-to-repair legislation',
      'Buy second-hand for the categories where it is easy — clothes, furniture, tools, phones',
      'Resist the framing that recycling solves this; it is the weakest of the three Rs for a reason'],
-    { drv: [['high', 'Material consumption per person is far above the global average.'],
+    { uniform: true, drv: [['high', 'Material consumption per person is far above the global average.'],
             ['upper', 'The fastest-growing consumer markets.']] },
     'circular economy sustainable consumption'),
 
@@ -262,6 +262,7 @@
      'Reduce dairy and beef consumption — feed production drives much of the fertiliser demand'],
     { exp: [['coastal', 'high', 'River mouths and enclosed seas accumulate nutrients.'],
             ['freshwater', 'high', 'The signature inland problem: farm runoff drives the summer algal blooms in Erie, Winnipeg and Tai.'],
+            ['agriculture', 'high', 'Fertiliser and manure loading is the source; the Netherlands and Denmark run some of the highest surpluses per hectare anywhere.'],
             ['monsoon', 'elevated', 'Intense rain flushes fertiliser off fields in pulses.']],
       drv: [['high', 'Intensive fertiliser use per hectare.'], ['upper', 'Rapidly rising fertiliser application.']] },
     'nutrient pollution watershed protection'),
@@ -272,7 +273,8 @@
      'Buy organic selectively for the crops with the heaviest residues if budget is limited',
      'Support integrated pest management, which cuts volumes without cutting yields',
      'Plant untreated, pollinator-friendly species — some ornamental plants come pre-dosed with neonicotinoids'],
-    { exp: [['tropicalforest', 'elevated', 'Weak application controls and high-volume export agriculture.']],
+    { exp: [['agriculture', 'high', 'Application per hectare is highest in high-input temperate farming, not in the tropics — this rule used to be missing, so no European or North American region ever surfaced pesticides at all.'],
+            ['tropicalforest', 'elevated', 'Weaker application controls and high-volume export agriculture.']],
       drv: [['high', 'High application intensity per hectare.'], ['upper', 'Expanding intensive agriculture.']] },
     'pesticide reduction integrated pest management'),
 
@@ -359,6 +361,7 @@
      'Back managed aquifer recharge, which banks wet-season water underground',
      'Reduce demand for the most water-intensive irrigated crops'],
     { exp: [['arid', 'high', 'Groundwater is often the only reliable supply, and recharge is minimal.'],
+            ['agriculture', 'high', 'Irrigation is where the water goes — the Punjab, the High Plains and the North China Plain are all farm-driven drawdowns.'],
             ['monsoon', 'high', 'Intensive irrigation pumping has drawn down major aquifers.'],
             ['coastal', 'elevated', 'Over-pumping near the coast pulls in seawater.']] },
     'groundwater depletion aquifer management'),

@@ -57,7 +57,8 @@
      'Stop using insecticides in gardens, and check ornamental plants are not neonicotinoid-treated',
      'Leave bare ground, dead stems and leaf litter — most wild bees nest in the ground or in stems',
      'Support hedgerow and field-margin schemes; landscape-scale flower resources matter more than gardens alone'],
-    { exp: [['monsoon', 'elevated', 'Smallholder systems depend heavily on wild pollination.'],
+    { exp: [['agriculture', 'high', 'Simplified landscapes and pesticide intensity are the mechanism, so exposure is highest exactly where farming is most intensive — and where the crops needing pollination are grown at scale.'],
+            ['monsoon', 'elevated', 'Smallholder systems depend heavily on wild pollination.'],
             ['medclimate', 'elevated', 'High wild bee diversity under intense agricultural pressure.']],
       drv: [['high', 'Pesticide intensity and simplified agricultural landscapes.'], ['upper', 'Rapid agricultural intensification.']] },
     'pollinator habitat native bees'),
@@ -68,7 +69,8 @@
      'Mow less and later; frequent short mowing removes almost all invertebrate habitat',
      'Avoid insecticides, including "pet-safe" and systemic products',
      'Support long-term monitoring schemes; the data gap is itself part of the problem'],
-    { exp: [['medclimate', 'elevated', 'Where most long-term declines have been documented.'],
+    { exp: [['agriculture', 'high', 'The best-documented declines are from intensively farmed temperate landscapes, which is also where the monitoring is.'],
+            ['medclimate', 'elevated', 'Where most long-term declines have been documented.'],
             ['megacity', 'elevated', 'Light, heat and sealed ground compound losses.']],
       drv: [['high', 'Intensive land management, pesticide use and lighting.']] },
     'insect conservation monitoring'),
@@ -79,7 +81,8 @@
      'Disturb soil as little as the situation allows — no-dig beds work remarkably well at garden scale',
      'Add compost and mulch rather than soluble fertiliser where you have the choice',
      'Support payments for soil health outcomes rather than for specific practices'],
-    { exp: [['arid', 'elevated', 'Thin soils with slow biological recovery.']],
+    { exp: [['agriculture', 'high', 'Tillage, bare fallows, compaction and fertiliser substitution are all features of high-input systems, and they are what degrades the soil community.'],
+            ['arid', 'elevated', 'Thin soils with slow biological recovery.']],
       drv: [['high', 'Intensive tillage and input-dependent systems.'], ['upper', 'Expanding intensive cultivation.']] },
     'soil health regenerative agriculture'),
 
@@ -101,9 +104,12 @@
      'Use reef-safe sun protection and never touch or anchor on coral',
      'Support reef restoration and heat-tolerant coral research, while being honest that it cannot outpace warming',
      'The decisive lever remains emissions; reef survival tracks peak temperature closely'],
+    /* No `equatorial` rule. Being in the humid tropics says nothing about having a
+     * reef -- it made landlocked DRC and Uganda surface reef bleaching at high
+     * exposure, which is what the locale audit is for. `reef` and `sids` already
+     * select the places this applies to. */
     { exp: [['reef', 'high', 'Directly affected wherever reefs occur.'],
-            ['sids', 'high', 'Food security, tourism income and wave protection all depend on reefs.'],
-            ['equatorial', 'high', 'Warmest waters and the most frequent bleaching.']] },
+            ['sids', 'high', 'Food security, tourism income and wave protection all depend on reefs.']] },
     'coral reef restoration protection'),
 
   n('kelp-seagrass-loss', 'Kelp & seagrass loss', 'bio',
@@ -147,7 +153,8 @@
      'Reduce the most input-intensive foods in your diet — beef, lamb and dairy above all',
      'Support subsidy reform; public money currently rewards volume rather than stewardship',
      'Eat more legumes; they fix their own nitrogen and displace fertiliser demand'],
-    { exp: [['freshwater', 'elevated', 'Row-crop belts drain straight into the lakes and rivers that supply drinking water.']],
+    { exp: [['agriculture', 'high', 'The node names the system itself, so wherever high-input farming dominates, this is the shape of it.'],
+            ['freshwater', 'elevated', 'Row-crop belts drain straight into the lakes and rivers that supply drinking water.']],
       drv: [['high', 'Most industrialised and most subsidised systems.'], ['upper', 'Fastest intensification.']] },
     'sustainable agriculture farm policy reform'),
 
@@ -167,7 +174,8 @@
     ['Grow or buy unusual varieties; markets for diversity are what keep them in cultivation',
      'Support seed banks and participatory breeding programmes',
      'Back crop rotation and intercropping incentives, which reduce pest pressure without chemicals'],
-    { drv: [['high', 'Mechanised, uniform commodity production.'], ['upper', 'Consolidating toward fewer varieties.']] },
+    { exp: [['agriculture', 'high', 'Uniformity is the defining feature of high-input commodity farming, and the regions with the most of it have the most concentrated varietal risk.']],
+      drv: [['high', 'Mechanised, uniform commodity production.'], ['upper', 'Consolidating toward fewer varieties.']] },
     'crop diversity seed sovereignty'),
 
   n('soil-erosion', 'Soil erosion', 'land',
@@ -222,7 +230,7 @@
      'Learn what use-by versus best-before actually mean — a large share of discarded food is still safe',
      'Freeze aggressively, and store produce properly; most waste is a storage failure',
      'Support cold-chain and storage investment in producing regions, where losses are largest'],
-    { drv: [['high', 'Waste concentrated at retail and household level.'],
+    { uniform: true, drv: [['high', 'Waste concentrated at retail and household level.'],
             ['lower', 'Losses concentrated in storage and transport.']] },
     'food waste reduction food rescue'),
 

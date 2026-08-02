@@ -1,0 +1,164 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Locale model audit</title>
+<!--
+  Ranks every issue for every place using the app's own ECO_LOCALE.assess, and flags
+  the shapes that mean a rule is wrong rather than merely coarse.
+
+  It loads src/locale.js rather than reimplementing the scoring, for the same reason
+  tools/linkdata.py exists: a second copy of the logic drifts, and then the audit
+  blesses exactly the output the app gets wrong. Open it from the served root
+  (http://localhost:4186/tools/locale-audit.html) so the relative paths resolve.
+
+  What each check is for:
+
+  UNREACHABLE   an issue with no exposure rules can never surface for anyone. It is
+                invisible in the locale panel no matter where the user says they are.
+  NARROW        an issue reachable from only one flag is a guess about geography, not
+                a rule -- `pesticides` pointing only at tropicalforest meant no
+                temperate farming region ever saw it.
+  THIN PLACE    a place matching very few issues usually means its flags are wrong or
+                missing, not that it has no environmental problems.
+  IDENTICAL     two places with identical output are indistinguishable to the model.
+                Fine for Tuvalu and Kiribati; a bug for Ireland and Uruguay.
+  UNDER-MODELLED a flag almost no issue declares does nothing for the places carrying
+                it, so those places fall back to whatever else they happen to have.
+  IMPOSSIBLE    a marine issue surfacing for a landlocked place would mean the rules
+                engine is not doing what it claims. Structurally it cannot happen;
+                the check exists so that stays true.
+-->
+<style>
+  body { font: 14px/1.5 system-ui, sans-serif; margin: 2rem; max-width: 70rem; }
+  h2 { margin-top: 2.5rem; border-bottom: 1px solid #ccc; padding-bottom: .3rem; }
+  table { border-collapse: collapse; width: 100%; margin-top: .5rem; }
+  td, th { border-bottom: 1px solid #eee; padding: .3rem .5rem; text-align: left;
+           vertical-align: top; font-size: 13px; }
+  th { background: #f6f6f6; }
+  .bad { color: #a11; font-weight: 600; }
+  .ok { color: #161; }
+  .muted { color: #666; }
+  code { background: #f2f2f2; padding: 0 .25rem; border-radius: 3px; }
+  #out { white-space: normal; }
+</style>
+<h1>Locale model audit</h1>
+<div id="out">Loading…</div>
+
+<script src="../data/schema.js"></script>
+<script src="../data/nodes-a.js"></script>
+<script src="../data/nodes-b.js"></script>
+<script src="../data/nodes-c.js"></script>
+<script src="../data/solutions.js"></script>
+<script src="../data/links.js"></script>
+<script src="../data/links-c.js"></script>
+<script src="../data/keywords.js"></script>
+<script src="../data/regions.js"></script>
+<script src="../src/locale.js"></script>
+<script>
+(function () {
+  const R = window.ECO_REGIONS;
+  const L = window.ECO_LOCALE;
+  const issues = window.ECO.nodes.filter(n => n.kind === 'issue');
+  const links = window.ECO.links;
+  const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+  const THIN_PLACE = 10;      // issues; below this a place is telling us its flags are wrong
+  const NARROW_ISSUE = 1;     // exposure rules; at or below this the rule is a guess
+  const UNDER_MODELLED = 2;   // issues declaring a flag
+
+  /* Issues that require a sea to be next to. Deliberately excludes oil-spills, which
+     the first run flagged for Bolivia, Mongolia and the Ruhr: that node covers inland
+     pipeline and fuel spills too and legitimately declares `mining`. The check found
+     a real bug on its first run -- coral-bleaching declared `equatorial`, so landlocked
+     DRC and Uganda surfaced reef bleaching at high exposure -- and one false positive
+     of its own, which is this line. */
+  const MARINE = ['coral-bleaching', 'kelp-seagrass-loss', 'overfishing', 'acidification',
+                  'sea-level', 'deep-sea-mining'];
+
+  const assessed = R.PLACES.map(p => {
+    const a = L.assess(issues, links, p);
+    return { place: p, exposed: a.exposed, key: a.exposed.map(r => r.node.id).join(',') };
+  });
+
+  const out = [];
+  const problems = [];
+
+  /* ── issue reachability ────────────────────────────────────────────────── */
+  const ruleCount = {};
+  issues.forEach(n => { ruleCount[n.id] = (n.local.exp || []).length; });
+  const reach = {};
+  issues.forEach(n => { reach[n.id] = 0; });
+  assessed.forEach(a => a.exposed.forEach(r => { reach[r.node.id]++; }));
+
+  /* `local.uniform` marks an issue whose exposure genuinely does not vary by place --
+     the greenhouse effect is the same physics everywhere, and emissions are a global
+     stock. Those legitimately have no exposure rules, and without the marker they were
+     indistinguishable from an issue whose rules someone forgot to write. */
+  const unreachable = issues.filter(n => ruleCount[n.id] === 0 && !n.local.uniform);
+  const uniform = issues.filter(n => n.local.uniform);
+  const narrow = issues.filter(n => ruleCount[n.id] > 0 && ruleCount[n.id] <= NARROW_ISSUE);
+
+  unreachable.forEach(n => problems.push(['UNREACHABLE', n.label,
+    'no exposure rules and not marked uniform — cannot surface for any place']));
+  narrow.forEach(n => problems.push(['NARROW', n.label,
+    'only ' + (n.local.exp || []).map(e => e[0]).join(', ')
+    + ' — reaches ' + reach[n.id] + ' of ' + R.PLACES.length + ' places']));
+
+  /* ── flags almost nothing declares ─────────────────────────────────────── */
+  const declaredBy = {};
+  Object.keys(R.FLAGS).forEach(f => { declaredBy[f] = []; });
+  issues.forEach(n => (n.local.exp || []).forEach(([t]) => {
+    if (declaredBy[t]) declaredBy[t].push(n.label);
+  }));
+  Object.entries(declaredBy).forEach(([f, list]) => {
+    if (list.length < UNDER_MODELLED) problems.push(['UNDER-MODELLED', R.FLAGS[f].label,
+      'declared by ' + list.length + ' issue(s)' + (list.length ? ': ' + list.join(', ') : '')]);
+  });
+
+  /* ── thin and identical places ─────────────────────────────────────────── */
+  assessed.forEach(a => {
+    if (a.exposed.length < THIN_PLACE) problems.push(['THIN PLACE', a.place.name,
+      'matches only ' + a.exposed.length + ' issues from flags [' + a.place.flags.join(', ') + ']']);
+  });
+  const byKey = {};
+  assessed.forEach(a => { (byKey[a.key] = byKey[a.key] || []).push(a.place.name); });
+  Object.values(byKey).filter(g => g.length > 1).forEach(g => {
+    problems.push(['IDENTICAL', g.join(' = '), 'indistinguishable to the model']);
+  });
+
+  /* ── structural impossibility ──────────────────────────────────────────── */
+  assessed.forEach(a => {
+    if (a.place.flags.includes('coastal') || a.place.flags.includes('sids')) return;
+    a.exposed.forEach(r => {
+      if (MARINE.includes(r.node.id)) problems.push(['IMPOSSIBLE', a.place.name,
+        'landlocked place surfaced marine issue "' + r.node.label + '"']);
+    });
+  });
+
+  out.push('<h2>Problems (' + problems.length + ')</h2>');
+  out.push('<p class="muted">' + uniform.length + ' issue(s) marked globally uniform and '
+    + 'excluded from the reachability check: '
+    + uniform.map(n => esc(n.label)).join(', ') + '</p>');
+  if (!problems.length) out.push('<p class="ok">None. Every issue reachable, no thin or duplicate places.</p>');
+  else {
+    out.push('<table><tr><th>Check</th><th>Subject</th><th>Detail</th></tr>');
+    problems.forEach(([k, s, d]) => out.push(
+      `<tr><td class="bad">${esc(k)}</td><td>${esc(s)}</td><td class="muted">${esc(d)}</td></tr>`));
+    out.push('</table>');
+  }
+
+  /* ── the full ranking, for eyeballing ──────────────────────────────────── */
+  out.push('<h2>Top issues per place (' + R.PLACES.length + ')</h2>');
+  out.push('<table><tr><th>Place</th><th>Flags</th><th>n</th><th>Top 8 by exposure</th></tr>');
+  assessed.slice().sort((a, b) => a.place.name.localeCompare(b.place.name)).forEach(a => {
+    const top = a.exposed.slice(0, 8).map(r =>
+      esc(r.node.label) + '<span class="muted"> (' + r.exposure.map(e => e.token).join('+') + ')</span>');
+    out.push(`<tr><td>${esc(a.place.name)}</td>`
+      + `<td class="muted">${esc(a.place.flags.join(', '))}</td>`
+      + `<td${a.exposed.length < THIN_PLACE ? ' class="bad"' : ''}>${a.exposed.length}</td>`
+      + `<td>${top.join(' · ') || '<span class="bad">nothing</span>'}</td></tr>`);
+  });
+  out.push('</table>');
+
+  document.getElementById('out').innerHTML = out.join('\n');
+})();
+</script>
