@@ -14,3 +14,10 @@ __pycache__/
 # used is extracted and committed as koppen_geiger_0p1_1991_2020.tif (217 KB).
 # Re-fetch: https://ndownloader.figshare.com/files/61012822
 tools/geo-cache/koppen_geiger_tif.zip
+
+# IBTrACS best-track archive: 143 MB, over GitHub's 100 MB file limit. The derived
+# per-country storm counts are committed as geo-cache/cyclone_storm_counts.csv instead.
+# Re-fetch: https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.since1980.list.v04r01.csv
+tools/geo-cache/ibtracs.since1980.list.v04r01.csv
+# Natural Earth reefs: fetched, evaluated, and not used -- see derive_physical.py.
+tools/geo-cache/ne_10m_reefs.geojson
