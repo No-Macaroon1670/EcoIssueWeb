@@ -39,6 +39,15 @@ SIMPLIFY_TOL = 0.05    # degrees, roughly 5 km -- sub-pixel at single-country zo
 # region name -> ISO 3166-2 subdivision codes. Matched on code, not name, because the
 # names carry accents (Quebec, Goias, Para) that encode inconsistently.
 REGIONS = {
+    # Every admin-1 unit in these eight countries belongs to exactly one region. Partial
+    # coverage was worse than it looked: unassigned provinces left holes that only made
+    # sense against a national outline drawn from a different, coarser dataset.
+    #
+    # Crimea and Sevastopol are the deliberate exception. Natural Earth files them under
+    # Russia's adm0_a3 but codes them UA-, and putting disputed territory inside a
+    # Russian region would be taking a side in the data. They are left out here and
+    # appear as part of Ukraine in the world view.
+    #
     # Canada
     'Atlantic Canada': ['CA-NB', 'CA-NS', 'CA-PE', 'CA-NL'],
     'British Columbia, Canada': ['CA-BC'],
@@ -48,7 +57,9 @@ REGIONS = {
     'Quebec, Canada': ['CA-QC'],
     # Australia. The Murray-Darling is a basin, not a set of states; these four are the
     # states it drains, which overstates it westward into arid South Australia.
-    'Murray-Darling Basin, Australia': ['AU-NSW', 'AU-VIC', 'AU-ACT', 'AU-SA'],
+    # Jervis Bay is a 70 km2 federal enclave inside New South Wales; it goes with the
+    # state that surrounds it rather than becoming an entry of its own.
+    'Murray-Darling Basin, Australia': ['AU-NSW', 'AU-VIC', 'AU-ACT', 'AU-SA', 'AU-X02~'],
     'Queensland, Australia': ['AU-QLD'],
     'Tasmania, Australia': ['AU-TAS'],
     'Top End, Australia': ['AU-NT'],
@@ -68,6 +79,13 @@ REGIONS = {
     'Rajasthan, India': ['IN-RJ'],
     'Western Ghats & Kerala, India': ['IN-KL', 'IN-GA'],
     'West Bengal & Sundarbans, India': ['IN-WB'],
+    'Gujarat & Kachchh, India': ['IN-GJ', 'IN-DH'],
+    'Central India': ['IN-MP', 'IN-CT', 'IN-JH'],
+    'Odisha & east coast, India': ['IN-OR'],
+    'Tamil Nadu & Coromandel, India': ['IN-TN', 'IN-PY'],
+    'Indian Ocean islands': ['IN-AN', 'IN-LD'],
+    'Indian Himalaya': ['IN-HP', 'IN-JK', 'IN-LA', 'IN-SK'],
+    'Northeast India': ['IN-AS', 'IN-AR', 'IN-ML', 'IN-MN', 'IN-MZ', 'IN-NL', 'IN-TR'],
     # China
     'Inner Mongolia, China': ['CN-NM'],
     'North China Plain, China': ['CN-HE', 'CN-SD', 'CN-HA', 'CN-BJ', 'CN-TJ'],
@@ -76,6 +94,11 @@ REGIONS = {
     'Tibetan Plateau, China': ['CN-XZ', 'CN-QH'],
     'Xinjiang, China': ['CN-XJ'],
     'Yangtze Delta, China': ['CN-JS', 'CN-SH', 'CN-ZJ'],
+    'Loess Plateau, China': ['CN-SX', 'CN-SN', 'CN-GS', 'CN-NX'],
+    'Sichuan Basin, China': ['CN-SC', 'CN-CQ'],
+    'Middle Yangtze, China': ['CN-HB', 'CN-HN', 'CN-JX', 'CN-AH'],
+    'Southeast coast, China': ['CN-FJ', 'CN-GX', 'CN-HI'],
+    'Yunnan-Guizhou Plateau, China': ['CN-YN', 'CN-GZ'],
     # Indonesia
     'Java, Indonesia': ['ID-JB', 'ID-JT', 'ID-JI', 'ID-BT', 'ID-JK', 'ID-YO'],
     'Kalimantan, Indonesia': ['ID-KB', 'ID-KS', 'ID-KT', 'ID-KI'],
@@ -83,6 +106,7 @@ REGIONS = {
     'Sulawesi, Indonesia': ['ID-SR', 'ID-SN', 'ID-ST', 'ID-SG', 'ID-SA', 'ID-GO'],
     'Sumatra, Indonesia': ['ID-AC', 'ID-SU', 'ID-SB', 'ID-RI', 'ID-JA', 'ID-SS',
                            'ID-BE', 'ID-LA', 'ID-BB', 'ID-KR'],
+    'Lesser Sunda & Maluku, Indonesia': ['ID-BA', 'ID-NB', 'ID-NT', 'ID-MA', 'ID-MU'],
     # Russia. Split at the Urals and then by federal-district logic; Sakha is put in
     # Siberia rather than the Far East, which is arguable either way.
     'European Russia': ['RU-MOW', 'RU-MOS', 'RU-SPE', 'RU-LEN', 'RU-BEL', 'RU-BRY',
@@ -94,7 +118,8 @@ REGIONS = {
                         'RU-ORE', 'RU-KDA', 'RU-ROS', 'RU-AST', 'RU-KL', 'RU-STA',
                         'RU-AD', 'RU-KB', 'RU-KC', 'RU-SE', 'RU-IN', 'RU-CE',
                         'RU-DA', 'RU-KGD'],
-    'Russian Arctic': ['RU-MUR', 'RU-NEN', 'RU-YAN', 'RU-CHU', 'RU-ARK', 'RU-KO'],
+    'Russian Arctic': ['RU-MUR', 'RU-NEN', 'RU-YAN', 'RU-CHU', 'RU-ARK', 'RU-KO',
+                       'RU-KR'],
     'Russian Far East': ['RU-PRI', 'RU-KHA', 'RU-AMU', 'RU-SAK', 'RU-KAM',
                          'RU-MAG', 'RU-YEV'],
     'Siberia, Russia': ['RU-KYA', 'RU-IRK', 'RU-NVS', 'RU-OMS', 'RU-TOM', 'RU-KEM',
@@ -103,13 +128,21 @@ REGIONS = {
                         'RU-PER'],
     # United States
     'Alaska, USA': ['US-AK'],
+    'Hawaii, USA': ['US-HI'],
     'California, USA': ['US-CA'],
     'Florida, USA': ['US-FL'],
-    'Great Lakes, USA': ['US-MI', 'US-WI', 'US-IL', 'US-IN', 'US-OH', 'US-MN'],
-    'Great Plains, USA': ['US-ND', 'US-SD', 'US-NE', 'US-KS', 'US-OK', 'US-MT',
-                          'US-WY', 'US-CO'],
     'New York, USA': ['US-NY'],
     'Texas, USA': ['US-TX'],
+    'Pacific Northwest, USA': ['US-WA', 'US-OR', 'US-ID'],
+    'Southwest, USA': ['US-AZ', 'US-NV', 'US-UT', 'US-NM'],
+    'Great Plains, USA': ['US-ND', 'US-SD', 'US-NE', 'US-KS', 'US-OK', 'US-MT',
+                          'US-WY', 'US-CO'],
+    'Great Lakes, USA': ['US-MI', 'US-WI', 'US-IL', 'US-IN', 'US-OH', 'US-MN',
+                         'US-IA', 'US-MO'],
+    'Southeast, USA': ['US-GA', 'US-AL', 'US-MS', 'US-SC', 'US-NC', 'US-TN',
+                       'US-KY', 'US-AR', 'US-LA', 'US-VA', 'US-WV'],
+    'Northeast, USA': ['US-ME', 'US-NH', 'US-VT', 'US-MA', 'US-RI', 'US-CT',
+                       'US-NJ', 'US-PA', 'US-DE', 'US-MD', 'US-DC'],
 }
 
 

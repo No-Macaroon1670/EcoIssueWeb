@@ -596,8 +596,6 @@ td .swatch { display: inline-block; margin-right: 6px; vertical-align: middle; }
 .eco-map-country.has-kids { stroke: var(--ink, #222); stroke-width: 1.2px; }
 .eco-map-country.is-selected { fill: var(--accent, #0053ad); }
 
-.eco-map-parent { fill: var(--rule, #e6e6e6); fill-opacity: .5; stroke: var(--ink, #222);
-                  stroke-width: 1px; vector-effect: non-scaling-stroke; }
 /* Regions need to read against the parent outline, so they take the accent colour at
    low opacity with a hard edge. Overlapping boxes are visible as darker overlap, which
    is honest -- the boxes really do overlap. */
@@ -612,13 +610,7 @@ td .swatch { display: inline-block; margin-right: 6px; vertical-align: middle; }
   cursor: pointer;
 }
 .eco-map-region:hover, .eco-map-region:hover path { fill-opacity: .8; }
-/* Regions still on a bounding box are drawn dashed, so an approximation never passes
-   for a boundary. Only the three Natural Earth has no admin-1 coverage for. */
-.eco-map-region.is-box { stroke-dasharray: 4 3; fill-opacity: .22; }
 .eco-map-region:focus-visible { outline: 2px solid var(--accent, #0053ad); }
-/* The whole-country target sits on top but only takes clicks where no region does. */
-.eco-map-whole { fill: none; stroke: var(--ink, #222); stroke-width: 2px;
-                 vector-effect: non-scaling-stroke; cursor: pointer; pointer-events: stroke; }
 
 .eco-map-label {
   margin: .35rem 0 0;

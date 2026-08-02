@@ -226,12 +226,14 @@ def hand_assigned():
         name, iso, raw = m.groups()
         if iso:
             countries[iso] = (name, set(re.findall(r"'([^']+)'", raw)))
+    # The trailing bounding box is optional: it was removed once every region gained a
+    # real outline, but the group stays so an older data file still parses.
     for m in re.finditer(
-            r"s\('([^']+)',\s*'([^']+)',\s*\[([^\]]*)\],\s*\[([^\]]*)\]\)", text):
+            r"s\('([^']+)',\s*'([^']+)',\s*\[([^\]]*)\](?:,\s*\[([^\]]*)\])?\)", text):
         name, parent, raw, box = m.groups()
         subs.append((name, parent,
                      set(re.findall(r"'([^']+)'", raw)),
-                     [float(v) for v in box.split(",")] if box.strip() else None))
+                     [float(v) for v in box.split(",")] if box and box.strip() else None))
     return countries, subs
 
 

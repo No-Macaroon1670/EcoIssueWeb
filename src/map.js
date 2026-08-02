@@ -10,10 +10,15 @@
  * and this map is a picker for a tool about environmental exposure, where making high
  * latitudes look several times their real size is exactly the wrong thumb on the scale.
  *
- * Subnational regions are drawn as their bounding boxes clipped to the parent country's
- * outline -- an SVG clipPath doing on screen precisely what tools/derive_climate.py does
- * numerically. That keeps the picture honest about what the data actually is: these are
- * boxes, not surveyed boundaries, and they look like boxes.
+ * Subnational regions are groups of administrative units, drawn as one <g> per region so
+ * a region made of several provinces is a single click target without needing the
+ * polygons unioned. Internal borders stay visible, which shows what a region is made of.
+ *
+ * The drilled view has no national outline behind the regions. It used to, from 1:110m
+ * admin-0, while the regions come from 1:50m admin-1 -- different generalisations that
+ * cannot register against each other, and around disputed borders they disagree outright.
+ * Now that the regions tile their country completely, their union is the outline, drawn
+ * from one consistent source.
  */
 window.ECO_MAP = (function () {
   const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -78,22 +83,9 @@ window.ECO_MAP = (function () {
     return d;
   }
 
-  /** A lon/lat box as a projected polygon: Equal Earth bends straight lines, so the
-   *  edges are sampled rather than drawn corner to corner. */
-  function boxPath(bbox, steps = 24) {
-    const [w, s, e, n] = bbox;
-    const pts = [];
-    for (let i = 0; i <= steps; i++) pts.push([w + (e - w) * i / steps, n]);
-    for (let i = 0; i <= steps; i++) pts.push([e, n + (s - n) * i / steps]);
-    for (let i = 0; i <= steps; i++) pts.push([e + (w - e) * i / steps, s]);
-    for (let i = 0; i <= steps; i++) pts.push([w, s + (n - s) * i / steps]);
-    return pathOf([pts]);
-  }
-
-  /* data/subregions.js is 292 KB and only the map needs it, so it is injected on first
-   * open rather than shipped in the initial page load. Everything degrades to bounding
-   * boxes if the fetch fails, which is also the permanent path for the three regions
-   * Natural Earth has no admin-1 coverage for. */
+  /* data/subregions.js is 347 KB and only the map needs it, so it is injected on first
+   * open rather than shipped in the initial page load. If the fetch fails, drilling is
+   * simply unavailable and clicking a country selects it whole. */
   let dataPromise = null;
   function ensureData() {
     if (window.ECO_SUBREGIONS) return Promise.resolve();
@@ -145,20 +137,6 @@ window.ECO_MAP = (function () {
       const pad = 0.04 * (box.x1 - box.x0);
       svg.setAttribute('viewBox',
         `${box.x0 - pad} ${box.y0 - pad} ${box.x1 - box.x0 + 2 * pad} ${box.y1 - box.y0 + 2 * pad}`);
-    }
-
-    function boundsOfBbox(bbox) {
-      const [w, s, e, n] = bbox;
-      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-      for (let i = 0; i <= 12; i++) {
-        for (const [lon, lat] of [[w + (e - w) * i / 12, s], [w + (e - w) * i / 12, n],
-                                  [w, s + (n - s) * i / 12], [e, s + (n - s) * i / 12]]) {
-          const [x, y] = project(lon, lat);
-          if (x < x0) x0 = x; if (x > x1) x1 = x;
-          if (y < y0) y0 = y; if (y > y1) y1 = y;
-        }
-      }
-      return { x0, x1, y0, y1 };
     }
 
     function drawWorld(selectedName) {
@@ -221,54 +199,40 @@ window.ECO_MAP = (function () {
     }
 
     function drill(place) {
+      const SUB0 = window.ECO_SUBREGIONS || {};
+      const kids = childrenOf(place.name).filter(k => (SUB0[k.name] || []).length);
+      if (!kids.length) return drawWorld(place.name);
       drilled = place;
       svg.textContent = '';
-      const rings = W.shapes[place.iso];
-      if (!rings) return drawWorld(null);
 
+      /* Frame on the regions themselves, not on the 110m country shape. Those are
+       * different datasets and do not agree, so framing on one while drawing the other
+       * left the drawing off-centre inside its own frame. */
       let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-      rings.forEach(r => r.forEach(([lon, lat]) => {
+      kids.forEach(k => SUB0[k.name].forEach(r => r.forEach(([lon, lat]) => {
         const [x, y] = project(lon, lat);
         if (x < x0) x0 = x; if (x > x1) x1 = x;
         if (y < y0) y0 = y; if (y > y1) y1 = y;
-      }));
+      })));
       viewBox({ x0, x1, y0, y1 });
 
-      const clipId = 'eco-clip-' + place.iso;
-      const defs = el('defs', {});
-      const clip = el('clipPath', { id: clipId });
-      clip.appendChild(el('path', { d: pathOf(rings) }));
-      defs.appendChild(clip);
-      svg.appendChild(defs);
-
-      svg.appendChild(el('path', { d: pathOf(rings), class: 'eco-map-parent' }));
-
+      /* No national outline behind the regions. It came from 1:110m admin-0 while the
+       * regions come from 1:50m admin-1, so the two are generalised differently and
+       * cannot register against each other -- and where a border is disputed they
+       * disagree outright, most visibly around Jammu and Kashmir, which admin-1 includes
+       * and the 110m India outline does not. The regions now tile their country
+       * completely, so their union IS the outline, drawn from one consistent source. */
       const SUB = window.ECO_SUBREGIONS || {};
       childrenOf(place.name).forEach(kid => {
         const shape = SUB[kid.name];
-        /* Real admin-1 outlines where we have them, the bounding box otherwise. The
-         * box still gets clipped to the country; the outlines do not need it, since
-         * they already stop at the border. */
-        let node;
-        if (shape && shape.length) {
-          /* One <g> per region holding every constituent unit, so a region made of
-           * three provinces is a single click target without needing the polygons
-           * unioned. Internal borders stay visible, which shows what it is made of. */
-          node = el('g', { class: 'eco-map-region', tabindex: '0', role: 'button' });
-          shape.forEach(ring => node.appendChild(el('path', { d: pathOf([ring]) })));
-        } else if (kid.bbox && kid.bbox.length === 4) {
-          node = el('path', {
-            d: boxPath(kid.bbox),
-            class: 'eco-map-region is-box',
-            'clip-path': `url(#${clipId})`,
-            tabindex: '0',
-            role: 'button',
-          });
-        } else {
-          return;
-        }
+        if (!shape || !shape.length) return;
+        /* One <g> per region holding every constituent unit, so a region made of three
+         * provinces is a single click target without needing the polygons unioned.
+         * Internal borders stay visible, which shows what it is made of. */
+        const node = el('g', { class: 'eco-map-region', tabindex: '0', role: 'button' });
+        shape.forEach(ring => node.appendChild(el('path', { d: pathOf([ring]) })));
         const t = el('title', {});
-        t.textContent = kid.name + (shape && shape.length ? '' : ' (approximate box)');
+        t.textContent = kid.name;
         node.appendChild(t);
         const act = () => onPick(kid.name);
         node.addEventListener('click', act);
@@ -278,28 +242,29 @@ window.ECO_MAP = (function () {
         svg.appendChild(node);
       });
 
-      /* The country itself stays selectable: someone looking at Canada may want
-       * Canada rather than one of its six regions. */
-      const whole = el('path', { d: pathOf(rings), class: 'eco-map-whole', tabindex: '0' });
-      const wt = el('title', {});
-      wt.textContent = place.name + ' as a whole';
-      whole.appendChild(wt);
+      /* The country itself stays selectable, but as a button rather than a clickable
+       * outline. The outline was the 110m national shape, which is the geometry just
+       * removed for disagreeing with the regions; with the regions tiling the country
+       * there is no spare area left to click anyway. */
+      label.textContent = '';
+      const whole = document.createElement('button');
+      whole.type = 'button';
+      whole.className = 'linkish';
+      whole.textContent = 'Use ' + place.name + ' as a whole';
       whole.addEventListener('click', () => onPick(place.name));
-      svg.appendChild(whole);
-
-      const boxes = svg.querySelectorAll('.eco-map-region.is-box').length;
-      label.textContent = place.name + ' — click a region, its outline for the whole '
-        + 'country, or anywhere else to go back. Regions are groups of states and '
-        + 'provinces, so they approximate their subject rather than matching it'
-        + (boxes ? '; dashed ones are rough bounding boxes.' : '.');
+      const hint = document.createElement('span');
+      hint.textContent = ' — or click a region, or the background to go back. Regions '
+        + 'are groups of states and provinces, so they approximate their subject '
+        + 'rather than matching it.';
+      label.appendChild(whole);
+      label.appendChild(hint);
     }
 
-    /* Going back: the SVG background, and also the parent country's own fill. Without
-     * the second case the label's "anywhere else" is a lie -- the fill covers most of
-     * the drilled view, and clicking it did nothing. */
+    /* Going back: clicking the SVG background. The regions now tile the country, so
+     * the background is genuinely empty space rather than the country's own fill. */
     svg.addEventListener('click', e => {
       if (!drilled) return;
-      if (e.target === svg || e.target.classList.contains('eco-map-parent')) {
+      if (e.target === svg) {
         drawWorld(null);
       }
     });
