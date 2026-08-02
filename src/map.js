@@ -90,6 +90,24 @@ window.ECO_MAP = (function () {
     return pathOf([pts]);
   }
 
+  /* data/subregions.js is 292 KB and only the map needs it, so it is injected on first
+   * open rather than shipped in the initial page load. Everything degrades to bounding
+   * boxes if the fetch fails, which is also the permanent path for the three regions
+   * Natural Earth has no admin-1 coverage for. */
+  let dataPromise = null;
+  function ensureData() {
+    if (window.ECO_SUBREGIONS) return Promise.resolve();
+    if (!dataPromise) {
+      dataPromise = new Promise(resolve => {
+        const s = document.createElement('script');
+        s.src = 'data/subregions.js';
+        s.onload = s.onerror = () => resolve();
+        document.head.appendChild(s);
+      });
+    }
+    return dataPromise;
+  }
+
   function el(name, attrs) {
     const node = document.createElementNS(SVG_NS, name);
     for (const k in attrs) node.setAttribute(k, attrs[k]);
@@ -225,17 +243,32 @@ window.ECO_MAP = (function () {
 
       svg.appendChild(el('path', { d: pathOf(rings), class: 'eco-map-parent' }));
 
+      const SUB = window.ECO_SUBREGIONS || {};
       childrenOf(place.name).forEach(kid => {
-        if (!kid.bbox || kid.bbox.length !== 4) return;
-        const node = el('path', {
-          d: boxPath(kid.bbox),
-          class: 'eco-map-region',
-          'clip-path': `url(#${clipId})`,
-          tabindex: '0',
-          role: 'button',
-        });
+        const shape = SUB[kid.name];
+        /* Real admin-1 outlines where we have them, the bounding box otherwise. The
+         * box still gets clipped to the country; the outlines do not need it, since
+         * they already stop at the border. */
+        let node;
+        if (shape && shape.length) {
+          /* One <g> per region holding every constituent unit, so a region made of
+           * three provinces is a single click target without needing the polygons
+           * unioned. Internal borders stay visible, which shows what it is made of. */
+          node = el('g', { class: 'eco-map-region', tabindex: '0', role: 'button' });
+          shape.forEach(ring => node.appendChild(el('path', { d: pathOf([ring]) })));
+        } else if (kid.bbox && kid.bbox.length === 4) {
+          node = el('path', {
+            d: boxPath(kid.bbox),
+            class: 'eco-map-region is-box',
+            'clip-path': `url(#${clipId})`,
+            tabindex: '0',
+            role: 'button',
+          });
+        } else {
+          return;
+        }
         const t = el('title', {});
-        t.textContent = kid.name;
+        t.textContent = kid.name + (shape && shape.length ? '' : ' (approximate box)');
         node.appendChild(t);
         const act = () => onPick(kid.name);
         node.addEventListener('click', act);
@@ -254,8 +287,11 @@ window.ECO_MAP = (function () {
       whole.addEventListener('click', () => onPick(place.name));
       svg.appendChild(whole);
 
+      const boxes = svg.querySelectorAll('.eco-map-region.is-box').length;
       label.textContent = place.name + ' — click a region, its outline for the whole '
-        + 'country, or anywhere else to go back. Regions are bounding boxes, not borders.';
+        + 'country, or anywhere else to go back. Regions are groups of states and '
+        + 'provinces, so they approximate their subject rather than matching it'
+        + (boxes ? '; dashed ones are rough bounding boxes.' : '.');
     }
 
     /* Going back: the SVG background, and also the parent country's own fill. Without
@@ -270,14 +306,20 @@ window.ECO_MAP = (function () {
 
     return {
       show(selectedName) {
-        if (selectedName) {
-          const p = R.PLACES.find(x => x.name === selectedName);
-          if (p && p.parent) {
-            const parent = R.PLACES.find(x => x.name === p.parent);
-            if (parent) return drill(parent);
+        const render = () => {
+          if (selectedName) {
+            const p = R.PLACES.find(x => x.name === selectedName);
+            if (p && p.parent) {
+              const parent = R.PLACES.find(x => x.name === p.parent);
+              if (parent) return drill(parent);
+            }
           }
-        }
-        drawWorld(selectedName);
+          drawWorld(selectedName);
+        };
+        render();                     // draw immediately from what is already loaded
+        ensureData().then(() => {     // redraw once the outlines arrive
+          if (drilled) drill(drilled);
+        });
       },
       isDrilled: () => !!drilled,
     };

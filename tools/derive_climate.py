@@ -39,6 +39,7 @@ KOPPEN_TIF = os.path.join(GEO, "koppen_geiger_0p1_1991_2020.tif")
 KOPPEN_ZIP = os.path.join(GEO, "koppen_geiger_tif.zip")
 NE = os.path.join(GEO, "ne_110m_admin_0_countries.geojson")
 REGIONS = os.path.join(HERE, os.pardir, "data", "regions.js")
+SUBREGIONS = os.path.join(HERE, os.pardir, "data", "subregions.js")
 
 # Koppen-Geiger class numbering as published with the V3 maps.
 CLASS = {
@@ -202,6 +203,21 @@ def fractions(arr, geom, bbox=None):
     return out, int(good.sum())
 
 
+def subregion_shapes():
+    """{region name: [ring, ...]} from the generated admin-1 outlines.
+
+    Where a region has real outlines, they replace the bounding-box-and-clip entirely:
+    sampling inside the union of its admin-1 units is both more accurate and simpler
+    than intersecting a rectangle with a country. The three regions Natural Earth has
+    no admin-1 coverage for keep the box path.
+    """
+    if not os.path.exists(SUBREGIONS):
+        return {}
+    text = open(SUBREGIONS, encoding="utf-8").read()
+    start = text.index("{", text.index("ECO_SUBREGIONS"))
+    return json.loads(text[start:text.rindex("}") + 1])
+
+
 def hand_assigned():
     """Countries keyed by ISO3, and subnational regions keyed by name with their box."""
     text = open(REGIONS, encoding="utf-8").read()
@@ -235,12 +251,16 @@ def main():
     countries, subs = hand_assigned()
     iso_of = {nm: iso for iso, (nm, _) in countries.items()}
 
+    shapes = subregion_shapes()
     targets = [(nm, geoms.get(iso), None, want)
                for iso, (nm, want) in sorted(countries.items(), key=lambda kv: kv[1][0])]
-    # Subnational regions reuse the parent's polygon, clipped to their bounding box.
+    # Subnational regions use their own admin-1 outlines where those exist, and
+    # otherwise fall back to the parent's polygon clipped to a bounding box.
     for nm, parent, want, box in sorted(subs):
-        piso = iso_of.get(parent)
-        targets.append((nm, geoms.get(piso), box, want))
+        if nm in shapes and shapes[nm]:
+            targets.append((nm, {"type": "Polygon", "coordinates": shapes[nm]}, None, want))
+        else:
+            targets.append((nm, geoms.get(iso_of.get(parent)), box, want))
 
     rows, agree, hand_only, data_only = [], 0, 0, 0
     for nm, geom, box, want_all in targets:

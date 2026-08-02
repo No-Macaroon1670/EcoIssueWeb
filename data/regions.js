@@ -22,31 +22,22 @@
  * environmental unit is often a basin or a delta rather than a province, which is why
  * "Yangtze Delta" and "Murray-Darling Basin" appear instead of provinces and states.
  *
- * Subnational bounding boxes exist so the raster derivations can reach these regions.
- * A box on its own would be useless -- Siberia's spills into Mongolia, Texas's into the
- * Gulf -- so tools/derive_climate.py intersects each box with its parent country's
- * polygon and samples only points satisfying both. That means a box only has to be
- * roughly right, which is what makes writing 48 by hand affordable, and it is why the
- * climate flags here are now derived rather than guessed.
+ * Subnational geometry now comes from real administrative units. tools/build_subregions.py
+ * maps each region to a set of ISO 3166-2 subdivisions and generates data/subregions.js;
+ * both the map and tools/derive_climate.py sample and draw those outlines. The bbox
+ * below is the fallback, still used by the three regions Natural Earth has no admin-1
+ * coverage for -- Scotland, Northern England and the Ruhr.
  *
- * The economic flags still are not. tools/derive_flags.py joins on ISO3 and World Bank
- * series have no subnational breakdown, so agriculture, mining and megacity remain
- * hand-assigned below country level.
+ * A group of provinces approximates its subject rather than matching it: the Pantanal is
+ * a fraction of Mato Grosso do Sul, the Murray-Darling is a basin and not four states,
+ * and the Prairies provinces run far north of any prairie. But a provincial border is a
+ * real line in the right place, which a rectangle never was, and switching corrected two
+ * readings the boxes had got wrong. The North China Plain went from 4% to 20% desert and
+ * steppe and regained `arid`; European Russia went from 31% to 3% subarctic and lost
+ * `boreal`, its northern taiga having correctly moved to the Russian Arctic.
  *
- * Sibling boxes abut and never overlap. They used to: 28 pairs overlapped and the
- * Pantanal sat entirely inside the Cerrado, which meant derive_climate.py counted the
- * same ground into two regions and the map drew the overlaps as dark bands that looked
- * like a third kind of region. Retiling them fixed a real error as well as the picture
- * -- the Indo-Gangetic Plain fell from 26% to 15% desert and steppe, and the North
- * China Plain from 17% to 4%, because the arid ground they had been claiming belongs to
- * Rajasthan, Punjab and Inner Mongolia. Both lost the `arid` flag as a result.
- *
- * Where two regions meet, their shared edge is written as the same number in both, so a
- * sample point on the boundary lands in one or the other and never in both.
- *
- * A box still cannot describe a narrow strip beside a mountain range: Western Ghats &
- * Kerala reads 29% desert or steppe because the box necessarily includes the rain
- * shadow east of the Ghats. That is a limit of rectangles, not of the method.
+ * The economic flags are still hand-assigned below country level: derive_flags.py joins
+ * on ISO3 and World Bank series have no subnational breakdown.
  *
  * Deliberate overrides -- places where the derivation disagrees and the hand value
  * stands. Kept here rather than silenced in the tool, so the report keeps reporting
@@ -110,14 +101,16 @@
  *     Tibetan Plateau 12%    water-stressed: the plain is semi-arid and over-pumped,
  *     / arid                 the plateau is cold desert in the Himalayan rain shadow
  *                            that Koppen classes largely as tundra.
- *   Western Ghats & Kerala   29% desert or steppe, from the rain shadow the bounding
- *     / arid                 box cannot exclude. Kerala itself is one of the wettest
- *                            places in India.
- *   Deccan Plateau 18%,      Just under the arid threshold after retiling moved their
- *     Tibetan Plateau 7%     boxes off neighbouring drylands. The Deccan is genuinely
- *     / arid                 semi-arid in the Ghats' rain shadow, and the Tibetan
- *                            Plateau is cold desert that Koppen classes as tundra
- *                            rather than as steppe.
+ *   Tibetan Plateau 16%      Under the arid threshold because Koppen classes the
+ *     / arid                 plateau largely as tundra rather than as cold desert.
+ *                            Xizang and Qinghai are among the driest inhabited places
+ *                            on earth.
+ *   Prairies, Canada 42%     The clearest cost of using administrative units: Alberta,
+ *     / boreal               Saskatchewan and Manitoba run hundreds of kilometres north
+ *                            of any prairie, into real boreal forest. The region means
+ *                            the agricultural south, so the flag is still refused --
+ *                            but the gap is now the provinces' fault rather than a
+ *                            threshold artefact, and it is wider than it was.
  *   Western Australia        4% Csa/Csb. The southwest corner around Perth is a real
  *     / medclimate           Mediterranean zone and a recognised biodiversity hotspot;
  *                            it is a small corner of a very large state.
@@ -350,7 +343,7 @@ window.ECO_REGIONS = (function () {
 
   /* China */
   s('Inner Mongolia, China', 'China', ['landlocked', 'arid', 'mining'], [97, 37, 118, 53]);
-  s('North China Plain, China', 'China', ['agriculture', 'megacity', 'freshwater'], [113, 32, 122, 37]);
+  s('North China Plain, China', 'China', ['agriculture', 'megacity', 'freshwater', 'arid'], [113, 32, 122, 37]);
   s('Northeast China', 'China', ['freezethaw', 'agriculture', 'mining', 'freshwater'], [118, 39, 135, 53]);
   s('Pearl River Delta, China', 'China', ['coastal', 'lowlying', 'megacity', 'cyclone'], [111.5, 21.5, 115.5, 24]);
   s('Tibetan Plateau, China', 'China', ['landlocked', 'glacierfed', 'arid'], [78, 27, 103, 34]);
@@ -365,7 +358,7 @@ window.ECO_REGIONS = (function () {
   s('Pantanal, Brazil', 'Brazil', ['freshwater', 'tropicalforest'], [-59, -21, -55, -16]);
 
   /* Russia */
-  s('European Russia', 'Russia', ['freshwater', 'freezethaw', 'megacity', 'agriculture', 'boreal'], [27, 44, 60, 66]);
+  s('European Russia', 'Russia', ['freshwater', 'freezethaw', 'megacity', 'agriculture'], [27, 44, 60, 66]);
   s('Russian Arctic', 'Russia', ['coastal', 'boreal', 'highlat', 'freezethaw'], [30, 66, 180, 82]);
   s('Russian Far East', 'Russia', ['coastal', 'boreal', 'highlat', 'mining', 'freezethaw'], [130, 42, 180, 66]);
   s('Siberia, Russia', 'Russia', ['boreal', 'highlat', 'mining', 'freshwater', 'freezethaw'], [60, 50, 130, 66]);
