@@ -420,9 +420,13 @@
     ['Support shellfish hatcheries and growers adapting to lower pH — some already buffer their water',
      'Reduce local nutrient pollution, which worsens acidification in coastal waters',
      'Note that unlike many issues here, the only real fix is cutting carbon dioxide itself'],
+    /* No `highlat` rule, though polar seas do acidify fastest because cold water
+     * absorbs more CO2. Exposure rules are matched one flag at a time with no way to
+     * express "high latitude AND has a coast", so the rule fired for inland Siberia.
+     * Latitude is not what exposes anyone here; having a coast is. The polar detail
+     * belongs in the summary above, not in a rule that cannot state the conjunction. */
     { exp: [['reef', 'high', 'Reef-building corals are directly undermined.'],
-            ['coastal', 'elevated', 'Shellfish industries are already reporting hatchery losses.'],
-            ['highlat', 'high', 'Cold water absorbs more carbon dioxide, so polar seas acidify fastest.']] },
+            ['coastal', 'elevated', 'Shellfish industries are already reporting hatchery losses.']] },
     'ocean acidification shellfish'),
 
   n('thermal-pollution', 'Thermal pollution', 'water',

@@ -118,18 +118,20 @@ def load_indicator(code):
 
 
 def hand_assigned():
-    """Flags currently written by hand in data/regions.js, including INTENSIVE_AG."""
+    """Country rows from data/regions.js as {name: (iso3, flags)}.
+
+    Reads the ISO code straight out of the hierarchy, which is why it is stored there:
+    the join key for every open dataset keyed by country lives in one place, and a
+    country added to the map is automatically in scope for derivation. Only c() rows
+    are read -- merged groups have no single ISO, and subnational regions are out of
+    reach of country-level series entirely.
+    """
     text = open(REGIONS, encoding="utf-8").read()
-    flags = {}
-    for m in re.finditer(r"r\('([^']+)',\s*'(\w+)',\s*\[([^\]]*)\]\)", text):
-        name, _income, raw = m.groups()
-        flags[name] = set(re.findall(r"'([^']+)'", raw))
-    m = re.search(r"const INTENSIVE_AG = \[(.*?)\];", text, re.S)
-    if m:
-        for name in re.findall(r"'([^']+)'", m.group(1)):
-            if name in flags:
-                flags[name].add("agriculture")
-    return flags
+    out = {}
+    for m in re.finditer(r"c\('([^']+)',\s*'(\w*)',\s*'(\w+)',\s*\[([^\]]*)\]\)", text):
+        name, iso, _income, raw = m.groups()
+        out[name] = (iso, set(re.findall(r"'([^']+)'", raw)))
+    return out
 
 
 def main():
@@ -144,6 +146,15 @@ def main():
               + ", ".join(absent) + "\n", file=sys.stderr)
 
     hand = hand_assigned()
+    unknown = [n for n in SAMPLE if n not in hand]
+    if unknown:
+        print("not in data/regions.js (renamed or merged away?): "
+              + ", ".join(unknown) + "\n", file=sys.stderr)
+    mismatched = [f"{n}: sample={i} regions.js={hand[n][0]}"
+                  for n, i in SAMPLE.items() if n in hand and hand[n][0] != i]
+    if mismatched:
+        print("ISO mismatch: " + "; ".join(mismatched) + "\n", file=sys.stderr)
+
     rows, agree, hand_only, data_only = [], 0, 0, 0
 
     for name, iso in SAMPLE.items():
@@ -189,7 +200,7 @@ def main():
         if iso in SIDS:
             got.add("sids")
 
-        want = hand.get(name, set()) & DERIVABLE
+        want = hand.get(name, ("", set()))[1] & DERIVABLE
         rows.append((name, cont, got, want, why))
         agree += len(got & want)
         hand_only += len(want - got)

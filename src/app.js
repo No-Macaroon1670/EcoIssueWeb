@@ -716,12 +716,28 @@
   const customBox = document.getElementById('custom-profile');
   const localTop = document.getElementById('local-top');
 
-  R.PLACES.forEach(p => {
+  /* Continent -> country -> subnational. A select only nests one level, so the third
+   * shows as an indented option inside its continent's optgroup rather than its own
+   * group; the names already carry the parent ("Ontario, Canada") so it reads correctly
+   * either way. The map will use R.tree() properly. */
+  const option = (value, text) => {
     const opt = document.createElement('option');
-    opt.value = p.name;
-    opt.textContent = p.name;
-    placeSelect.appendChild(opt);
+    opt.value = value;
+    opt.textContent = text;
+    return opt;
+  };
+  R.tree().forEach(region => {
+    const grp = document.createElement('optgroup');
+    grp.label = region.name;
+    region.children.forEach(({ place, children }) => {
+      grp.appendChild(option(place.name, place.name));
+      children.forEach(sub => grp.appendChild(option(sub.name, '  – ' + sub.name)));
+    });
+    placeSelect.appendChild(grp);
   });
+  /* A stored place may no longer exist -- "England, UK" was merged away. Fall back
+   * rather than leaving the select showing a value it does not have. */
+  if (state.place && !R.PLACES.some(p => p.name === state.place)) state.place = '';
   placeSelect.value = state.place;
 
   const incomeSelect = document.getElementById('custom-income');

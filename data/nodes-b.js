@@ -117,8 +117,10 @@
     ['Support urchin removal and predator recovery projects, which have restored kelp in several regions',
      'Anchor in sand, never in seagrass; use mooring buoys where provided',
      'Reduce nutrient and sediment runoff so light can reach the seabed'],
-    { exp: [['coastal', 'high', 'Temperate coastlines are where kelp and seagrass losses concentrate.'],
-            ['highlat', 'elevated', 'Fast-warming temperate seas are pushing kelp poleward.']] },
+    /* `highlat` dropped for the same reason as on ocean acidification: it fired for
+     * landlocked Siberia. Kelp moving poleward is real, but the flag that decides who
+     * is exposed is `coastal`. */
+    { exp: [['coastal', 'high', 'Temperate coastlines are where kelp and seagrass losses concentrate.']] },
     'kelp forest seagrass restoration'),
 
   n('invasives', 'Invasive species', 'bio',

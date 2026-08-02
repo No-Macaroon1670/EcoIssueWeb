@@ -1,10 +1,30 @@
 /* Coarse locale profiles for the "how does this land where I live" panel.
  *
- * This is deliberately a rules-of-thumb archetype model, not a downscaled
- * projection. A country gets a set of physical-geography flags plus a World-Bank-
- * style income group; issues declare which flags and income groups raise exposure
- * or contribution. Big, diverse countries are poorly served by one profile, so a
- * few subnational entries are included and users can build a custom profile.
+ * A rules-of-thumb archetype model, not a downscaled projection. A place carries
+ * physical-geography flags plus a World-Bank-style income group; issues declare which
+ * flags and income groups raise exposure or contribution.
+ *
+ * Three levels, continent -> country -> subnational:
+ *
+ *   c(name, iso3, income, flags)          a country. iso3 is the join key for
+ *                                         tools/derive_flags.py; '' where the place is
+ *                                         not a World Bank reporting economy.
+ *   s(name, parent, flags)                a subnational region. Inherits its parent's
+ *                                         income. Exists only where one national
+ *                                         profile demonstrably fails.
+ *   g(name, income, flags, members)       several countries the model cannot tell
+ *                                         apart, folded into one named entry.
+ *
+ * Subnational regions cover the eight countries big or varied enough that a single
+ * profile is misleading, plus three legacy entries kept because they differ from their
+ * parent. They are roughly admin-1 scale but not strictly admin-1 -- the meaningful
+ * environmental unit is often a basin or a delta rather than a province, which is why
+ * "Yangtze Delta" and "Murray-Darling Basin" appear instead of provinces and states.
+ *
+ * Subnational flags are hand-assigned and provisional. The derivation in
+ * tools/derive_flags.py joins on ISO3 and so can only reach country level; World Bank
+ * series have no subnational breakdown. Populating these properly needs the raster
+ * sources (Koppen, DEM, land cover) zonal-averaged over each region.
  */
 window.ECO_REGIONS = (function () {
   const FLAGS = {
@@ -25,7 +45,7 @@ window.ECO_REGIONS = (function () {
     megacity:       { label: 'Very large city',            hint: 'Heat islands, traffic pollution, unequal exposure' },
     mining:         { label: 'Mining region',              hint: 'Extraction, tailings and water contamination' },
     freshwater:     { label: 'Great lakes & big rivers',   hint: 'Inland freshwater: farm runoff, algal blooms, aquatic invasives' },
-    freezethaw:     { label: 'Freeze–thaw winters',        hint: 'Winters crossing 0°C repeatedly — roads, pipes and foundations' },
+    freezethaw:     { label: 'Freeze-thaw winters',        hint: 'Winters crossing 0C repeatedly - roads, pipes and foundations' },
     agriculture:    { label: 'Intensive agriculture',      hint: 'High-input farming: fertiliser, pesticides, irrigation, simplified landscapes' }
   };
 
@@ -36,180 +56,237 @@ window.ECO_REGIONS = (function () {
     low:   'Low income'
   };
 
+  const REGIONS = ['Africa', 'Asia', 'Europe', 'Americas', 'Small island states', 'Oceania'];
+
   const PLACES = [];
-  const r = (name, income, flags) => PLACES.push({ name, income, flags });
+  let CURRENT = null;
+  const region = name => { CURRENT = name; };
+  const c = (name, iso, income, flags) =>
+    PLACES.push({ name, iso, income, flags, region: CURRENT, parent: null, members: null });
+  const g = (name, income, flags, members) =>
+    PLACES.push({ name, iso: '', income, flags, region: CURRENT, parent: null, members });
+  const s = (name, parent, flags) => {
+    const p = PLACES.find(x => x.name === parent);
+    if (!p) throw new Error('subnational region names a missing parent: ' + parent);
+    PLACES.push({ name, iso: '', income: p.income, flags, region: p.region,
+                  parent, members: null });
+  };
 
-  /* ── Africa ─────────────────────────────────────────────────────────────── */
-  r('Algeria', 'upper', ['coastal', 'arid', 'medclimate']);
-  r('Angola', 'lower', ['coastal', 'arid', 'tropicalforest', 'mining']);
-  r('Chad', 'low', ['landlocked', 'arid']);
-  r('Democratic Republic of the Congo', 'low', ['tropicalforest', 'equatorial', 'mining']);
-  r('Egypt', 'lower', ['coastal', 'lowlying', 'arid', 'megacity']);
-  r('Ethiopia', 'low', ['landlocked', 'arid']);
-  r('Ghana', 'lower', ['coastal', 'equatorial', 'tropicalforest', 'mining']);
-  r('Kenya', 'lower', ['coastal', 'arid', 'equatorial', 'reef', 'freshwater']);
-  r('Madagascar', 'low', ['coastal', 'cyclone', 'reef', 'tropicalforest']);
-  r('Mali', 'low', ['landlocked', 'arid']);
-  r('Morocco', 'lower', ['coastal', 'arid', 'medclimate']);
-  r('Mozambique', 'low', ['coastal', 'cyclone', 'lowlying', 'reef', 'tropicalforest']);
-  r('Niger', 'low', ['landlocked', 'arid']);
-  r('Nigeria', 'lower', ['coastal', 'lowlying', 'megacity', 'tropicalforest', 'equatorial', 'mining']);
-  r('Senegal', 'lower', ['coastal', 'arid', 'lowlying']);
-  r('Somalia', 'low', ['coastal', 'arid']);
-  r('South Africa', 'upper', ['coastal', 'arid', 'medclimate', 'mining', 'megacity']);
-  r('Sudan', 'low', ['coastal', 'arid']);
-  r('Tanzania', 'lower', ['coastal', 'reef', 'equatorial', 'arid', 'freshwater']);
-  r('Tunisia', 'lower', ['coastal', 'arid', 'medclimate']);
-  r('Uganda', 'low', ['landlocked', 'equatorial', 'tropicalforest', 'freshwater']);
-  r('Zambia', 'low', ['landlocked', 'arid', 'mining']);
 
-  /* ── Asia ───────────────────────────────────────────────────────────────── */
-  r('Afghanistan', 'low', ['landlocked', 'arid', 'glacierfed']);
-  r('Bangladesh', 'lower', ['coastal', 'lowlying', 'monsoon', 'cyclone', 'megacity']);
-  r('Cambodia', 'lower', ['coastal', 'monsoon', 'lowlying', 'tropicalforest']);
-  r('China', 'upper', ['coastal', 'lowlying', 'monsoon', 'arid', 'glacierfed', 'megacity', 'mining', 'cyclone', 'freshwater']);
-  r('Hong Kong', 'high', ['coastal', 'cyclone', 'megacity']);
-  r('India', 'lower', ['coastal', 'lowlying', 'monsoon', 'arid', 'glacierfed', 'megacity', 'reef', 'cyclone']);
-  r('Indonesia', 'lower', ['coastal', 'equatorial', 'tropicalforest', 'reef', 'megacity', 'lowlying', 'mining']);
-  r('Iran', 'lower', ['arid', 'coastal', 'megacity', 'glacierfed']);
-  r('Iraq', 'upper', ['arid', 'lowlying', 'coastal']);
-  r('Israel', 'high', ['coastal', 'arid', 'medclimate']);
-  r('Japan', 'high', ['coastal', 'cyclone', 'megacity']);
-  r('Kazakhstan', 'upper', ['landlocked', 'arid', 'mining']);
-  r('Malaysia', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'reef', 'lowlying']);
-  r('Mongolia', 'lower', ['landlocked', 'arid', 'boreal', 'mining']);
-  r('Myanmar', 'lower', ['coastal', 'lowlying', 'monsoon', 'cyclone', 'tropicalforest']);
-  r('Nepal', 'lower', ['landlocked', 'glacierfed', 'monsoon']);
-  r('Pakistan', 'lower', ['coastal', 'arid', 'monsoon', 'glacierfed', 'megacity', 'cyclone']);
-  r('Philippines', 'lower', ['coastal', 'cyclone', 'reef', 'equatorial', 'megacity', 'lowlying', 'tropicalforest']);
-  r('Russia', 'upper', ['boreal', 'highlat', 'coastal', 'mining', 'arid', 'freshwater', 'freezethaw']);
-  r('Saudi Arabia', 'high', ['arid', 'coastal', 'reef']);
-  r('Singapore', 'high', ['coastal', 'equatorial', 'lowlying', 'megacity']);
-  r('South Korea', 'high', ['coastal', 'megacity', 'monsoon']);
-  r('Sri Lanka', 'lower', ['coastal', 'reef', 'monsoon', 'equatorial']);
-  r('Taiwan', 'high', ['coastal', 'cyclone', 'megacity']);
-  r('Thailand', 'upper', ['coastal', 'lowlying', 'monsoon', 'reef', 'megacity', 'tropicalforest', 'cyclone']);
-  r('Turkey', 'upper', ['coastal', 'medclimate', 'arid', 'megacity']);
-  r('United Arab Emirates', 'high', ['arid', 'coastal', 'reef', 'megacity']);
-  r('Uzbekistan', 'lower', ['landlocked', 'arid', 'glacierfed']);
-  r('Vietnam', 'lower', ['coastal', 'lowlying', 'cyclone', 'monsoon', 'megacity', 'tropicalforest']);
+  /* ── Africa ─────────────────────────────────────────────────── */
+  region('Africa');
+  c('Algeria', 'DZA', 'upper', ['coastal', 'arid', 'medclimate']);
+  c('Angola', 'AGO', 'lower', ['coastal', 'arid', 'tropicalforest', 'mining']);
+  c('Democratic Republic of the Congo', 'COD', 'low', ['tropicalforest', 'equatorial', 'mining']);
+  c('Egypt', 'EGY', 'lower', ['coastal', 'lowlying', 'arid', 'megacity', 'agriculture']);
+  c('Ghana', 'GHA', 'lower', ['coastal', 'equatorial', 'tropicalforest', 'mining']);
+  c('Kenya', 'KEN', 'lower', ['coastal', 'arid', 'equatorial', 'reef', 'freshwater']);
+  c('Madagascar', 'MDG', 'low', ['coastal', 'cyclone', 'reef', 'tropicalforest']);
+  c('Morocco', 'MAR', 'lower', ['coastal', 'arid', 'medclimate']);
+  c('Mozambique', 'MOZ', 'low', ['coastal', 'cyclone', 'lowlying', 'reef', 'tropicalforest']);
+  c('Nigeria', 'NGA', 'lower', ['coastal', 'lowlying', 'megacity', 'tropicalforest', 'equatorial', 'mining']);
+  g('Sahel & Horn of Africa', 'low', ['landlocked', 'arid'], ['Chad', 'Ethiopia', 'Mali', 'Niger']);
+  c('Senegal', 'SEN', 'lower', ['coastal', 'arid', 'lowlying']);
+  c('Somalia', 'SOM', 'low', ['coastal', 'arid']);
+  c('South Africa', 'ZAF', 'upper', ['coastal', 'arid', 'medclimate', 'mining', 'megacity']);
+  c('Sudan', 'SDN', 'low', ['coastal', 'arid']);
+  c('Tanzania', 'TZA', 'lower', ['coastal', 'reef', 'equatorial', 'arid', 'freshwater']);
+  c('Tunisia', 'TUN', 'lower', ['coastal', 'arid', 'medclimate']);
+  c('Uganda', 'UGA', 'low', ['landlocked', 'equatorial', 'tropicalforest', 'freshwater']);
+  c('Zambia', 'ZMB', 'low', ['landlocked', 'arid', 'mining']);
 
-  /* ── Europe ─────────────────────────────────────────────────────────────── */
-  r('Austria', 'high', ['landlocked', 'glacierfed', 'freezethaw', 'freshwater']);
-  r('Belgium', 'high', ['coastal', 'lowlying']);
-  r('Czechia', 'high', ['landlocked', 'mining', 'freshwater', 'freezethaw']);
-  r('Denmark', 'high', ['coastal', 'lowlying']);
-  r('Finland', 'high', ['coastal', 'boreal', 'highlat']);
-  r('France', 'high', ['coastal', 'medclimate', 'megacity', 'glacierfed']);
-  r('Germany', 'high', ['coastal', 'lowlying', 'megacity', 'freshwater', 'freezethaw']);
-  r('Greece', 'high', ['coastal', 'medclimate', 'arid']);
-  r('Hungary', 'high', ['landlocked', 'freshwater', 'freezethaw']);
-  r('Iceland', 'high', ['coastal', 'highlat', 'glacierfed']);
-  r('Ireland', 'high', ['coastal']);
-  r('Italy', 'high', ['coastal', 'medclimate', 'glacierfed', 'megacity']);
-  r('Netherlands', 'high', ['coastal', 'lowlying', 'megacity', 'freshwater']);
-  r('Norway', 'high', ['coastal', 'boreal', 'highlat', 'glacierfed']);
-  r('Poland', 'high', ['coastal', 'lowlying', 'mining', 'freshwater', 'freezethaw']);
-  r('Portugal', 'high', ['coastal', 'medclimate']);
-  r('Romania', 'high', ['coastal', 'lowlying']);
-  r('Spain', 'high', ['coastal', 'medclimate', 'arid']);
-  r('Sweden', 'high', ['coastal', 'boreal', 'highlat']);
-  r('Switzerland', 'high', ['landlocked', 'glacierfed', 'freezethaw']);
-  r('Ukraine', 'lower', ['coastal', 'lowlying', 'freshwater', 'freezethaw']);
-  r('United Kingdom', 'high', ['coastal', 'lowlying', 'megacity']);
+  /* ── Asia ─────────────────────────────────────────────────── */
+  region('Asia');
+  c('Afghanistan', 'AFG', 'low', ['landlocked', 'arid', 'glacierfed']);
+  c('Bangladesh', 'BGD', 'lower', ['coastal', 'lowlying', 'monsoon', 'cyclone', 'megacity', 'agriculture']);
+  c('Cambodia', 'KHM', 'lower', ['coastal', 'monsoon', 'lowlying', 'tropicalforest']);
+  c('China', 'CHN', 'upper', ['coastal', 'lowlying', 'monsoon', 'arid', 'glacierfed', 'megacity', 'mining', 'cyclone', 'freshwater', 'agriculture']);
+  c('Hong Kong', 'HKG', 'high', ['coastal', 'cyclone', 'megacity']);
+  c('India', 'IND', 'lower', ['coastal', 'lowlying', 'monsoon', 'arid', 'glacierfed', 'megacity', 'reef', 'cyclone', 'agriculture']);
+  c('Indonesia', 'IDN', 'lower', ['coastal', 'equatorial', 'tropicalforest', 'reef', 'megacity', 'lowlying', 'mining', 'agriculture']);
+  c('Iran', 'IRN', 'lower', ['arid', 'coastal', 'megacity', 'glacierfed']);
+  c('Iraq', 'IRQ', 'upper', ['arid', 'lowlying', 'coastal']);
+  c('Israel', 'ISR', 'high', ['coastal', 'arid', 'medclimate']);
+  c('Japan', 'JPN', 'high', ['coastal', 'cyclone', 'megacity']);
+  c('Kazakhstan', 'KAZ', 'upper', ['landlocked', 'arid', 'mining']);
+  c('Malaysia', 'MYS', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'reef', 'lowlying', 'agriculture']);
+  c('Mongolia', 'MNG', 'lower', ['landlocked', 'arid', 'boreal', 'mining']);
+  c('Myanmar', 'MMR', 'lower', ['coastal', 'lowlying', 'monsoon', 'cyclone', 'tropicalforest']);
+  c('Nepal', 'NPL', 'lower', ['landlocked', 'glacierfed', 'monsoon']);
+  c('Pakistan', 'PAK', 'lower', ['coastal', 'arid', 'monsoon', 'glacierfed', 'megacity', 'cyclone', 'agriculture']);
+  c('Philippines', 'PHL', 'lower', ['coastal', 'cyclone', 'reef', 'equatorial', 'megacity', 'lowlying', 'tropicalforest', 'agriculture']);
+  c('Russia', 'RUS', 'upper', ['boreal', 'highlat', 'coastal', 'mining', 'arid', 'freshwater', 'freezethaw']);
+  c('Saudi Arabia', 'SAU', 'high', ['arid', 'coastal', 'reef']);
+  c('Singapore', 'SGP', 'high', ['coastal', 'equatorial', 'lowlying', 'megacity']);
+  c('South Korea', 'KOR', 'high', ['coastal', 'megacity', 'monsoon']);
+  c('Sri Lanka', 'LKA', 'lower', ['coastal', 'reef', 'monsoon', 'equatorial']);
+  c('Taiwan', 'TWN', 'high', ['coastal', 'cyclone', 'megacity']);
+  c('Thailand', 'THA', 'upper', ['coastal', 'lowlying', 'monsoon', 'reef', 'megacity', 'tropicalforest', 'cyclone', 'agriculture']);
+  c('Turkey', 'TUR', 'upper', ['coastal', 'medclimate', 'arid', 'megacity', 'agriculture']);
+  c('United Arab Emirates', 'ARE', 'high', ['arid', 'coastal', 'reef', 'megacity']);
+  c('Uzbekistan', 'UZB', 'lower', ['landlocked', 'arid', 'glacierfed']);
+  c('Vietnam', 'VNM', 'lower', ['coastal', 'lowlying', 'cyclone', 'monsoon', 'megacity', 'tropicalforest', 'agriculture']);
 
-  /* ── Americas ───────────────────────────────────────────────────────────── */
-  r('Argentina', 'upper', ['coastal', 'arid', 'glacierfed', 'medclimate']);
-  r('Bolivia', 'lower', ['landlocked', 'arid', 'glacierfed', 'tropicalforest', 'mining']);
-  r('Brazil', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'megacity', 'mining', 'arid']);
-  r('Canada', 'high', ['coastal', 'boreal', 'highlat', 'glacierfed', 'mining', 'freshwater', 'freezethaw']);
-  r('Chile', 'high', ['coastal', 'arid', 'medclimate', 'glacierfed', 'mining']);
-  r('Colombia', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'glacierfed', 'reef', 'megacity', 'mining']);
-  r('Costa Rica', 'upper', ['coastal', 'tropicalforest', 'equatorial', 'reef']);
-  r('Ecuador', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'glacierfed', 'reef']);
-  r('Guatemala', 'lower', ['coastal', 'cyclone', 'tropicalforest', 'reef', 'equatorial']);
-  r('Guyana', 'upper', ['coastal', 'lowlying', 'tropicalforest', 'equatorial']);
-  r('Honduras', 'lower', ['coastal', 'cyclone', 'tropicalforest', 'reef', 'equatorial']);
-  r('Mexico', 'upper', ['coastal', 'arid', 'cyclone', 'reef', 'megacity', 'tropicalforest']);
-  r('Nicaragua', 'lower', ['coastal', 'cyclone', 'tropicalforest', 'reef', 'equatorial']);
-  r('Panama', 'upper', ['coastal', 'tropicalforest', 'equatorial', 'reef', 'lowlying']);
-  r('Paraguay', 'upper', ['landlocked', 'arid']);
-  r('Peru', 'upper', ['coastal', 'arid', 'glacierfed', 'tropicalforest', 'mining', 'equatorial']);
-  r('United States', 'high', ['coastal', 'lowlying', 'cyclone', 'arid', 'medclimate', 'megacity', 'glacierfed', 'mining', 'boreal', 'reef', 'freshwater', 'freezethaw']);
-  r('Uruguay', 'high', ['coastal']);
-  r('Venezuela', 'upper', ['coastal', 'tropicalforest', 'equatorial', 'mining']);
+  /* ── Europe ─────────────────────────────────────────────────── */
+  region('Europe');
+  c('Austria', 'AUT', 'high', ['landlocked', 'glacierfed', 'freezethaw', 'freshwater', 'agriculture']);
+  c('Belgium', 'BEL', 'high', ['coastal', 'lowlying', 'agriculture']);
+  c('Czechia', 'CZE', 'high', ['landlocked', 'mining', 'freshwater', 'freezethaw', 'agriculture']);
+  c('Denmark', 'DNK', 'high', ['coastal', 'lowlying', 'agriculture']);
+  c('Finland', 'FIN', 'high', ['coastal', 'boreal', 'highlat']);
+  c('France', 'FRA', 'high', ['coastal', 'medclimate', 'megacity', 'glacierfed', 'agriculture']);
+  c('Germany', 'DEU', 'high', ['coastal', 'lowlying', 'megacity', 'freshwater', 'freezethaw', 'agriculture']);
+  c('Greece', 'GRC', 'high', ['coastal', 'medclimate', 'arid']);
+  c('Hungary', 'HUN', 'high', ['landlocked', 'freshwater', 'freezethaw', 'agriculture']);
+  c('Iceland', 'ISL', 'high', ['coastal', 'highlat', 'glacierfed']);
+  c('Ireland', 'IRL', 'high', ['coastal', 'agriculture']);
+  c('Italy', 'ITA', 'high', ['coastal', 'medclimate', 'glacierfed', 'megacity', 'agriculture']);
+  c('Netherlands', 'NLD', 'high', ['coastal', 'lowlying', 'megacity', 'freshwater', 'agriculture']);
+  c('Norway', 'NOR', 'high', ['coastal', 'boreal', 'highlat', 'glacierfed']);
+  c('Poland', 'POL', 'high', ['coastal', 'lowlying', 'mining', 'freshwater', 'freezethaw', 'agriculture']);
+  c('Portugal', 'PRT', 'high', ['coastal', 'medclimate']);
+  c('Romania', 'ROU', 'high', ['coastal', 'lowlying', 'agriculture']);
+  c('Spain', 'ESP', 'high', ['coastal', 'medclimate', 'arid', 'agriculture']);
+  c('Sweden', 'SWE', 'high', ['coastal', 'boreal', 'highlat']);
+  c('Switzerland', 'CHE', 'high', ['landlocked', 'glacierfed', 'freezethaw', 'agriculture']);
+  c('Ukraine', 'UKR', 'lower', ['coastal', 'lowlying', 'freshwater', 'freezethaw', 'agriculture']);
+  c('United Kingdom', 'GBR', 'high', ['coastal', 'lowlying', 'megacity', 'agriculture']);
 
-  /* ── Caribbean & Pacific small island states ────────────────────────────── */
-  r('Bahamas', 'high', ['sids', 'coastal', 'lowlying', 'cyclone', 'reef']);
-  r('Barbados', 'high', ['sids', 'coastal', 'cyclone', 'reef']);
-  r('Cuba', 'upper', ['sids', 'coastal', 'cyclone', 'reef']);
-  r('Dominican Republic', 'upper', ['sids', 'coastal', 'cyclone', 'reef']);
-  r('Fiji', 'upper', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial']);
-  r('Haiti', 'low', ['sids', 'coastal', 'cyclone', 'tropicalforest']);
-  r('Jamaica', 'upper', ['sids', 'coastal', 'cyclone', 'reef']);
-  r('Kiribati', 'lower', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial']);
-  r('Maldives', 'upper', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial']);
-  r('Marshall Islands', 'upper', ['sids', 'coastal', 'lowlying', 'reef']);
-  r('Papua New Guinea', 'lower', ['coastal', 'equatorial', 'tropicalforest', 'reef', 'mining']);
-  r('Puerto Rico', 'high', ['sids', 'coastal', 'cyclone', 'reef']);
-  r('Samoa', 'lower', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial']);
-  r('Solomon Islands', 'lower', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial']);
-  r('Trinidad and Tobago', 'high', ['sids', 'coastal', 'reef', 'mining']);
-  r('Tuvalu', 'lower', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial']);
-  r('Vanuatu', 'lower', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial']);
+  /* ── Americas ─────────────────────────────────────────────────── */
+  region('Americas');
+  c('Argentina', 'ARG', 'upper', ['coastal', 'arid', 'glacierfed', 'medclimate', 'agriculture']);
+  c('Bolivia', 'BOL', 'lower', ['landlocked', 'arid', 'glacierfed', 'tropicalforest', 'mining']);
+  c('Brazil', 'BRA', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'megacity', 'mining', 'arid', 'agriculture']);
+  c('Canada', 'CAN', 'high', ['coastal', 'boreal', 'highlat', 'glacierfed', 'mining', 'freshwater', 'freezethaw', 'agriculture']);
+  g('Central America', 'lower', ['coastal', 'cyclone', 'tropicalforest', 'reef', 'equatorial'], ['Guatemala', 'Honduras', 'Nicaragua']);
+  c('Chile', 'CHL', 'high', ['coastal', 'arid', 'medclimate', 'glacierfed', 'mining']);
+  c('Colombia', 'COL', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'glacierfed', 'reef', 'megacity', 'mining']);
+  c('Costa Rica', 'CRI', 'upper', ['coastal', 'tropicalforest', 'equatorial', 'reef']);
+  c('Ecuador', 'ECU', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'glacierfed', 'reef']);
+  c('Guyana', 'GUY', 'upper', ['coastal', 'lowlying', 'tropicalforest', 'equatorial']);
+  c('Mexico', 'MEX', 'upper', ['coastal', 'arid', 'cyclone', 'reef', 'megacity', 'tropicalforest', 'agriculture']);
+  c('Panama', 'PAN', 'upper', ['coastal', 'tropicalforest', 'equatorial', 'reef', 'lowlying']);
+  c('Paraguay', 'PRY', 'upper', ['landlocked', 'arid']);
+  c('Peru', 'PER', 'upper', ['coastal', 'arid', 'glacierfed', 'tropicalforest', 'mining', 'equatorial']);
+  c('United States', 'USA', 'high', ['coastal', 'lowlying', 'cyclone', 'arid', 'medclimate', 'megacity', 'glacierfed', 'mining', 'boreal', 'reef', 'freshwater', 'freezethaw', 'agriculture']);
+  c('Uruguay', 'URY', 'high', ['coastal', 'agriculture']);
+  c('Venezuela', 'VEN', 'upper', ['coastal', 'tropicalforest', 'equatorial', 'mining']);
 
-  /* ── Oceania ────────────────────────────────────────────────────────────── */
-  r('Australia', 'high', ['coastal', 'arid', 'medclimate', 'reef', 'cyclone', 'mining']);
-  r('New Zealand', 'high', ['coastal', 'glacierfed', 'medclimate']);
+  /* ── Small island states ─────────────────────────────────────────────────── */
+  region('Small island states');
+  c('Bahamas', 'BHS', 'high', ['sids', 'coastal', 'lowlying', 'cyclone', 'reef']);
+  c('Barbados', 'BRB', 'high', ['sids', 'coastal', 'cyclone', 'reef']);
+  c('Cuba', 'CUB', 'upper', ['sids', 'coastal', 'cyclone', 'reef']);
+  c('Dominican Republic', 'DOM', 'upper', ['sids', 'coastal', 'cyclone', 'reef']);
+  c('Fiji', 'FJI', 'upper', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial']);
+  c('Haiti', 'HTI', 'low', ['sids', 'coastal', 'cyclone', 'tropicalforest']);
+  c('Jamaica', 'JAM', 'upper', ['sids', 'coastal', 'cyclone', 'reef']);
+  c('Maldives', 'MDV', 'upper', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial']);
+  c('Marshall Islands', 'MHL', 'upper', ['sids', 'coastal', 'lowlying', 'reef']);
+  g('Pacific atoll states', 'lower', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial'], ['Kiribati', 'Solomon Islands', 'Tuvalu']);
+  c('Papua New Guinea', 'PNG', 'lower', ['coastal', 'equatorial', 'tropicalforest', 'reef', 'mining']);
+  c('Puerto Rico', 'PRI', 'high', ['sids', 'coastal', 'cyclone', 'reef']);
+  c('Samoa', 'WSM', 'lower', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial']);
+  c('Trinidad and Tobago', 'TTO', 'high', ['sids', 'coastal', 'reef', 'mining']);
+  c('Vanuatu', 'VUT', 'lower', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial']);
 
-  /* ── Subnational entries for places a single national profile fits badly ── */
-  /* Temperate inland industrial belts — the Great Lakes, the Rhine–Ruhr, the
-   * English north. Not coastal, not arid, not boreal, and badly served by a
-   * national profile: their signature problems are farm runoff into lakes,
-   * aquatic invasives, legacy industrial sediment and freeze–thaw damage. */
-  r('Great Lakes, USA', 'high', ['freshwater', 'freezethaw', 'megacity', 'mining']);
-  r('Ontario, Canada', 'high', ['freshwater', 'freezethaw', 'megacity']);
-  r('Ruhr, Germany', 'high', ['freshwater', 'freezethaw', 'megacity', 'mining']);
-  r('Northern England, UK', 'high', ['freshwater', 'freezethaw', 'coastal', 'mining']);
+  /* ── Oceania ─────────────────────────────────────────────────── */
+  region('Oceania');
+  c('Australia', 'AUS', 'high', ['coastal', 'arid', 'medclimate', 'reef', 'cyclone', 'mining', 'agriculture']);
+  c('New Zealand', 'NZL', 'high', ['coastal', 'glacierfed', 'medclimate', 'agriculture']);
 
-  r('Alaska, USA', 'high', ['coastal', 'boreal', 'highlat', 'glacierfed', 'mining']);
-  r('California, USA', 'high', ['coastal', 'medclimate', 'arid', 'megacity', 'glacierfed']);
-  r('Florida, USA', 'high', ['coastal', 'lowlying', 'cyclone', 'reef', 'megacity']);
-  r('New York, USA', 'high', ['coastal', 'lowlying', 'megacity']);
-  r('Texas, USA', 'high', ['coastal', 'arid', 'cyclone', 'megacity', 'mining']);
-  r('England, UK', 'high', ['coastal', 'lowlying', 'megacity']);
-  r('Scotland, UK', 'high', ['coastal', 'highlat']);
-  r('Queensland, Australia', 'high', ['coastal', 'reef', 'cyclone', 'arid', 'mining']);
-  r('British Columbia, Canada', 'high', ['coastal', 'boreal', 'glacierfed', 'medclimate', 'mining']);
-
-  /* Intensive agriculture, applied as one list rather than scattered through the
-   * entries above, because the judgement is comparative and belongs in one place.
+  /* ── Subnational regions ────────────────────────────────────────────────────
+   * The eight countries where one national profile is actively misleading, plus
+   * three legacy entries retained because they differ from their parent.
    *
-   * The test is not "does this country farm" -- almost all of them do -- but whether
-   * high-input farming is among the things that dominates its environmental profile:
-   * fertiliser and manure loading, pesticide intensity, irrigation draw, and landscapes
-   * simplified enough to matter for pollinators and soil. Subsistence and low-input
-   * systems are deliberately excluded; they carry different problems, mostly already
-   * covered by `arid`, `monsoon` and `tropicalforest`.
+   * The derivation run gave the empirical argument for these: Egypt farms at
+   * 533 kg/ha and Canada at 133, but only 4% and 6% of their land area is farmed,
+   * so both failed a national extent test. The Nile Valley and the Prairies are
+   * intensive agriculture; Egypt and Canada as wholes are desert and boreal forest.
+   * A national flag can only be wrong in one direction or the other.
    *
-   * Added because the locale audit showed the model was blind here. Ireland and Uruguay
-   * returned byte-identical rankings despite both being livestock economies, and
-   * `pesticides` reached only tropical-forest countries, so no temperate farming region
-   * ever surfaced it. */
-  const INTENSIVE_AG = [
-    'Argentina', 'Australia', 'Austria', 'Bangladesh', 'Belgium', 'Brazil', 'Canada',
-    'China', 'Czechia', 'Denmark', 'Egypt', 'France', 'Germany', 'Hungary', 'India',
-    'Indonesia', 'Ireland', 'Italy', 'Malaysia', 'Mexico', 'Netherlands', 'New Zealand',
-    'Pakistan', 'Philippines', 'Poland', 'Romania', 'Spain', 'Switzerland', 'Thailand',
-    'Turkey', 'Ukraine', 'United Kingdom', 'United States', 'Uruguay', 'Vietnam',
-    'England, UK', 'Great Lakes, USA', 'Ontario, Canada'
-  ];
-  INTENSIVE_AG.forEach(name => {
-    const p = PLACES.find(x => x.name === name);
-    if (!p) throw new Error('INTENSIVE_AG names a place that does not exist: ' + name);
-    p.flags.push('agriculture');
-  });
+   * Flags here are hand-assigned and provisional -- see the header note. */
+
+  /* United States */
+  s('Alaska, USA', 'United States', ['coastal', 'boreal', 'highlat', 'glacierfed', 'mining']);
+  s('California, USA', 'United States', ['coastal', 'medclimate', 'arid', 'megacity', 'glacierfed', 'agriculture']);
+  s('Florida, USA', 'United States', ['coastal', 'lowlying', 'cyclone', 'reef', 'megacity']);
+  s('Great Lakes, USA', 'United States', ['freshwater', 'freezethaw', 'megacity', 'mining', 'agriculture']);
+  s('Great Plains, USA', 'United States', ['arid', 'agriculture', 'freezethaw']);
+  s('New York, USA', 'United States', ['coastal', 'lowlying', 'megacity', 'freezethaw']);
+  s('Texas, USA', 'United States', ['coastal', 'arid', 'cyclone', 'megacity', 'mining', 'agriculture']);
+
+  /* China */
+  s('Inner Mongolia, China', 'China', ['landlocked', 'arid', 'mining']);
+  s('North China Plain, China', 'China', ['agriculture', 'arid', 'megacity', 'freshwater']);
+  s('Northeast China', 'China', ['freezethaw', 'agriculture', 'mining', 'freshwater']);
+  s('Pearl River Delta, China', 'China', ['coastal', 'lowlying', 'megacity', 'cyclone']);
+  s('Tibetan Plateau, China', 'China', ['landlocked', 'glacierfed', 'arid']);
+  s('Xinjiang, China', 'China', ['landlocked', 'arid', 'mining', 'glacierfed']);
+  s('Yangtze Delta, China', 'China', ['coastal', 'lowlying', 'megacity', 'freshwater', 'agriculture', 'cyclone']);
+
+  /* Brazil */
+  s('Amazonia, Brazil', 'Brazil', ['tropicalforest', 'equatorial', 'freshwater', 'mining']);
+  s('Atlantic Coast, Brazil', 'Brazil', ['coastal', 'megacity', 'agriculture']);
+  s('Cerrado, Brazil', 'Brazil', ['tropicalforest', 'agriculture', 'freshwater']);
+  s('Northeast Sertao, Brazil', 'Brazil', ['coastal', 'arid', 'equatorial']);
+  s('Pantanal, Brazil', 'Brazil', ['freshwater', 'tropicalforest']);
+
+  /* Russia */
+  s('European Russia', 'Russia', ['freshwater', 'freezethaw', 'megacity', 'agriculture']);
+  s('Russian Arctic', 'Russia', ['coastal', 'boreal', 'highlat', 'freezethaw']);
+  s('Russian Far East', 'Russia', ['coastal', 'boreal', 'highlat', 'mining', 'freezethaw']);
+  s('Siberia, Russia', 'Russia', ['boreal', 'highlat', 'mining', 'freshwater', 'freezethaw']);
+
+  /* India */
+  s('Deccan Plateau, India', 'India', ['arid', 'monsoon', 'agriculture']);
+  s('Indo-Gangetic Plain, India', 'India', ['monsoon', 'agriculture', 'megacity', 'freshwater', 'glacierfed']);
+  s('Punjab, India', 'India', ['agriculture', 'monsoon', 'glacierfed', 'landlocked']);
+  s('Rajasthan, India', 'India', ['arid', 'landlocked', 'agriculture']);
+  s('Western Ghats & Kerala, India', 'India', ['coastal', 'monsoon', 'tropicalforest', 'equatorial', 'reef']);
+  s('West Bengal & Sundarbans, India', 'India', ['coastal', 'lowlying', 'monsoon', 'cyclone', 'megacity']);
+
+  /* Canada */
+  s('Atlantic Canada', 'Canada', ['coastal', 'boreal', 'freezethaw']);
+  s('British Columbia, Canada', 'Canada', ['coastal', 'boreal', 'glacierfed', 'medclimate', 'mining']);
+  s('Northern Canada', 'Canada', ['coastal', 'boreal', 'highlat', 'glacierfed', 'mining', 'freezethaw']);
+  s('Ontario, Canada', 'Canada', ['freshwater', 'freezethaw', 'megacity', 'agriculture']);
+  s('Prairies, Canada', 'Canada', ['agriculture', 'freezethaw', 'mining', 'landlocked']);
+  s('Quebec, Canada', 'Canada', ['coastal', 'boreal', 'freshwater', 'freezethaw']);
+
+  /* Australia */
+  s('Murray-Darling Basin, Australia', 'Australia', ['arid', 'agriculture', 'freshwater', 'landlocked']);
+  s('Queensland, Australia', 'Australia', ['coastal', 'reef', 'cyclone', 'arid', 'mining', 'agriculture']);
+  s('Tasmania, Australia', 'Australia', ['coastal', 'medclimate']);
+  s('Top End, Australia', 'Australia', ['coastal', 'arid', 'cyclone', 'tropicalforest', 'mining']);
+  s('Western Australia', 'Australia', ['coastal', 'arid', 'medclimate', 'mining']);
+
+  /* Indonesia */
+  s('Java, Indonesia', 'Indonesia', ['coastal', 'equatorial', 'megacity', 'lowlying', 'agriculture']);
+  s('Kalimantan, Indonesia', 'Indonesia', ['coastal', 'equatorial', 'tropicalforest', 'mining']);
+  s('Papua, Indonesia', 'Indonesia', ['coastal', 'equatorial', 'tropicalforest', 'mining', 'reef']);
+  s('Sulawesi, Indonesia', 'Indonesia', ['coastal', 'equatorial', 'tropicalforest', 'reef', 'mining']);
+  s('Sumatra, Indonesia', 'Indonesia', ['coastal', 'equatorial', 'tropicalforest', 'mining']);
+
+  /* Legacy entries outside the eight, kept because they differ from their parent.
+   * "England, UK" was dropped: the audit found it byte-identical to United Kingdom. */
+  s('Northern England, UK', 'United Kingdom', ['freshwater', 'freezethaw', 'coastal', 'mining']);
+  s('Scotland, UK', 'United Kingdom', ['coastal', 'highlat']);
+  s('Ruhr, Germany', 'Germany', ['freshwater', 'freezethaw', 'megacity', 'mining']);
 
   PLACES.sort((a, b) => a.name.localeCompare(b.name));
-  return { FLAGS, INCOME, PLACES };
+
+  /* Tree for the picker and, later, the map: continent -> country -> subnational. */
+  function tree() {
+    return REGIONS.map(name => ({
+      name,
+      children: PLACES.filter(p => p.region === name && !p.parent)
+        .map(country => ({
+          place: country,
+          children: PLACES.filter(p => p.parent === country.name)
+        }))
+    })).filter(r => r.children.length);
+  }
+
+  return { FLAGS, INCOME, REGIONS, PLACES, tree };
 })();
