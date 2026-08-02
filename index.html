@@ -72,6 +72,10 @@
         <option value="">— none —</option>
         <option value="__custom__">Describe my area…</option>
       </select>
+      <button type="button" id="map-toggle" class="linkish" aria-expanded="false">
+        Pick on a map
+      </button>
+      <div id="map-panel" class="map-panel" hidden></div>
       <label class="check" id="local-focus-wrap" hidden>
         <input type="checkbox" id="opt-local-focus"> Local focus — fade what does not feed this place
       </label>
@@ -118,11 +122,13 @@
 <script src="data/keywords.js"></script>
 <script src="data/weights-clickstream.js"></script>
 <script src="data/regions.js"></script>
+<script src="data/world.js"></script>
 <script src="src/cluster.js"></script>
 <script src="src/loops.js"></script>
 <script src="src/layout.js"></script>
 <script src="src/graph.js"></script>
 <script src="src/locale.js"></script>
+<script src="src/map.js"></script>
 <script src="src/panel.js"></script>
 <script src="src/app.js"></script>
 </body>

@@ -518,3 +518,82 @@ td .swatch { display: inline-block; margin-right: 6px; vertical-align: middle; }
   .detail { border-left: 0; border-top: 1px solid var(--border); }
   .sidebar-foot { position: sticky; bottom: 0; background: var(--surface-1); }
 }
+
+/* ── Map picker ──────────────────────────────────────────────────────────────
+   Collapsed until asked for. Colours come from the existing custom properties so
+   the map follows the theme without a second palette to keep in sync. */
+.linkish {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-top: .4rem;
+  font: inherit;
+  font-size: .82rem;
+  color: var(--accent, #0053ad);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.linkish:hover { opacity: .75; }
+
+.map-panel { margin-top: .5rem; }
+
+.eco-map {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--panel, #f6f6f6);
+  border: 1px solid var(--rule, #ddd);
+  border-radius: 4px;
+}
+
+.eco-map-country {
+  stroke: var(--panel, #f6f6f6);
+  stroke-width: 0.004;
+  vector-effect: non-scaling-stroke;
+}
+/* Countries with no profile are shown, not hidden: the gaps in coverage are part of
+   what the map honestly says. They are simply not interactive. */
+.eco-map-country.no-place { fill: var(--rule, #dcdcdc); opacity: .45; pointer-events: none; }
+.eco-map-country.has-place { fill: var(--ink-soft, #8894a5); cursor: pointer; }
+.eco-map-country.has-place:hover { fill: var(--accent, #0053ad); }
+.eco-map-country.has-place:focus-visible { outline: 2px solid var(--accent, #0053ad); }
+/* Countries that subdivide are outlined, which is the cue that clicking drills in. */
+.eco-map-country.has-kids { stroke: var(--ink, #222); stroke-width: 1.2px; }
+.eco-map-country.is-selected { fill: var(--accent, #0053ad); }
+
+.eco-map-parent { fill: var(--rule, #e6e6e6); fill-opacity: .5; stroke: var(--ink, #222);
+                  stroke-width: 1px; vector-effect: non-scaling-stroke; }
+/* Regions need to read against the parent outline, so they take the accent colour at
+   low opacity with a hard edge. Overlapping boxes are visible as darker overlap, which
+   is honest -- the boxes really do overlap. */
+.eco-map-region {
+  fill: var(--accent, #0053ad);
+  fill-opacity: .35;
+  stroke: var(--accent, #0053ad);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+}
+.eco-map-region:hover { fill-opacity: .8; }
+.eco-map-region:focus-visible { outline: 2px solid var(--accent, #0053ad); }
+/* The whole-country target sits on top but only takes clicks where no region does. */
+.eco-map-whole { fill: none; stroke: var(--ink, #222); stroke-width: 2px;
+                 vector-effect: non-scaling-stroke; cursor: pointer; pointer-events: stroke; }
+
+.eco-map-label {
+  margin: .35rem 0 0;
+  font-size: .72rem;
+  line-height: 1.35;
+  color: var(--ink-soft, #666);
+}
+
+.eco-map-dot {
+  fill: var(--ink-soft, #8894a5);
+  stroke: var(--panel, #fff);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+}
+.eco-map-dot:hover { fill: var(--accent, #0053ad); }
+.eco-map-dot.is-selected { fill: var(--accent, #0053ad); }
+.eco-map-dot:focus-visible { outline: 2px solid var(--accent, #0053ad); }

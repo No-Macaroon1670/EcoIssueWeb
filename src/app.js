@@ -740,6 +740,28 @@
   if (state.place && !R.PLACES.some(p => p.name === state.place)) state.place = '';
   placeSelect.value = state.place;
 
+  /* Map picker. Collapsed by default: it is 154 KB of geometry and a second way to do
+   * something the select already does, so it stays out of the way until asked for. */
+  const mapToggle = document.getElementById('map-toggle');
+  const mapPanel = document.getElementById('map-panel');
+  let mapView = null;
+  mapToggle.addEventListener('click', () => {
+    const open = mapPanel.hidden;
+    mapPanel.hidden = !open;
+    mapToggle.setAttribute('aria-expanded', String(open));
+    mapToggle.textContent = open ? 'Hide map' : 'Pick on a map';
+    if (!open) return;
+    if (!mapView) mapView = window.ECO_MAP.create({
+      mount: mapPanel,
+      onPick(name) {
+        placeSelect.value = name;
+        placeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        mapView.show(name);
+      },
+    });
+    mapView.show(state.place);
+  });
+
   const incomeSelect = document.getElementById('custom-income');
   Object.entries(R.INCOME).forEach(([key, label]) => {
     const opt = document.createElement('option');
