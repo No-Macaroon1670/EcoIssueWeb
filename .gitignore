@@ -8,3 +8,9 @@ desktop.ini
 tools/clickstream-*.tsv.gz
 
 __pycache__/
+
+# Koppen-Geiger source bundle: 130 MB, over GitHub's 100 MB file limit, and 71 of its
+# 72 GeoTIFFs are future SSP scenarios or resolutions nothing reads. The single grid
+# used is extracted and committed as koppen_geiger_0p1_1991_2020.tif (217 KB).
+# Re-fetch: https://ndownloader.figshare.com/files/61012822
+tools/geo-cache/koppen_geiger_tif.zip
