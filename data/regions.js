@@ -25,6 +25,21 @@
  * tools/derive_flags.py joins on ISO3 and so can only reach country level; World Bank
  * series have no subnational breakdown. Populating these properly needs the raster
  * sources (Koppen, DEM, land cover) zonal-averaged over each region.
+ *
+ * Deliberate overrides -- places where the derivation disagrees and the hand value
+ * stands. Kept here rather than silenced in the tool, so the report keeps reporting
+ * them and each one has to stay justified:
+ *
+ *   Netherlands / megacity   The World Bank's "population in largest city" reads 1.2M
+ *                            for Amsterdam and so votes no. The Randstad is polycentric
+ *                            and about 8M; no single-largest-city measure can see it.
+ *   Egypt / agriculture      533 kg/ha of fertiliser on 4% of the land area, so the
+ *   Canada / agriculture     extent gate rejects both. The Nile Valley and the Prairies
+ *                            are intensive agriculture; the countries are mostly desert
+ *                            and boreal forest. A country-level extent test cannot
+ *                            represent a concentrated farming belt inside an empty
+ *                            country, and a user picking "Canada" should still see
+ *                            agricultural issues.
  */
 window.ECO_REGIONS = (function () {
   const FLAGS = {
@@ -35,7 +50,7 @@ window.ECO_REGIONS = (function () {
     arid:           { label: 'Dryland / arid',             hint: 'Structural water scarcity and degradation risk' },
     monsoon:        { label: 'Monsoon rainfall',           hint: 'Highly seasonal rain; failure is immediately felt' },
     boreal:         { label: 'Boreal / permafrost',        hint: 'Frozen ground, peat and boreal forest' },
-    highlat:        { label: 'High latitude (>50 deg)',    hint: 'Warming two to four times the global rate' },
+    highlat:        { label: 'Subarctic / high latitude',  hint: 'Warming two to four times the global rate; roughly 58 degrees and poleward' },
     glacierfed:     { label: 'Glacier or snowmelt rivers', hint: 'Dry-season water stored as mountain ice' },
     medclimate:     { label: 'Mediterranean climate',      hint: 'Hot dry summers; the classic fire-and-drought pattern' },
     equatorial:     { label: 'Equatorial / humid tropics', hint: 'Persistent heat and humidity, year-round disease season' },
@@ -157,9 +172,9 @@ window.ECO_REGIONS = (function () {
   c('Argentina', 'ARG', 'upper', ['coastal', 'arid', 'glacierfed', 'medclimate', 'agriculture']);
   c('Bolivia', 'BOL', 'lower', ['landlocked', 'arid', 'glacierfed', 'tropicalforest', 'mining']);
   c('Brazil', 'BRA', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'megacity', 'mining', 'arid', 'agriculture']);
-  c('Canada', 'CAN', 'high', ['coastal', 'boreal', 'highlat', 'glacierfed', 'mining', 'freshwater', 'freezethaw', 'agriculture']);
+  c('Canada', 'CAN', 'high', ['coastal', 'boreal', 'highlat', 'glacierfed', 'mining', 'freshwater', 'freezethaw', 'agriculture', 'megacity']);
   g('Central America', 'lower', ['coastal', 'cyclone', 'tropicalforest', 'reef', 'equatorial'], ['Guatemala', 'Honduras', 'Nicaragua']);
-  c('Chile', 'CHL', 'high', ['coastal', 'arid', 'medclimate', 'glacierfed', 'mining']);
+  c('Chile', 'CHL', 'high', ['coastal', 'arid', 'medclimate', 'glacierfed', 'mining', 'megacity']);
   c('Colombia', 'COL', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'glacierfed', 'reef', 'megacity', 'mining']);
   c('Costa Rica', 'CRI', 'upper', ['coastal', 'tropicalforest', 'equatorial', 'reef']);
   c('Ecuador', 'ECU', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'glacierfed', 'reef']);
