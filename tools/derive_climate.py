@@ -150,12 +150,25 @@ def rings_of(geom):
     return out
 
 
-def fractions(arr, geom):
-    """cos-latitude-weighted Koppen class fractions inside one country polygon."""
+def fractions(arr, geom, bbox=None):
+    """cos-latitude-weighted Koppen class fractions inside a polygon, optionally clipped.
+
+    `bbox` restricts sampling to a [west, south, east, north] window, which is how
+    subnational regions are handled: a box alone would spill Siberia into Mongolia and
+    Texas into the Gulf, so the box is intersected with the parent country's polygon
+    and only points satisfying both are kept. The box therefore only has to be roughly
+    right, which is the whole reason it is affordable to hand-write 48 of them.
+    """
     rings = rings_of(geom)
     xs = [p[0] for r in rings for p in r]
     ys = [p[1] for r in rings for p in r]
     lon0, lon1, lat0, lat1 = min(xs), max(xs), min(ys), max(ys)
+    if bbox:
+        bw, bs, be, bn = bbox
+        lon0, lon1 = max(lon0, bw), min(lon1, be)
+        lat0, lat1 = max(lat0, bs), min(lat1, bn)
+        if lon0 >= lon1 or lat0 >= lat1:
+            return {}, 0
 
     step = SAMPLE_STEP
     for _ in range(4):   # shrink the step until the country has enough points in it
@@ -190,13 +203,20 @@ def fractions(arr, geom):
 
 
 def hand_assigned():
+    """Countries keyed by ISO3, and subnational regions keyed by name with their box."""
     text = open(REGIONS, encoding="utf-8").read()
-    out = {}
+    countries, subs = {}, []
     for m in re.finditer(r"c\('([^']+)',\s*'(\w*)',\s*'\w+',\s*\[([^\]]*)\]\)", text):
         name, iso, raw = m.groups()
         if iso:
-            out[iso] = (name, set(re.findall(r"'([^']+)'", raw)))
-    return out
+            countries[iso] = (name, set(re.findall(r"'([^']+)'", raw)))
+    for m in re.finditer(
+            r"s\('([^']+)',\s*'([^']+)',\s*\[([^\]]*)\],\s*\[([^\]]*)\]\)", text):
+        name, parent, raw, box = m.groups()
+        subs.append((name, parent,
+                     set(re.findall(r"'([^']+)'", raw)),
+                     [float(v) for v in box.split(",")] if box.strip() else None))
+    return countries, subs
 
 
 def main():
@@ -212,12 +232,21 @@ def main():
         if f.get("geometry") and iso and iso != "-99":
             geoms[iso] = f["geometry"]
 
-    hand = hand_assigned()
+    countries, subs = hand_assigned()
+    iso_of = {nm: iso for iso, (nm, _) in countries.items()}
+
+    targets = [(nm, geoms.get(iso), None, want)
+               for iso, (nm, want) in sorted(countries.items(), key=lambda kv: kv[1][0])]
+    # Subnational regions reuse the parent's polygon, clipped to their bounding box.
+    for nm, parent, want, box in sorted(subs):
+        piso = iso_of.get(parent)
+        targets.append((nm, geoms.get(piso), box, want))
+
     rows, agree, hand_only, data_only = [], 0, 0, 0
-    for iso, (nm, want_all) in sorted(hand.items(), key=lambda kv: kv[1][0]):
-        if iso not in geoms:
+    for nm, geom, box, want_all in targets:
+        if geom is None:
             continue
-        frac, n = fractions(arr, geoms[iso])
+        frac, n = fractions(arr, geom, box)
         if not frac:
             continue
         got = set()
@@ -234,7 +263,7 @@ def main():
         data_only += len(got - want)
 
     total = agree + hand_only + data_only
-    print(f"{len(rows)} countries, climate flags ({', '.join(sorted(RULES))})")
+    print(f"{len(rows)} places (countries + subnational), climate flags ({', '.join(sorted(RULES))})")
     print(f"agree {agree} / {total}  ({100*agree/total:.0f}%)   "
           f"hand-only {hand_only}   data-only {data_only}\n")
     print(f"{'flag':13}{'agree':>7}{'hand only':>11}{'data only':>11}")
