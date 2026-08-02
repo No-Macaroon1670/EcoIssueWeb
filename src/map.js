@@ -33,10 +33,31 @@ window.ECO_MAP = (function () {
     return [x, -y];                       // SVG y grows downward
   }
 
+  /* World extent is measured from the geometry actually drawn, not from the projection's
+   * theoretical -180..180 by 90..-90. Those differ enough to see: with Antarctica
+   * dropped and sub-degree islands filtered out by the build, the theoretical frame left
+   * 2.3 times as much empty ocean on the west edge as the east, and nearly twice as much
+   * below the land as above it. The map read as sitting high and to the right -- centred
+   * on the projection rather than on its content. Fitting the drawn shapes centres what
+   * a reader is actually looking at. */
   const WORLD = (() => {
-    const [xr] = project(180, 0);
-    const [, yt] = project(0, 90);
-    return { x0: -xr, x1: xr, y0: yt, y1: -yt };
+    const W = window.ECO_WORLD;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    const note = (lon, lat) => {
+      const [x, y] = project(lon, lat);
+      if (x < x0) x0 = x; if (x > x1) x1 = x;
+      if (y < y0) y0 = y; if (y > y1) y1 = y;
+    };
+    for (const iso in W.shapes) {
+      for (const ring of W.shapes[iso]) {
+        let lo = 180, hi = -180;
+        for (const p of ring) { if (p[0] < lo) lo = p[0]; if (p[0] > hi) hi = p[0]; }
+        if (hi - lo > 180) continue;       // same guard drawWorld applies
+        for (const p of ring) note(p[0], p[1]);
+      }
+    }
+    for (const iso in (W.points || {})) note(W.points[iso][0], W.points[iso][1]);
+    return { x0, x1, y0, y1 };
   })();
 
   function pathOf(rings) {
