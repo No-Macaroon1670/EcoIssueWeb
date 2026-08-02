@@ -140,9 +140,15 @@ REGIONS = {
     'Great Lakes, USA': ['US-MI', 'US-WI', 'US-IL', 'US-IN', 'US-OH', 'US-MN',
                          'US-IA', 'US-MO'],
     'Southeast, USA': ['US-GA', 'US-AL', 'US-MS', 'US-SC', 'US-NC', 'US-TN',
-                       'US-KY', 'US-AR', 'US-LA', 'US-VA', 'US-WV'],
-    'Northeast, USA': ['US-ME', 'US-NH', 'US-VT', 'US-MA', 'US-RI', 'US-CT',
-                       'US-NJ', 'US-PA', 'US-DE', 'US-MD', 'US-DC'],
+                       'US-KY', 'US-AR', 'US-LA'],
+    # Split from a single "Northeast", which ran from Maine to Washington DC and had
+    # New York punched out of the middle of it. As two regions New York sits on the
+    # edge of both instead of being enclosed by one, and Virginia and West Virginia
+    # move to the Mid-Atlantic, where the Chesapeake watershed and Appalachian coal
+    # put them, rather than padding out an already huge Southeast.
+    'New England, USA': ['US-ME', 'US-NH', 'US-VT', 'US-MA', 'US-RI', 'US-CT'],
+    'Mid-Atlantic, USA': ['US-NJ', 'US-PA', 'US-DE', 'US-MD', 'US-DC',
+                          'US-VA', 'US-WV'],
 }
 
 

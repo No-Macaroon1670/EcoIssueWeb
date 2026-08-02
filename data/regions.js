@@ -345,7 +345,8 @@ window.ECO_REGIONS = (function () {
   s('Great Plains, USA', 'United States', ['arid', 'agriculture', 'freezethaw']);
   s('Hawaii, USA', 'United States', ['coastal', 'reef', 'tropicalforest', 'cyclone', 'equatorial']);
   s('New York, USA', 'United States', ['coastal', 'lowlying', 'megacity', 'freezethaw']);
-  s('Northeast, USA', 'United States', ['coastal', 'freezethaw', 'megacity', 'lowlying']);
+  s('Mid-Atlantic, USA', 'United States', ['coastal', 'freezethaw', 'megacity', 'lowlying', 'mining', 'agriculture']);
+  s('New England, USA', 'United States', ['coastal', 'freezethaw']);
   s('Pacific Northwest, USA', 'United States', ['coastal', 'medclimate', 'freshwater', 'agriculture', 'glacierfed', 'arid']);
   s('Southeast, USA', 'United States', ['coastal', 'cyclone', 'agriculture', 'lowlying']);
   s('Southwest, USA', 'United States', ['arid', 'mining', 'megacity']);
