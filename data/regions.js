@@ -205,6 +205,35 @@ window.ECO_REGIONS = (function () {
 
   /* ── Africa ─────────────────────────────────────────────────── */
   region('Africa');
+  c('Benin', 'BEN', 'lower', ['coastal', 'lowlying']);
+  c('Botswana', 'BWA', 'upper', ['landlocked', 'mining', 'arid']);
+  c('Burkina Faso', 'BFA', 'low', ['landlocked', 'arid']);
+  c('Burundi', 'BDI', 'low', ['landlocked', 'agriculture', 'freshwater']);
+  c('Cameroon', 'CMR', 'lower', ['coastal', 'tropicalforest']);
+  c('Central African Republic', 'CAF', 'low', ['landlocked']);
+  c('Congo', 'COG', 'lower', ['coastal', 'equatorial', 'tropicalforest']);
+  c('Djibouti', 'DJI', 'lower', ['coastal', 'arid', 'lowlying', 'reef']);
+  c('Equatorial Guinea', 'GNQ', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'lowlying']);
+  c('Eritrea', 'ERI', 'low', ['coastal', 'arid', 'lowlying', 'reef']);
+  c('Gabon', 'GAB', 'upper', ['coastal', 'lowlying']);
+  c('Gambia', 'GMB', 'low', ['coastal', 'agriculture', 'arid', 'lowlying']);
+  c('Guinea', 'GIN', 'lower', ['coastal']);
+  c('Guinea-Bissau', 'GNB', 'low', ['coastal']);
+  c('Ivory Coast', 'CIV', 'lower', ['coastal', 'megacity']);
+  c('Lesotho', 'LSO', 'lower', ['landlocked']);
+  c('Liberia', 'LBR', 'low', ['coastal', 'equatorial', 'tropicalforest', 'lowlying']);
+  c('Libya', 'LBY', 'upper', ['coastal', 'arid', 'lowlying']);
+  c('Malawi', 'MWI', 'low', ['landlocked', 'agriculture', 'freshwater']);
+  c('Mauritania', 'MRT', 'lower', ['coastal', 'arid', 'lowlying']);
+  c('Namibia', 'NAM', 'lower', ['coastal', 'mining', 'arid']);
+  c('Rwanda', 'RWA', 'low', ['landlocked', 'agriculture', 'freshwater']);
+  c('Sierra Leone', 'SLE', 'low', ['coastal', 'mining', 'equatorial', 'tropicalforest']);
+  c('Somaliland', 'SOL', 'lower', ['coastal', 'arid']);
+  c('South Sudan', 'SDS', 'lower', ['landlocked', 'freshwater']);
+  c('Togo', 'TGO', 'lower', ['coastal', 'agriculture']);
+  c('Western Sahara', 'SAH', 'lower', ['coastal', 'arid']);
+  c('Zimbabwe', 'ZWE', 'lower', ['landlocked', 'arid']);
+  c('eSwatini', 'SWZ', 'lower', ['landlocked', 'arid']);
   c('Algeria', 'DZA', 'upper', ['coastal', 'arid', 'medclimate']);
   c('Angola', 'AGO', 'lower', ['coastal', 'arid', 'tropicalforest', 'mining', 'megacity']);
   c('Democratic Republic of the Congo', 'COD', 'low', ['tropicalforest', 'equatorial', 'mining', 'coastal', 'megacity']);
@@ -227,6 +256,27 @@ window.ECO_REGIONS = (function () {
 
   /* ── Asia ─────────────────────────────────────────────────── */
   region('Asia');
+  c('Armenia', 'ARM', 'upper', ['landlocked', 'mining', 'freezethaw', 'glacierfed']);
+  c('Azerbaijan', 'AZE', 'upper', ['landlocked', 'arid']);
+  c('Bhutan', 'BTN', 'lower', ['landlocked', 'monsoon', 'glacierfed']);
+  c('Brunei', 'BRN', 'high', ['coastal', 'equatorial', 'tropicalforest', 'lowlying']);
+  c('Cyprus', 'CYP', 'high', ['coastal', 'mining', 'medclimate']);
+  c('Georgia', 'GEO', 'upper', ['coastal', 'agriculture', 'freezethaw', 'glacierfed']);
+  c('Jordan', 'JOR', 'upper', ['coastal', 'mining', 'arid']);
+  c('Kuwait', 'KWT', 'high', ['coastal', 'arid']);
+  c('Kyrgyzstan', 'KGZ', 'lower', ['landlocked', 'freezethaw', 'glacierfed']);
+  c('Laos', 'LAO', 'lower', ['landlocked', 'tropicalforest', 'cyclone', 'monsoon']);
+  c('Lebanon', 'LBN', 'lower', ['coastal', 'agriculture', 'medclimate']);
+  c('North Korea', 'PRK', 'low', ['coastal', 'freezethaw']);
+  c('Northern Cyprus', 'CYN', 'lower', ['coastal', 'arid', 'medclimate']);
+  c('Oman', 'OMN', 'high', ['coastal', 'arid', 'lowlying']);
+  c('Palestine', 'PSX', 'lower', ['coastal', 'arid', 'medclimate']);
+  c('Qatar', 'QAT', 'high', ['coastal', 'arid', 'lowlying']);
+  c('Syria', 'SYR', 'low', ['coastal', 'arid', 'medclimate']);
+  c('Tajikistan', 'TJK', 'lower', ['landlocked', 'freezethaw', 'glacierfed']);
+  c('Timor-Leste', 'TLS', 'lower', ['coastal', 'monsoon', 'reef']);
+  c('Turkmenistan', 'TKM', 'upper', ['landlocked', 'agriculture', 'arid']);
+  c('Yemen', 'YEM', 'low', ['coastal', 'arid', 'reef']);
   c('Afghanistan', 'AFG', 'low', ['landlocked', 'arid', 'glacierfed', 'freezethaw']);
   c('Bangladesh', 'BGD', 'lower', ['coastal', 'lowlying', 'monsoon', 'cyclone', 'megacity', 'agriculture']);
   c('Cambodia', 'KHM', 'lower', ['coastal', 'monsoon', 'lowlying', 'tropicalforest', 'cyclone']);
@@ -259,6 +309,22 @@ window.ECO_REGIONS = (function () {
 
   /* ── Europe ─────────────────────────────────────────────────── */
   region('Europe');
+  c('Albania', 'ALB', 'upper', ['coastal', 'medclimate', 'lowlying']);
+  c('Belarus', 'BLR', 'upper', ['landlocked', 'agriculture', 'freezethaw']);
+  c('Bosnia and Herzegovina', 'BIH', 'upper', ['coastal', 'freezethaw']);
+  c('Bulgaria', 'BGR', 'high', ['coastal', 'agriculture', 'mining', 'freezethaw']);
+  c('Croatia', 'HRV', 'high', ['coastal', 'agriculture']);
+  c('Estonia', 'EST', 'high', ['coastal', 'highlat', 'freezethaw']);
+  c('Kosovo', 'KOS', 'lower', ['landlocked', 'freezethaw']);
+  c('Latvia', 'LVA', 'high', ['coastal', 'agriculture', 'freezethaw', 'lowlying']);
+  c('Lithuania', 'LTU', 'high', ['coastal', 'agriculture', 'freezethaw']);
+  c('Luxembourg', 'LUX', 'high', ['landlocked', 'agriculture']);
+  c('Moldova', 'MDA', 'upper', ['landlocked', 'agriculture', 'freezethaw']);
+  c('Montenegro', 'MNE', 'upper', ['coastal', 'agriculture', 'freezethaw']);
+  c('North Macedonia', 'MKD', 'upper', ['landlocked', 'mining', 'freezethaw']);
+  c('Serbia', 'SRB', 'upper', ['landlocked', 'agriculture', 'mining', 'freezethaw']);
+  c('Slovakia', 'SVK', 'high', ['landlocked', 'agriculture', 'freezethaw']);
+  c('Slovenia', 'SVN', 'high', ['coastal', 'agriculture', 'freezethaw']);
   c('Austria', 'AUT', 'high', ['landlocked', 'glacierfed', 'freezethaw', 'freshwater', 'agriculture']);
   c('Belgium', 'BEL', 'high', ['coastal', 'lowlying', 'agriculture']);
   c('Czechia', 'CZE', 'high', ['landlocked', 'mining', 'freshwater', 'freezethaw', 'agriculture']);
@@ -284,6 +350,11 @@ window.ECO_REGIONS = (function () {
 
   /* ── Americas ─────────────────────────────────────────────────── */
   region('Americas');
+  c('Belize', 'BLZ', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'lowlying', 'cyclone', 'reef']);
+  c('El Salvador', 'SLV', 'upper', ['coastal']);
+  c('Falkland Islands', 'FLK', 'high', ['coastal']);
+  c('Greenland', 'GRL', 'high', ['coastal', 'highlat', 'boreal', 'glacierfed']);
+  c('Suriname', 'SUR', 'upper', ['coastal', 'mining', 'equatorial', 'tropicalforest', 'lowlying']);
   c('Argentina', 'ARG', 'upper', ['coastal', 'arid', 'glacierfed', 'medclimate', 'megacity', 'mining']);
   c('Bolivia', 'BOL', 'lower', ['landlocked', 'arid', 'glacierfed', 'tropicalforest', 'mining']);
   c('Brazil', 'BRA', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'megacity', 'mining', 'agriculture']);
@@ -304,6 +375,24 @@ window.ECO_REGIONS = (function () {
 
   /* ── Small island states ─────────────────────────────────────────────────── */
   region('Small island states');
+  c('Bahrain', 'BHR', 'high', ['coastal', 'lowlying']);
+  c('Bermuda', 'BMU', 'high', ['coastal', 'lowlying', 'reef']);
+  c('Comoros', 'COM', 'lower', ['coastal', 'sids', 'reef']);
+  c('Cook Islands', 'COK', 'lower', ['coastal', 'reef']);
+  c('Faroe Islands', 'FRO', 'high', ['coastal']);
+  c('French Polynesia', 'PYF', 'high', ['coastal', 'lowlying', 'reef']);
+  c('Guam', 'GUM', 'high', ['coastal', 'reef']);
+  c('Malta', 'MLT', 'high', ['coastal', 'agriculture']);
+  c('Mauritius', 'MUS', 'upper', ['coastal', 'agriculture', 'reef']);
+  c('Micronesia', 'FSM', 'upper', ['coastal', 'sids', 'lowlying', 'reef']);
+  c('Nauru', 'NRU', 'high', ['coastal', 'sids', 'lowlying']);
+  c('Northern Mariana Islands', 'MNP', 'high', ['coastal', 'lowlying', 'reef']);
+  c('Palau', 'PLW', 'high', ['coastal', 'sids', 'lowlying', 'reef']);
+  c('Saint Helena', 'SHN', 'upper', ['coastal']);
+  c('Saint Pierre and Miquelon', 'SPM', 'lower', ['coastal']);
+  c('São Tomé and Principe', 'STP', 'lower', ['coastal', 'sids']);
+  c('Tonga', 'TON', 'upper', ['coastal', 'sids', 'lowlying', 'reef']);
+  c('Turks and Caicos Islands', 'TCA', 'high', ['coastal', 'lowlying', 'reef']);
   c('Bahamas', 'BHS', 'high', ['sids', 'coastal', 'lowlying', 'cyclone', 'reef', 'equatorial', 'tropicalforest']);
   c('Barbados', 'BRB', 'high', ['sids', 'coastal', 'cyclone', 'reef']);
   c('Cuba', 'CUB', 'upper', ['sids', 'coastal', 'cyclone', 'reef', 'mining']);
@@ -313,7 +402,7 @@ window.ECO_REGIONS = (function () {
   c('Jamaica', 'JAM', 'upper', ['sids', 'coastal', 'cyclone', 'reef', 'mining', 'equatorial', 'lowlying', 'tropicalforest']);
   c('Maldives', 'MDV', 'upper', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial']);
   c('Marshall Islands', 'MHL', 'upper', ['sids', 'coastal', 'lowlying', 'reef']);
-  g('Pacific atoll states', 'lower', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial'], ['Kiribati', 'Solomon Islands', 'Tuvalu']);
+  g('Pacific atoll states', 'lower', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial'], ['Kiribati', 'Tuvalu']);
   c('Papua New Guinea', 'PNG', 'lower', ['coastal', 'equatorial', 'tropicalforest', 'reef', 'mining', 'lowlying']);
   c('Puerto Rico', 'PRI', 'high', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial', 'lowlying', 'tropicalforest']);
   c('Samoa', 'WSM', 'lower', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial']);
@@ -322,6 +411,8 @@ window.ECO_REGIONS = (function () {
 
   /* ── Oceania ─────────────────────────────────────────────────── */
   region('Oceania');
+  c('New Caledonia', 'NCL', 'high', ['coastal', 'mining', 'equatorial', 'tropicalforest', 'lowlying', 'cyclone', 'reef']);
+  c('Solomon Islands', 'SLB', 'lower', ['coastal', 'sids', 'equatorial', 'tropicalforest', 'lowlying', 'reef']);
   c('Australia', 'AUS', 'high', ['coastal', 'arid', 'medclimate', 'reef', 'cyclone', 'mining', 'agriculture', 'megacity']);
   c('New Zealand', 'NZL', 'high', ['coastal', 'glacierfed', 'medclimate', 'agriculture']);
 

@@ -119,7 +119,7 @@ T_HIGHLAT = 58.0
 # with a lake or an inland sea is not the same as a coastline, and Kazakhstan on the
 # Caspian is the case that breaks any naive test.
 LANDLOCKED = {
-    "AFG", "AND", "ARM", "AUT", "AZE", "BLR", "BOL", "BWA", "BFA", "BDI", "CAF",
+    "AFG", "AND", "ARM", "AUT", "AZE", "BLR", "BOL", "BTN", "BWA", "BFA", "BDI", "CAF",
     "TCD", "CZE", "SWZ", "ETH", "HUN", "KAZ", "KGZ", "LAO", "LSO", "LIE", "LUX",
     "MWI", "MLI", "MDA", "MNG", "NPL", "NER", "MKD", "PRY", "RWA", "SMR", "SRB",
     "SVK", "SSD", "CHE", "TJK", "TKM", "UGA", "UZB", "VAT", "ZMB", "ZWE",
