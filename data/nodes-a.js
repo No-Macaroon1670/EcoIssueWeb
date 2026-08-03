@@ -127,9 +127,16 @@
      'Support managed retreat and coastal wetland restoration over seawalls alone, which shift the problem sideways',
      'Check whether flood insurance in your area is still viable long-term',
      'Push for planning rules that stop new building in areas expected to flood within a mortgage term'],
+    /* `coastal` is high, not elevated. It was elevated, which put sea level rise on the
+     * same footing as light pollution for any country that has a coast but no `lowlying`
+     * or `sids` flag -- so it scored the minimum almost everywhere and sat in the bottom
+     * tenth of the list for Hawaii, Sri Lanka and most of the world's coastline. Having
+     * a coast is the condition for this risk, not a marginal aggravator of it. */
     { exp: [['sids', 'high', 'Existential for low-lying atoll nations — there is no higher ground.'],
             ['lowlying', 'high', 'Deltas and low coastal plains hold enormous populations barely above sea level.'],
-            ['coastal', 'elevated', 'Any coastline faces higher baseline water and worse surge.']] },
+            ['coastal', 'high', 'Any coastline faces higher baseline water, worse surge and a retreating shore.'],
+            ['reef', 'elevated', 'Reef-fringed coasts tend to be low, and the reef that breaks the waves is being lost at the same time. Elevated rather than high: having reefs offshore is not the same as being an atoll, and `sids` already carries that case.'],
+            ['cyclone', 'elevated', 'Surge arrives on top of a higher starting point, so the same storm reaches further inland each decade.']] },
     'sea level rise coastal adaptation'),
 
   n('ice-loss', 'Glacier & ice sheet loss', 'climate',
@@ -410,8 +417,10 @@
     ['Support marine protected areas — protected reefs and kelp recover from heat events better',
      'Back fisheries management that anticipates shifting stock ranges rather than fighting them',
      'Reduce local stressors like nutrient runoff, which compound heat damage'],
+    /* Same correction as sea level rise: a coastline is the condition, not an
+     * aggravator. Every coastal fishery sits in water that is warming. */
     { exp: [['reef', 'high', 'Coral systems sit near their thermal limit already.'],
-            ['coastal', 'elevated', 'Coastal fisheries and ecosystems shift or collapse.'],
+            ['coastal', 'high', 'Coastal fisheries and ecosystems shift or collapse.'],
             ['sids', 'high', 'Reef fisheries and reef-based coastal protection are both at stake.']] },
     'marine heatwave ocean protection'),
 

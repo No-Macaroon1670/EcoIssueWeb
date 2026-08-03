@@ -103,6 +103,31 @@
     'only ' + (n.local.exp || []).map(e => e[0]).join(', ')
     + ' — reaches ' + reach[n.id] + ' of ' + R.PLACES.length + ' places']));
 
+  /* ── issues that surface everywhere and matter nowhere ─────────────────── */
+  /* An issue whose median position is in the bottom fifth of every list it appears in
+     is usually not unimportant -- it is mis-levelled. Exposure score is the sum of
+     matched rules, 3 for `high` and 1.5 for `elevated`, so an issue that declares its
+     main condition at `elevated` scores the floor wherever only that condition matches,
+     and sinks below things that named the same flag `high`. Sea level rise sat in the
+     93rd percentile that way: it declared `coastal` at `elevated`, level with light
+     pollution, so for every coastal country without a delta it ranked near last. */
+  const watchlist = [];
+  const RANK_FLOOR = 0.80;
+  const pos = {};
+  assessed.forEach(a => a.exposed.forEach((r, i) => {
+    (pos[r.node.id] = pos[r.node.id] || []).push((i + 1) / a.exposed.length);
+  }));
+  issues.forEach(n => {
+    const v = (pos[n.id] || []).slice().sort((x, y) => x - y);
+    if (v.length < 6) return;
+    const med = v[Math.floor(v.length / 2)];
+    if (med < RANK_FLOOR) return;
+    const rules = (n.local.exp || []).map(e => e[0] + '/' + e[1]).join(', ');
+    watchlist.push([n.label,
+      `median position ${(med * 100).toFixed(0)}% of ${v.length} lists. `
+      + `Rules: ${rules}`]);
+  });
+
   /* ── flags almost nothing declares ─────────────────────────────────────── */
   const declaredBy = {};
   Object.keys(R.FLAGS).forEach(f => { declaredBy[f] = []; });
@@ -143,6 +168,21 @@
     out.push('<table><tr><th>Check</th><th>Subject</th><th>Detail</th></tr>');
     problems.forEach(([k, s, d]) => out.push(
       `<tr><td class="bad">${esc(k)}</td><td>${esc(s)}</td><td class="muted">${esc(d)}</td></tr>`));
+    out.push('</table>');
+  }
+
+  /* Deliberately not counted among the problems. Most entries here are correct --
+     plastic waste and noise pollution genuinely are secondary to drought or sea level
+     rise nearly everywhere, and their `elevated` levels say so on purpose. The question
+     the list asks is narrower: is this issue low because it IS low, or because its main
+     condition was written at `elevated` when the issue is the reason that condition
+     matters? Sea level rise was the second kind. */
+  out.push('<h2>Never ranks — review, not necessarily wrong (' + watchlist.length + ')</h2>');
+  if (!watchlist.length) out.push('<p class="ok">Nothing sits at the floor.</p>');
+  else {
+    out.push('<table><tr><th>Issue</th><th>Detail</th></tr>');
+    watchlist.forEach(([s, d]) => out.push(
+      `<tr><td>${esc(s)}</td><td class="muted">${esc(d)}</td></tr>`));
     out.push('</table>');
   }
 

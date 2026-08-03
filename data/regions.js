@@ -355,7 +355,7 @@ window.ECO_REGIONS = (function () {
   /* China */
   s('Inner Mongolia, China', 'China', ['landlocked', 'arid', 'mining']);
   s('Loess Plateau, China', 'China', ['arid', 'agriculture', 'mining', 'freshwater', 'freezethaw']);
-  s('Middle Yangtze, China', 'China', ['freshwater', 'agriculture', 'megacity', 'lowlying']);
+  s('Middle Yangtze, China', 'China', ['freshwater', 'agriculture', 'megacity']);
   s('North China Plain, China', 'China', ['agriculture', 'megacity', 'freshwater', 'arid']);
   s('Northeast China', 'China', ['freezethaw', 'agriculture', 'mining', 'freshwater']);
   s('Pearl River Delta, China', 'China', ['coastal', 'lowlying', 'megacity', 'cyclone']);
