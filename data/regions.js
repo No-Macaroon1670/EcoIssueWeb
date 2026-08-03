@@ -11,8 +11,16 @@
  *                                         not a World Bank reporting economy.
  *   s(name, parent, flags)                a subnational region. Inherits its parent's
  *                                         income. Geometry comes from data/subregions.js.
- *   g(name, income, flags, members)       several countries the model cannot tell
- *                                         apart, folded into one named entry.
+ *
+ * There was a third form, g(), folding several countries the model could not tell apart
+ * into one named entry -- a Sahel group, a Pacific atoll group, a Central America group.
+ * It is gone. It made sense when only a hundred countries had profiles and those nine
+ * were genuinely indistinguishable; with every country on the map listed individually it
+ * was the one place a reader could not find their own country by name. Splitting them
+ * also turned out to be informative: the model now separates Ethiopia from the Sahel on
+ * Addis Ababa, and Nicaragua from its neighbours on farming intensity. Chad, Mali and
+ * Niger still share a profile, as do Kiribati and Tuvalu, and that is fine -- identical
+ * output is a fact about the model's resolution, not a reason to hide a country.
  *
  * Subnational regions exist for the eight countries big or varied enough that a single
  * profile is misleading, and they TILE those countries completely -- every admin-1 unit
@@ -193,8 +201,6 @@ window.ECO_REGIONS = (function () {
   const region = name => { CURRENT = name; };
   const c = (name, iso, income, flags) =>
     PLACES.push({ name, iso, income, flags, region: CURRENT, parent: null, members: null });
-  const g = (name, income, flags, members) =>
-    PLACES.push({ name, iso: '', income, flags, region: CURRENT, parent: null, members });
   const s = (name, parent, flags) => {
     const p = PLACES.find(x => x.name === parent);
     if (!p) throw new Error('subnational region names a missing parent: ' + parent);
@@ -205,6 +211,10 @@ window.ECO_REGIONS = (function () {
 
   /* ── Africa ─────────────────────────────────────────────────── */
   region('Africa');
+  c('Chad', 'TCD', 'low', ['landlocked', 'arid', 'freshwater']);
+  c('Ethiopia', 'ETH', 'low', ['landlocked', 'megacity', 'arid', 'monsoon', 'freshwater']);
+  c('Mali', 'MLI', 'low', ['landlocked', 'arid', 'freshwater']);
+  c('Niger', 'NER', 'low', ['landlocked', 'arid', 'freshwater']);
   c('Benin', 'BEN', 'lower', ['coastal', 'lowlying']);
   c('Botswana', 'BWA', 'upper', ['landlocked', 'mining', 'arid']);
   c('Burkina Faso', 'BFA', 'low', ['landlocked', 'arid']);
@@ -244,7 +254,6 @@ window.ECO_REGIONS = (function () {
   c('Morocco', 'MAR', 'lower', ['coastal', 'arid', 'medclimate', 'mining']);
   c('Mozambique', 'MOZ', 'low', ['coastal', 'cyclone', 'lowlying', 'reef', 'tropicalforest', 'arid']);
   c('Nigeria', 'NGA', 'lower', ['coastal', 'lowlying', 'megacity', 'tropicalforest', 'equatorial', 'mining', 'agriculture', 'arid']);
-  g('Sahel & Horn of Africa', 'low', ['landlocked', 'arid'], ['Chad', 'Ethiopia', 'Mali', 'Niger']);
   c('Senegal', 'SEN', 'lower', ['coastal', 'arid', 'lowlying']);
   c('Somalia', 'SOM', 'low', ['coastal', 'arid']);
   c('South Africa', 'ZAF', 'upper', ['coastal', 'arid', 'medclimate', 'mining', 'megacity']);
@@ -350,6 +359,9 @@ window.ECO_REGIONS = (function () {
 
   /* ── Americas ─────────────────────────────────────────────────── */
   region('Americas');
+  c('Guatemala', 'GTM', 'upper', ['coastal', 'agriculture', 'equatorial', 'tropicalforest', 'cyclone', 'reef']);
+  c('Honduras', 'HND', 'lower', ['coastal', 'agriculture', 'equatorial', 'tropicalforest', 'cyclone', 'reef']);
+  c('Nicaragua', 'NIC', 'lower', ['coastal', 'equatorial', 'tropicalforest', 'cyclone', 'reef']);
   c('Belize', 'BLZ', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'lowlying', 'cyclone', 'reef']);
   c('El Salvador', 'SLV', 'upper', ['coastal']);
   c('Falkland Islands', 'FLK', 'high', ['coastal']);
@@ -359,7 +371,6 @@ window.ECO_REGIONS = (function () {
   c('Bolivia', 'BOL', 'lower', ['landlocked', 'arid', 'glacierfed', 'tropicalforest', 'mining']);
   c('Brazil', 'BRA', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'megacity', 'mining', 'agriculture']);
   c('Canada', 'CAN', 'high', ['coastal', 'boreal', 'highlat', 'glacierfed', 'mining', 'freshwater', 'freezethaw', 'agriculture', 'megacity']);
-  g('Central America', 'lower', ['coastal', 'cyclone', 'tropicalforest', 'reef', 'equatorial'], ['Guatemala', 'Honduras', 'Nicaragua']);
   c('Chile', 'CHL', 'high', ['coastal', 'arid', 'medclimate', 'glacierfed', 'mining', 'megacity']);
   c('Colombia', 'COL', 'upper', ['coastal', 'equatorial', 'tropicalforest', 'glacierfed', 'reef', 'megacity', 'mining', 'agriculture']);
   c('Costa Rica', 'CRI', 'upper', ['coastal', 'tropicalforest', 'equatorial', 'reef', 'agriculture']);
@@ -375,6 +386,8 @@ window.ECO_REGIONS = (function () {
 
   /* ── Small island states ─────────────────────────────────────────────────── */
   region('Small island states');
+  c('Kiribati', 'KIR', 'lower', ['coastal', 'sids', 'lowlying', 'reef', 'equatorial']);
+  c('Tuvalu', 'TUV', 'upper', ['coastal', 'sids', 'lowlying', 'reef', 'equatorial']);
   c('Bahrain', 'BHR', 'high', ['coastal', 'lowlying']);
   c('Bermuda', 'BMU', 'high', ['coastal', 'lowlying', 'reef']);
   c('Comoros', 'COM', 'lower', ['coastal', 'sids', 'reef']);
@@ -402,7 +415,6 @@ window.ECO_REGIONS = (function () {
   c('Jamaica', 'JAM', 'upper', ['sids', 'coastal', 'cyclone', 'reef', 'mining', 'equatorial', 'lowlying', 'tropicalforest']);
   c('Maldives', 'MDV', 'upper', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial']);
   c('Marshall Islands', 'MHL', 'upper', ['sids', 'coastal', 'lowlying', 'reef']);
-  g('Pacific atoll states', 'lower', ['sids', 'coastal', 'lowlying', 'reef', 'equatorial'], ['Kiribati', 'Tuvalu']);
   c('Papua New Guinea', 'PNG', 'lower', ['coastal', 'equatorial', 'tropicalforest', 'reef', 'mining', 'lowlying']);
   c('Puerto Rico', 'PRI', 'high', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial', 'lowlying', 'tropicalforest']);
   c('Samoa', 'WSM', 'lower', ['sids', 'coastal', 'cyclone', 'reef', 'equatorial']);
