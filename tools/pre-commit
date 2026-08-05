@@ -9,10 +9,13 @@
 # does nothing is worse than no guard, because it is trusted. Pattern matching is
 # done with the shell's own `case` instead, and a missing interpreter fails loudly.
 
+# Any data file, not just the ones the link lint reads. The narrower list was itself a
+# hole: a commit that left data/regions.js syntactically broken did not match
+# links*/nodes*/solutions*, so the hook never ran at all.
 relevant=0
 while IFS= read -r staged; do
     case "$staged" in
-        data/links*.js|data/nodes*.js|data/solutions*.js) relevant=1 ;;
+        data/*.js) relevant=1 ;;
     esac
 done <<EOF
 $(git diff --cached --name-only)
@@ -33,6 +36,15 @@ if [ -z "$py" ]; then
     echo "            Install python, or commit with --no-verify to skip deliberately." >&2
     exit 1
 fi
+
+# Syntax first. If a data file is structurally broken the link lint will still report
+# clean -- it parses with regexes, which match whatever survives -- so running it first
+# would print a reassuring result about a file that does not load.
+"$py" tools/lint_syntax.py || {
+    echo "" >&2
+    echo "pre-commit: data syntax check failed. Fix the above, or --no-verify to override." >&2
+    exit 1
+}
 
 "$py" tools/lint_links.py || {
     echo "" >&2
